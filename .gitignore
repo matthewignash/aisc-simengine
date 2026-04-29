@@ -6,6 +6,10 @@ dist/
 build/
 *.tsbuildinfo
 
+# Git worktrees (created by superpowers:using-git-worktrees skill)
+.worktrees/
+worktrees/
+
 # Test artifacts
 coverage/
 .vitest-cache/
