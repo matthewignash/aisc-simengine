@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import gasLaws from '../src/sims/gas-laws/index.js';
 import { registerSim, lookupSim, clearRegistry } from '../src/sims/registry.js';
 import '../src/components/sim-engine.js';
@@ -111,5 +111,25 @@ describe('gas-laws sim module', () => {
     expect(clearIdx).toBeGreaterThanOrEqual(0);
     expect(strokeIdx).toBeGreaterThan(clearIdx);
     expect(translateIdx).toBeGreaterThan(strokeIdx);
+  });
+
+  it('removes state listeners on dispose so they do not fire on nulled fields', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws' });
+    await Promise.resolve();
+    // Capture the state reference; remove the element triggers disconnectedCallback → dispose.
+    const state = el._state;
+    el.remove();
+    // After dispose, _field, _graph, etc. are null. If the dispose left listeners
+    // attached, state.set('T', 999) would call this._field.setTemperature on null.
+    // The OLD impl uses ?. chains so it doesn't crash, but it ALSO does no work.
+    // The fix: dispose collects unsubs and calls them; subsequent set is a true no-op.
+    // We assert via the spy below.
+    const fakeSimSpy = vi.spyOn(el._sim, '_updateReadouts').mockImplementation(() => {});
+    state.set('T', 999);
+    state.set('V', 1.0);
+    state.set('n', 2.5);
+    expect(fakeSimSpy).not.toHaveBeenCalled();
+    fakeSimSpy.mockRestore();
   });
 });

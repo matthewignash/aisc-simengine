@@ -130,19 +130,26 @@ const sim = {
       makeReadout('Particles', 'N', '')
     );
 
-    // Wire state listeners
-    host._state.on('T', (T) => {
-      this._field.setTemperature(T);
-      this._updateReadouts(host);
-    });
-    host._state.on('V', (V) => {
-      this._field.setBounds(boundsForVolume(V));
-      this._updateReadouts(host);
-    });
-    host._state.on('n', (n) => {
-      this._field.setCount(visualParticleCount(n));
-      this._updateReadouts(host);
-    });
+    // Wire state listeners — collect unsubs for dispose to clean up.
+    this._unsubs = [];
+    this._unsubs.push(
+      host._state.on('T', (T) => {
+        this._field.setTemperature(T);
+        this._updateReadouts(host);
+      })
+    );
+    this._unsubs.push(
+      host._state.on('V', (V) => {
+        this._field.setBounds(boundsForVolume(V));
+        this._updateReadouts(host);
+      })
+    );
+    this._unsubs.push(
+      host._state.on('n', (n) => {
+        this._field.setCount(visualParticleCount(n));
+        this._updateReadouts(host);
+      })
+    );
 
     this._updateReadouts(host);
     this._lastHost = host;
@@ -180,6 +187,8 @@ const sim = {
   },
 
   dispose() {
+    for (const off of this._unsubs ?? []) off();
+    this._unsubs = [];
     this._field = null;
     this._graph = null;
     this._lastHost = null;
