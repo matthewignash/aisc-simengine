@@ -1,5 +1,7 @@
 # AISC SimEngine
 
+[![CI](https://github.com/matthewignash/aisc-simengine/actions/workflows/ci.yml/badge.svg)](https://github.com/matthewignash/aisc-simengine/actions/workflows/ci.yml)
+
 Interactive IB Chemistry simulations as web components.
 
 > **Status:** Foundation phase (steps 1–3 of 14). The repository scaffold, design system, and engine primitives are in place. The Gas Laws topic page (the v1 deliverable) is not yet built. See `1-Projects/SimEngine/docs/specs/2026-04-29-gaslaws-polish-handoff.md` in the IB Chemistry project for the full spec.
