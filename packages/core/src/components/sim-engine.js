@@ -308,6 +308,23 @@ class SimEngineElement extends HTMLElement {
   }
 }
 
-if (!customElements.get('sim-engine')) {
-  customElements.define('sim-engine', SimEngineElement);
-}
+/**
+ * Define the custom element on the next microtask, not synchronously at
+ * module load. This matters for bundle ordering: when the IIFE bundle runs,
+ * sim-engine.js's body executes BEFORE the bundle's later top-level
+ * `registerSim(gasLaws)` call. If `customElements.define` ran synchronously
+ * during module body, any existing `<sim-engine>` in the DOM would upgrade
+ * immediately, run `connectedCallback`, call `lookupSim('gas-laws')`, and
+ * find an empty registry — failing with "Unknown sim id".
+ *
+ * Deferring via `queueMicrotask` ensures all synchronous bundle code
+ * (including `registerSim` calls) completes before any DOM-resident
+ * `<sim-engine>` elements upgrade. Tests that await `Promise.resolve()`
+ * after mounting still see a fully initialized element on the next line,
+ * since both microtasks drain in FIFO order.
+ */
+queueMicrotask(() => {
+  if (!customElements.get('sim-engine')) {
+    customElements.define('sim-engine', SimEngineElement);
+  }
+});
