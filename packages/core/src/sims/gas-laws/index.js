@@ -106,6 +106,28 @@ const sim = {
       traces: [{ id: 'path', color: 'rgb(42, 157, 143)', kind: 'dots' }],
     });
 
+    // HL-only Ideal-vs-Real graph — always built, visibility gated on level.
+    const hlGraphCanvas = document.createElement('canvas');
+    hlGraphCanvas.width = 320;
+    hlGraphCanvas.height = 220;
+    hlGraphCanvas.setAttribute('aria-label', 'Ideal vs Real pressure comparison');
+    const hlContainer = document.createElement('div');
+    hlContainer.dataset.hlOnly = 'true';
+    hlContainer.style.display = host._state.get('level') === 'hl' ? '' : 'none';
+    hlContainer.appendChild(hlGraphCanvas);
+    rail.appendChild(hlContainer);
+
+    this._hlContainer = hlContainer;
+    this._hlGraph = createGraph({
+      canvas: hlGraphCanvas,
+      xAxis: { label: 'V / L', min: 0, max: 5.5 },
+      yAxis: { label: 'P / kPa', min: 0, max: 5000 },
+      traces: [
+        { id: 'ideal', color: 'rgb(38, 70, 83)', kind: 'line' },
+        { id: 'real', color: 'rgb(231, 111, 81)', kind: 'line' },
+      ],
+    });
+
     // Sliders
     for (const c of this.controls) {
       rail.appendChild(
@@ -149,23 +171,33 @@ const sim = {
       host._state.on('T', (T) => {
         this._field.setTemperature(T);
         this._updateReadouts(host);
+        if (host._state.get('level') === 'hl') this._redrawHLGraph(host);
       })
     );
     this._unsubs.push(
       host._state.on('V', (V) => {
         this._field.setBounds(boundsForVolume(V));
         this._updateReadouts(host);
+        if (host._state.get('level') === 'hl') this._redrawHLGraph(host);
       })
     );
     this._unsubs.push(
       host._state.on('n', (n) => {
         this._field.setCount(visualParticleCount(n));
         this._updateReadouts(host);
+        if (host._state.get('level') === 'hl') this._redrawHLGraph(host);
       })
     );
     this._unsubs.push(
       host._state.on('species', () => {
         this._updateReadouts(host);
+        if (host._state.get('level') === 'hl') this._redrawHLGraph(host);
+      })
+    );
+    this._unsubs.push(
+      host._state.on('level', (level) => {
+        this._hlContainer.style.display = level === 'hl' ? '' : 'none';
+        if (level === 'hl') this._redrawHLGraph(host);
       })
     );
 
@@ -175,6 +207,7 @@ const sim = {
       return vdWPressure({ ...state, a: sp.a, b: sp.b });
     };
     this._updateReadouts(host);
+    this._redrawHLGraph(host);
     this._lastHost = host;
     this._frameCount = 0;
   },
@@ -216,7 +249,22 @@ const sim = {
     this._unsubs = [];
     this._field = null;
     this._graph = null;
+    this._hlGraph = null;
+    this._hlContainer = null;
     this._lastHost = null;
+  },
+
+  _redrawHLGraph(host) {
+    if (!this._hlGraph) return;
+    const state = host._state.getAll();
+    const sp = SPECIES[state.species ?? 'ideal'];
+    this._hlGraph.clearAll();
+    for (let V = 0.1; V <= 5.5 + 1e-9; V += 0.1) {
+      this._hlGraph.addPoint('ideal', V, idealPressure({ V, T: state.T, n: state.n }));
+      const real = vdWPressure({ V, T: state.T, n: state.n, a: sp.a, b: sp.b });
+      if (Number.isFinite(real)) this._hlGraph.addPoint('real', V, real);
+    }
+    this._hlGraph.redraw();
   },
 
   _updateReadouts(host) {

@@ -162,6 +162,35 @@ describe('gas-laws sim module', () => {
     expect(out.P).toBeGreaterThan(0); // not compressed past nb
   });
 
+  it('Ideal-vs-Real graph container is hidden by default (level=sl)', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws' });
+    await Promise.resolve();
+    const hl = el.shadowRoot.querySelector('[data-hl-only="true"]');
+    expect(hl).not.toBeNull();
+    expect(hl.style.display).toBe('none');
+  });
+
+  it('setting level=hl reveals the Ideal-vs-Real graph and triggers redraw', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws', level: 'sl' });
+    await Promise.resolve();
+    el.setAttribute('level', 'hl');
+    const hl = el.shadowRoot.querySelector('[data-hl-only="true"]');
+    expect(hl.style.display).toBe('');
+  });
+
+  it('changing species while HL is on triggers a redraw of the Ideal-vs-Real curves', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws', level: 'hl' });
+    await Promise.resolve();
+    const sim = el._sim;
+    const spy = vi.spyOn(sim, '_redrawHLGraph');
+    el.setVariable('species', 'co2');
+    expect(spy).toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
   it('removes state listeners on dispose so they do not fire on nulled fields', async () => {
     registerSim(gasLaws);
     const el = mountSimEngine({ sim: 'gas-laws' });
