@@ -53,9 +53,10 @@ export function createParticleField(opts) {
 
     render(ctx) {
       if (!ctx) return;
-      ctx.clearRect(0, 0, bounds.width, bounds.height);
-      ctx.strokeStyle = 'rgba(0,0,0,0.4)';
-      ctx.strokeRect(0.5, 0.5, bounds.width - 1, bounds.height - 1);
+      // The consuming sim is responsible for clearing the canvas and drawing
+      // any container outline. This keeps particles.render compatible with
+      // a translated canvas frame (e.g., gas-laws translates to the inner
+      // container box so particle coordinates are container-local).
       // Canvas 2D doesn't resolve CSS var() — must use a hex literal here.
       // The visual color matches AISC --chem-500 from tokens.css.
       ctx.fillStyle = '#2a9d8f';

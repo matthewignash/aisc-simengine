@@ -7,9 +7,21 @@ import { idealPressure, avgKineticEnergy, visualParticleCount } from './physics.
 import { createParticleField } from '../../engine/particles.js';
 import { createSlider, createButton } from '../../engine/controls.js';
 import { createGraph } from '../../engine/graph.js';
+import { drawContainer } from './render.js';
 
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 360;
+// Must match drawContainer's margins in render.js so the particle bounds
+// align exactly with the visible container outline.
+const CONTAINER_MARGIN_X = 30;
+const CONTAINER_MARGIN_Y = 30;
+const V_MAX = 5; // matches the V slider's max
+const INNER_HEIGHT = CANVAS_HEIGHT - 2 * CONTAINER_MARGIN_Y;
+const INNER_CANVAS_WIDTH = CANVAS_WIDTH - 2 * CONTAINER_MARGIN_X;
+
+function boundsForVolume(V) {
+  return { width: (V / V_MAX) * INNER_CANVAS_WIDTH, height: INNER_HEIGHT };
+}
 
 const sim = {
   id: 'gas-laws',
@@ -70,10 +82,12 @@ const sim = {
     }
     const initial = host._state.getAll();
 
-    // Particle field
+    // Particle field — bounds are container-local (origin at the inner
+    // top-left of the container box). The render method translates the
+    // canvas before delegating to the field.
     this._field = createParticleField({
       count: visualParticleCount(initial.n),
-      bounds: { width: CANVAS_WIDTH, height: CANVAS_HEIGHT },
+      bounds: boundsForVolume(initial.V),
       temperature: initial.T,
     });
 
@@ -121,7 +135,10 @@ const sim = {
       this._field.setTemperature(T);
       this._updateReadouts(host);
     });
-    host._state.on('V', () => this._updateReadouts(host));
+    host._state.on('V', (V) => {
+      this._field.setBounds(boundsForVolume(V));
+      this._updateReadouts(host);
+    });
     host._state.on('n', (n) => {
       this._field.setCount(visualParticleCount(n));
       this._updateReadouts(host);
@@ -137,7 +154,19 @@ const sim = {
   },
 
   render(ctx) {
-    this._field?.render(ctx);
+    if (ctx) {
+      const V = this._lastHost?._state.get('V') ?? V_MAX;
+      // Clear full canvas, draw the (V-dependent) container outline, then
+      // translate into the inner box and render particles. Translation lets
+      // particles.js continue using 0-origin {width, height} bounds while
+      // visually appearing inside the container.
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      drawContainer(ctx, { width: CANVAS_WIDTH, height: CANVAS_HEIGHT, V, Vmax: V_MAX });
+      ctx.save();
+      ctx.translate(CONTAINER_MARGIN_X, CONTAINER_MARGIN_Y);
+      this._field?.render(ctx);
+      ctx.restore();
+    }
     this._frameCount = (this._frameCount ?? 0) + 1;
     if (this._frameCount % 10 === 0 && this._lastHost && this._graph) {
       const state = this._lastHost._state.getAll();

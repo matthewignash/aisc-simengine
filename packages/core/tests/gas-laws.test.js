@@ -82,4 +82,34 @@ describe('gas-laws sim module', () => {
     expect(out.P).toBeCloseTo((8.314 * 300) / 2, 1);
     expect(out.KE).toBeGreaterThan(0);
   });
+
+  it('render(ctx) calls drawContainer (clearRect + strokeRect) before particles', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws' });
+    await Promise.resolve();
+    const calls = [];
+    const ctx = {
+      canvas: { width: 600, height: 360 },
+      clearRect: (...a) => calls.push(['clearRect', ...a]),
+      strokeStyle: '',
+      fillStyle: '',
+      lineWidth: 1,
+      strokeRect: (...a) => calls.push(['strokeRect', ...a]),
+      beginPath: () => calls.push(['beginPath']),
+      arc: (...a) => calls.push(['arc', ...a]),
+      fill: () => calls.push(['fill']),
+      save: () => calls.push(['save']),
+      restore: () => calls.push(['restore']),
+      translate: (...a) => calls.push(['translate', ...a]),
+    };
+    el._sim.render(ctx);
+    // The sim should have done clearRect, then strokeRect (drawContainer),
+    // then translate + arc + fill (particles inside translated frame).
+    const clearIdx = calls.findIndex(([fn]) => fn === 'clearRect');
+    const strokeIdx = calls.findIndex(([fn]) => fn === 'strokeRect');
+    const translateIdx = calls.findIndex(([fn]) => fn === 'translate');
+    expect(clearIdx).toBeGreaterThanOrEqual(0);
+    expect(strokeIdx).toBeGreaterThan(clearIdx);
+    expect(translateIdx).toBeGreaterThan(strokeIdx);
+  });
 });
