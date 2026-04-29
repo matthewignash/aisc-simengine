@@ -110,3 +110,54 @@ The sim is auto-registered when `@TBD/simengine` is imported (see `packages/core
 ### What's deferred to step 5b
 
 VdW physics; HL toggle + Ideal-vs-Real graph; multiple species (He, N₂, CO₂); Maxwell-Boltzmann distribution; teacher presets; search palette; measured pressure; particle-particle collisions; `createDropdown` / `createToggle` / `initKeyboard`; `exportPNG`. Plus several smaller polish items captured in the step 5 sweep notes (listener leak on dispose, `dt` clamping at the rAF boundary, stronger graph test assertions).
+
+## Step 5b — Gas Laws extensions
+
+Adds VdW physics + HL toggle, multiple species, Maxwell-Boltzmann distribution graph, and teacher presets to the existing Gas Laws sim. Plus three sweep fixes folded in: listener leak fix on sim dispose, `dt` clamping at the rAF loop boundary, and `_pressureFn` abstraction in the gas-laws sim.
+
+### Species data
+
+`packages/core/src/sims/gas-laws/species.js` exports `SPECIES` (object keyed by id) and `SPECIES_OPTIONS` (array for `createDropdown`). Four species: `ideal`, `he`, `n2`, `co2` — each with `a`, `b` VdW constants (in our V/P/T/n unit system: a in kPa·L²·mol⁻², b in L·mol⁻¹) and a `color`.
+
+### VdW physics
+
+`vdWPressure({ V, T, n, a, b })` in `gas-laws/physics.js`:
+
+```
+P = nRT / (V - nb) - a · n² / V²
+```
+
+Returns 0 for non-positive V/T/n; Infinity if V ≤ nb (gas compressed past minimum molar volume). The gas-laws sim's `_pressureFn` dispatches: ideal when species has `a=b=0`, VdW otherwise. Reads species from state every call.
+
+### HL toggle
+
+The `level` attribute on `<sim-engine>` is reactive from step 4. When `level=hl`, the gas-laws sim shows an additional graph below the P-V graph: two static curves (`ideal` line + `real` line) plotted across V's full range for the current T, n, and species. The user sees the divergence widen at moderate V — the canonical IB pedagogical moment.
+
+The HL graph canvas is created once at `init` time; visibility is toggled via the container's `display` style on `state.level` change.
+
+### Maxwell-Boltzmann distribution graph
+
+Always visible. Updated every 15 frames in the sim's `render(ctx)`. Two traces:
+
+- `observed`: histogram of current particle speeds (24 bins, x ∈ [0, 200])
+- `theory`: 2D MB PDF curve at the current T (`f(v) = (m/kT) v exp(-mv²/(2kT))`)
+
+The 2D form (rather than the more familiar 3D form from textbook physics) is correct for our 2D simulator. Calibrated to the velocity-scale convention in `particles.sampleVelocity` so theory and observation overlap.
+
+### Teacher presets
+
+Three IB Chemistry scenarios in `gas-laws.scenarios`:
+
+- `boyle` — isothermal (T=300, V=2, n=3, ideal)
+- `charles` — isobaric template (T=200, V=2, n=3, ideal)
+- `idealVsReal` — high-pressure CO₂ at HL (T=150, V=0.8, n=8, CO₂, level=hl)
+
+Preset dropdown at the top of the rail. Selecting `idealVsReal` self-promotes to HL via `host.setAttribute('level', 'hl')`, since `level` is an attribute-mirrored state key (the existing `host.scenario()` uses `state.set` only).
+
+### Sim listener cleanup convention
+
+Sims that register state listeners via `host._state.on(...)` MUST collect the returned unsubscribe functions in `this._unsubs = []` during `init` and call them in `dispose`. Without this, listeners persist on `_state` after the sim is disposed, calling methods on nulled fields and leaking closures across remounts. The gas-laws sim demonstrates the pattern; future sims should follow it.
+
+### `dt` clamping
+
+`<sim-engine>`'s rAF loop clamps the per-frame `dt` to `Math.min(rawDt, 0.1)` at the loop boundary. Without this, a backgrounded tab resumed after seconds of throttling delivers one giant `dt` that produces glitched physics on the resumed frame. The cap is invisible during normal 60fps operation.

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SimEngine — Gas Laws (step 5 smoke test)</title>
+    <title>SimEngine — Gas Laws (step 5b smoke test)</title>
     <link rel="stylesheet" href="../../packages/core/src/styles/tokens.css" />
     <link rel="stylesheet" href="../../packages/core/src/styles/base.css" />
     <link rel="stylesheet" href="../../packages/core/src/styles/components.css" />
@@ -18,28 +18,47 @@
           <span style="color: var(--ib-navy-800)">Gas Laws</span>
         </div>
         <div class="sim-topstrip__right">
-          <span class="sim-topstrip__badge">SimEngine v0.0 · step 5</span>
+          <span class="sim-topstrip__badge">SimEngine v0.0 · step 5b</span>
           <span>Smoke test</span>
         </div>
       </nav>
 
       <header class="sim-head">
         <div>
-          <div class="sim-head__kicker">Step 5 — Gas Laws sim</div>
-          <h1 class="sim-head__title">PV = <em>nRT</em>, animated.</h1>
+          <div class="sim-head__kicker">Step 5b — Gas Laws sim</div>
+          <h1 class="sim-head__title">PV = <em>nRT</em>, plus van der Waals.</h1>
           <p class="sim-head__lede">
-            The <code>&lt;sim-engine sim="gas-laws"&gt;</code> below mounts an animated ideal-gas
-            simulation with adjustable T/V/n, live readouts, and a P-V graph. VdW physics, multiple
-            species, and presets land in step 5b.
+            The <code>&lt;sim-engine sim="gas-laws"&gt;</code> below mounts an animated gas-law
+            simulation with adjustable T/V/n, gas species selector, live readouts, and three graphs
+            (P-V, Maxwell-Boltzmann distribution, and an HL-only Ideal-vs-Real comparison). Toggle
+            HL mode to reveal the Ideal-vs-Real graph; pick a teacher preset to jump to a canonical
+            IB Chemistry scenario.
           </p>
         </div>
         <div class="sim-head__meta">
-          <span>Phase<br /><b>Step 5</b></span>
+          <span>Phase<br /><b>Step 5b</b></span>
           <span>Status<br /><b>Smoke test</b></span>
         </div>
       </header>
 
-      <sim-engine sim="gas-laws">
+      <div
+        style="
+          margin: 16px 0;
+          padding: 12px 16px;
+          background: var(--ib-ink-50, #f4f4f4);
+          border: 1px solid var(--ib-ink-200, #ddd);
+          border-radius: 4px;
+        "
+      >
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer">
+          <input type="checkbox" id="hl-toggle" />
+          <span style="font-family: var(--font-sans, sans-serif)"
+            >HL mode (shows Ideal vs Real graph)</span
+          >
+        </label>
+      </div>
+
+      <sim-engine sim="gas-laws" id="sim">
         <div class="sim-fallback">
           <p>Loading the simulation… enable JavaScript to run it.</p>
         </div>
@@ -54,5 +73,13 @@
       module does for npm consumers.
     -->
     <script src="../../packages/core/dist/index.global.js"></script>
+    <script>
+      // HL mode checkbox: flips the level attribute on <sim-engine>.
+      // The Ideal-vs-Real graph appears/hides accordingly.
+      document.getElementById('hl-toggle').addEventListener('change', (e) => {
+        const sim = document.getElementById('sim');
+        sim.setAttribute('level', e.target.checked ? 'hl' : 'sl');
+      });
+    </script>
   </body>
 </html>

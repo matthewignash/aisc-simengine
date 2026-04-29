@@ -51,7 +51,7 @@ export function createParticleField(opts) {
       }
     },
 
-    render(ctx) {
+    render(ctx, opts = {}) {
       if (!ctx) return;
       // The consuming sim is responsible for clearing the canvas and drawing
       // any container outline. This keeps particles.render compatible with
@@ -59,7 +59,7 @@ export function createParticleField(opts) {
       // container box so particle coordinates are container-local).
       // Canvas 2D doesn't resolve CSS var() — must use a hex literal here.
       // The visual color matches AISC --chem-500 from tokens.css.
-      ctx.fillStyle = '#2a9d8f';
+      ctx.fillStyle = opts.fillStyle ?? '#2a9d8f';
       for (const p of particles) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -108,6 +108,10 @@ export function createParticleField(opts) {
       rng = seededRng(seed);
       particles.length = 0;
       spawn(count, temperature);
+    },
+
+    getSpeeds() {
+      return particles.map((p) => Math.hypot(p.vx, p.vy));
     },
   };
 }

@@ -52,6 +52,29 @@ Nine commits implementing the foundation-stub engine modules and porting an idea
 
 **Deferred to step 5b:** VdW physics; HL toggle and Ideal-vs-Real comparison graph; multiple gas species (He, N₂, CO₂); Maxwell-Boltzmann distribution graph; teacher presets (Boyle's, Charles's); search palette UI; particle-particle collisions; measured pressure (wall-collision smoothed) alongside computed; `createDropdown` / `createToggle` / `initKeyboard`; `exportPNG`. Also: listener-leak fix on sim dispose, `dt` clamping at the rAF boundary, weaker-than-ideal graph test assertions, and several other minor sweep tasks captured in step 5 brainstorming notes.
 
+### Step 5b — Gas Laws extensions (HL physics + MB graph + presets)
+
+Twelve commits adding the IB SL/HL syllabus extensions and folding in three high-priority sweep cleanups deferred from steps 4 and 5. Eleven planned commits plus one in-flight test fix-up (the dt-clamp test was tautological under fake rAF; rewritten to capture the rAF callback and invoke with controlled `now`). One commit (commit 6) also corrected a 1000× error in species `a` constants discovered during TDD — caught by the implementer's hand-computed math when the "diverges below ideal" test failed under the spec's parameters.
+
+- `fix(core)`: collect state listener unsubs in gas-laws sim dispose (listener leak)
+- `fix(core)`: clamp `dt` at rAF boundary to handle backgrounded tabs
+- `test(core)`: make dt-clamp test actually drive RED→GREEN
+- `feat(core)`: implement `controls.createDropdown`
+- `refactor(core)`: gas-laws — abstract pressure via `_pressureFn`
+- `feat(core)`: gas-laws — multiple species (ideal/He/N₂/CO₂)
+- `feat(core)`: gas-laws — VdW pressure for non-ideal species (also corrects species `a` constants by 1000×)
+- `feat(core)`: gas-laws — HL toggle and Ideal-vs-Real graph
+- `feat(core)`: gas-laws — Maxwell-Boltzmann distribution graph
+- `feat(core)`: gas-laws — teacher presets (Boyle/Charles/Ideal-vs-Real)
+- `feat(examples)`: smoke test page adds HL mode checkbox
+- `docs`: this CHANGELOG entry + architecture.md update
+
+**Test count:** 103 (was 75 after step 5; +28 new).
+
+**Public surface added:** species table (`SPECIES`, `SPECIES_OPTIONS` exposed via `species` state key); `controls.createDropdown` real implementation; `vdWPressure`, `speedHistogram`, `maxwellBoltzmann2D` in physics; `particles.getSpeeds()`; `gas-laws.scenarios` with 3 IB scenarios.
+
+**Deferred to a future polish PR (~25 items):** state.set no-op skip, recordTrial JSDoc, recorder.size accessor, search palette UI, measured pressure, particle-particle collisions, exportPNG, MB Y-axis auto-scale, preset dropdown auto-revert to custom, `<sim-engine>.scenario()` attribute-aware writes, sim init re-entrancy hardening, HL graph skip-on-V-change, and others.
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.

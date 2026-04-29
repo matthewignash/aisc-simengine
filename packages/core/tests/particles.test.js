@@ -134,6 +134,30 @@ describe('createParticleField', () => {
     expect(lastFill).toMatch(/^#[0-9a-f]{3,8}$/i); // hex color, not 'var(...)'
   });
 
+  it('render(ctx, { fillStyle }) uses the supplied fillStyle for particles', () => {
+    const field = createParticleField({
+      count: 3,
+      bounds: { width: 600, height: 400 },
+      temperature: 300,
+    });
+    let lastFill = '';
+    const ctx = {
+      canvas: { width: 600, height: 400 },
+      clearRect: () => {},
+      set fillStyle(v) {
+        lastFill = v;
+      },
+      get fillStyle() {
+        return lastFill;
+      },
+      beginPath: () => {},
+      arc: () => {},
+      fill: () => {},
+    };
+    field.render(ctx, { fillStyle: '#abcdef' });
+    expect(lastFill).toBe('#abcdef');
+  });
+
   it('setTemperature can recover from temperature=0 by resampling, not by rescaling', () => {
     const field = createParticleField({
       count: 5,
@@ -153,5 +177,22 @@ describe('createParticleField', () => {
       expect(Number.isFinite(p.vy)).toBe(true);
       expect(Math.abs(p.vx) + Math.abs(p.vy)).toBeGreaterThan(0); // re-energized
     }
+  });
+
+  it('getSpeeds() returns the speed magnitude of each particle', () => {
+    const field = createParticleField({
+      count: 3,
+      bounds: { width: 600, height: 400 },
+      temperature: 300,
+    });
+    // Override velocities for known speeds
+    field.particles[0].vx = 3;
+    field.particles[0].vy = 4;
+    field.particles[1].vx = 0;
+    field.particles[1].vy = 5;
+    field.particles[2].vx = -6;
+    field.particles[2].vy = 8;
+    const speeds = field.getSpeeds();
+    expect(speeds).toEqual([5, 5, 10]);
   });
 });

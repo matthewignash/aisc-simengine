@@ -84,8 +84,44 @@ export function createButton(opts) {
   return btn;
 }
 
-export function createDropdown() {
-  throw new Error(NOT_IMPLEMENTED);
+/**
+ * @param {{
+ *   key: string, label: string,
+ *   options: Array<{ value: string, label: string }>,
+ *   value?: string,
+ *   disabled?: boolean,
+ *   onChange?: (v: string) => void,
+ * }} opts
+ * @returns {HTMLElement}
+ */
+export function createDropdown(opts) {
+  const { key, label, options, value, disabled = false, onChange } = opts;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'sim-dropdown';
+  wrap.dataset.var = key;
+
+  const labelEl = document.createElement('label');
+  labelEl.className = 'sim-dropdown__label';
+  labelEl.textContent = label;
+
+  const select = document.createElement('select');
+  select.disabled = disabled;
+  select.setAttribute('aria-label', label);
+  for (const opt of options) {
+    const o = document.createElement('option');
+    o.value = opt.value;
+    o.textContent = opt.label;
+    if (opt.value === value) o.selected = true;
+    select.appendChild(o);
+  }
+
+  select.addEventListener('change', () => {
+    if (!select.disabled) onChange?.(select.value);
+  });
+
+  wrap.append(labelEl, select);
+  return wrap;
 }
 export function createToggle() {
   throw new Error(NOT_IMPLEMENTED);
