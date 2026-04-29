@@ -97,6 +97,7 @@ export function createGraph(opts) {
       for (const trace of traces.values()) trace.points.length = 0;
     },
     redraw() {
+      if (!ctx) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawAxes();
       for (const trace of traces.values()) drawTrace(trace);

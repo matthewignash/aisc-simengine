@@ -16,6 +16,10 @@ export { registerSim, lookupSim } from './sims/registry.js';
 // Side-effect import: defines the <sim-engine> custom element.
 import './components/sim-engine.js';
 
+import gasLaws from './sims/gas-laws/index.js';
+import { registerSim as _registerForBoot } from './sims/registry.js';
+_registerForBoot(gasLaws);
+
 export { prefersReducedMotion, announce, trapFocus, restoreFocusTo } from './engine/a11y.js';
 
 // Stub namespaces — every export throws "not implemented" until step 5.

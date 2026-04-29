@@ -52,6 +52,7 @@ export function createParticleField(opts) {
     },
 
     render(ctx) {
+      if (!ctx) return;
       ctx.clearRect(0, 0, bounds.width, bounds.height);
       ctx.strokeStyle = 'rgba(0,0,0,0.4)';
       ctx.strokeRect(0.5, 0.5, bounds.width - 1, bounds.height - 1);
