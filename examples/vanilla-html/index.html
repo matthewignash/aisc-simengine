@@ -73,15 +73,83 @@
         class="sim-canvas"
         style="
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
+          gap: 12px;
           min-height: 300px;
           font-family: var(--font-mono);
           color: var(--ib-ink-500);
+          padding: 24px;
         "
       >
-        &lt;sim-engine&gt; mounts here in step 4
+        <div>&lt;sim-engine&gt; mounts here in step 4</div>
+        <pre
+          id="bundle-output"
+          style="
+            margin: 0;
+            padding: 12px 16px;
+            background: var(--ib-ink-50, #f4f4f4);
+            border: 1px solid var(--ib-ink-200, #ddd);
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--ib-ink-700, #333);
+            min-width: 280px;
+            text-align: left;
+          "
+        >
+Loading bundle...</pre
+        >
       </div>
     </div>
+
+    <!--
+      Bundle wire-up: imports the built IIFE bundle and exercises the
+      foundation API. Run `pnpm --filter @TBD/simengine build` first to
+      produce dist/index.global.js, then open this page in a browser.
+      Exit criterion #6 from the foundation plan.
+    -->
+    <script src="../../packages/core/dist/index.global.js"></script>
+    <script>
+      (function () {
+        var out = document.getElementById('bundle-output');
+        var lines = [];
+        try {
+          if (typeof SimEngine === 'undefined') {
+            throw new Error('SimEngine global not found. Run: pnpm --filter @TBD/simengine build');
+          }
+          var state = SimEngine.createState({ T: 298, V: 6.4 });
+          lines.push('createState({ T: 298, V: 6.4 })');
+          lines.push('  state.get("T") -> ' + state.get('T'));
+          state.set('T', 350);
+          lines.push('  state.set("T", 350)');
+          lines.push('  state.get("T") -> ' + state.get('T'));
+          lines.push('');
+          lines.push('Stub modules (expected to throw):');
+          try {
+            SimEngine.particles.createParticleField({});
+            lines.push('  particles: NO ERROR (unexpected)');
+          } catch (e) {
+            lines.push('  particles: throws "' + e.message.split(' — ')[0] + '" ✓');
+          }
+          try {
+            SimEngine.graph.createGraph({});
+            lines.push('  graph: NO ERROR (unexpected)');
+          } catch (e) {
+            lines.push('  graph: throws "' + e.message.split(' — ')[0] + '" ✓');
+          }
+          try {
+            SimEngine.controls.createSlider({});
+            lines.push('  controls: NO ERROR (unexpected)');
+          } catch (e) {
+            lines.push('  controls: throws "' + e.message.split(' — ')[0] + '" ✓');
+          }
+          out.textContent = lines.join('\n');
+        } catch (err) {
+          out.textContent = 'Bundle smoke test FAILED:\n' + err.message;
+          out.style.color = 'crimson';
+        }
+      })();
+    </script>
   </body>
 </html>
