@@ -107,4 +107,51 @@ describe('createParticleField', () => {
     expect(field.particles[0].x).toBeGreaterThanOrEqual(field.particles[0].r);
     expect(field.particles[0].x).toBeLessThanOrEqual(600 - field.particles[0].r);
   });
+
+  it('render(ctx) sets fillStyle to a literal color (not a CSS var expression)', () => {
+    const field = createParticleField({
+      count: 3,
+      bounds: { width: 600, height: 400 },
+      temperature: 300,
+    });
+    let lastFill = '';
+    const ctx = {
+      canvas: { width: 600, height: 400 },
+      clearRect: () => {},
+      strokeStyle: '',
+      set fillStyle(v) {
+        lastFill = v;
+      },
+      get fillStyle() {
+        return lastFill;
+      },
+      strokeRect: () => {},
+      beginPath: () => {},
+      arc: () => {},
+      fill: () => {},
+    };
+    field.render(ctx);
+    expect(lastFill).toMatch(/^#[0-9a-f]{3,8}$/i); // hex color, not 'var(...)'
+  });
+
+  it('setTemperature can recover from temperature=0 by resampling, not by rescaling', () => {
+    const field = createParticleField({
+      count: 5,
+      bounds: { width: 600, height: 400 },
+      temperature: 300,
+    });
+    field.setTemperature(0);
+    // After T=0, all velocities should be 0.
+    for (const p of field.particles) {
+      expect(p.vx).toBe(0);
+      expect(p.vy).toBe(0);
+    }
+    field.setTemperature(300);
+    // Velocities must be finite numbers (not NaN from divide-by-zero).
+    for (const p of field.particles) {
+      expect(Number.isFinite(p.vx)).toBe(true);
+      expect(Number.isFinite(p.vy)).toBe(true);
+      expect(Math.abs(p.vx) + Math.abs(p.vy)).toBeGreaterThan(0); // re-energized
+    }
+  });
 });

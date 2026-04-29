@@ -55,7 +55,9 @@ export function createParticleField(opts) {
       ctx.clearRect(0, 0, bounds.width, bounds.height);
       ctx.strokeStyle = 'rgba(0,0,0,0.4)';
       ctx.strokeRect(0.5, 0.5, bounds.width - 1, bounds.height - 1);
-      ctx.fillStyle = 'var(--chem-500, #2a9d8f)';
+      // Canvas 2D doesn't resolve CSS var() — must use a hex literal here.
+      // The visual color matches AISC --chem-500 from tokens.css.
+      ctx.fillStyle = '#2a9d8f';
       for (const p of particles) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -72,10 +74,26 @@ export function createParticleField(opts) {
     },
 
     setTemperature(T) {
-      const ratio = Math.sqrt(T / temperature);
-      for (const p of particles) {
-        p.vx *= ratio;
-        p.vy *= ratio;
+      if (T <= 0) {
+        // Going to T=0: all kinetic energy is gone. Zero velocities directly
+        // (rescaling would produce -0 artifacts for negative components).
+        for (const p of particles) {
+          p.vx = 0;
+          p.vy = 0;
+        }
+      } else if (temperature <= 0) {
+        // Cannot rescale from zero — resample velocities at the new temperature.
+        for (const p of particles) {
+          const v = sampleVelocity(T, rng);
+          p.vx = v.vx;
+          p.vy = v.vy;
+        }
+      } else {
+        const ratio = Math.sqrt(T / temperature);
+        for (const p of particles) {
+          p.vx *= ratio;
+          p.vy *= ratio;
+        }
       }
       temperature = T;
     },
