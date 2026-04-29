@@ -1,0 +1,15 @@
+{
+  "name": "@TBD/simengine-data",
+  "version": "0.0.0",
+  "description": "AISC SimEngine reference data: chemistry constants, citations, schemas",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {}
+}

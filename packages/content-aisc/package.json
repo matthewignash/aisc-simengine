@@ -1,0 +1,8 @@
+{
+  "name": "@TBD/content-aisc",
+  "version": "0.0.0",
+  "description": "AISC topic content: markdown source for IB Chemistry topic pages",
+  "type": "module",
+  "private": true,
+  "scripts": {}
+}
