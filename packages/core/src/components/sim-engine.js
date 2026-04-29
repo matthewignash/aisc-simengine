@@ -241,7 +241,12 @@ class SimEngineElement extends HTMLElement {
         this._rafHandle = null;
         return;
       }
-      const dt = (now - this._lastFrameTime) / 1000;
+      const rawDt = (now - this._lastFrameTime) / 1000;
+      // Cap at 100ms to handle backgrounded-tab spikes — without this, a tab
+      // resumed after seconds of throttling would deliver one giant dt that
+      // produces glitched physics. At normal 60fps the typical dt is ~16ms,
+      // so the cap is invisible during active operation.
+      const dt = Math.min(rawDt, 0.1);
       this._lastFrameTime = now;
       this._state.set('dt', dt);
       if (typeof this._sim?.step === 'function') this._sim.step(dt);

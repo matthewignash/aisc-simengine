@@ -228,4 +228,17 @@ describe('<sim-engine> — rAF loop', () => {
     expect(el._rafHandle).toBeNull();
     matchMediaSpy.mockRestore();
   });
+
+  it('clamps dt to 0.1 when the rAF callback fires after a long delay (backgrounded tab)', async () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
+    const el = mountSimEngine({ sim: 'fake-sim' });
+    await Promise.resolve();
+    // Advance one frame normally to capture lastFrameTime
+    vi.advanceTimersByTime(20);
+    // Now simulate a long pause (5 seconds of backgrounded throttling)
+    vi.advanceTimersByTime(5000);
+    // After the next tick, state.dt should be clamped at 0.1, not ~5.0
+    expect(el._state.get('dt')).toBeLessThanOrEqual(0.1);
+    vi.useRealTimers();
+  });
 });
