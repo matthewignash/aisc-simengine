@@ -151,6 +151,7 @@ const sim = {
       })
     );
 
+    this._pressureFn = (state) => idealPressure(state);
     this._updateReadouts(host);
     this._lastHost = host;
     this._frameCount = 0;
@@ -177,13 +178,14 @@ const sim = {
     this._frameCount = (this._frameCount ?? 0) + 1;
     if (this._frameCount % 10 === 0 && this._lastHost && this._graph) {
       const state = this._lastHost._state.getAll();
-      this._graph.addPoint('path', state.V, idealPressure(state));
+      this._graph.addPoint('path', state.V, this._pressureFn(state));
       this._graph.redraw();
     }
   },
 
   derived(state) {
-    return { P: idealPressure(state), KE: avgKineticEnergy(state.T) };
+    const pressureFn = this._pressureFn ?? ((s) => idealPressure(s));
+    return { P: pressureFn(state), KE: avgKineticEnergy(state.T) };
   },
 
   dispose() {
@@ -201,7 +203,7 @@ const sim = {
       const node = root.querySelector(`[data-readout="${key}"] .sim-readout__value-text`);
       if (node) node.textContent = value;
     };
-    set('P', idealPressure(state).toFixed(1));
+    set('P', this._pressureFn(state).toFixed(1));
     set('KE', avgKineticEnergy(state.T).toFixed(2));
     set('N', String(visualParticleCount(state.n)));
   },
