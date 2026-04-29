@@ -147,6 +147,21 @@ describe('gas-laws sim module', () => {
     expect(speciesReadout.textContent).toBe('CO₂ · Carbon dioxide');
   });
 
+  it('derived(state) returns VdW pressure for CO₂ (different from ideal)', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws' });
+    await Promise.resolve();
+    el.setVariable('species', 'co2');
+    el.setVariable('V', 2);
+    el.setVariable('T', 300);
+    el.setVariable('n', 2);
+    // At V=2, T=300, n=2 with CO₂: ideal=2494 kPa, real≈2241 kPa
+    const idealP = (8.314 * 300 * 2) / 2; // ~2494.2
+    const out = el._sim.derived(el._state.getAll());
+    expect(out.P).toBeLessThan(idealP); // VdW attraction lowers pressure here
+    expect(out.P).toBeGreaterThan(0); // not compressed past nb
+  });
+
   it('removes state listeners on dispose so they do not fire on nulled fields', async () => {
     registerSim(gasLaws);
     const el = mountSimEngine({ sim: 'gas-laws' });

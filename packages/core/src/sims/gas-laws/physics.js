@@ -33,3 +33,24 @@ export function avgKineticEnergy(T) {
 export function visualParticleCount(n) {
   return Math.max(4, Math.min(80, Math.round(n * 12)));
 }
+
+/**
+ * Van der Waals pressure: ideal-gas correction for finite particle volume
+ * (b) and intermolecular attraction (a). Both species-specific; see
+ * species.js. Constants are in our V/P/T/n unit system (kPa·L²·mol⁻² for
+ * a, L·mol⁻¹ for b).
+ *
+ *     P = nRT / (V - nb)  -  a · n² / V²
+ *
+ * Returns 0 for non-positive V/T/n; Infinity if V <= nb (compressed
+ * past minimum molar volume — non-physical regime).
+ *
+ * @param {{ V: number, T: number, n: number, a: number, b: number }} opts
+ * @returns {number} pressure in kPa
+ */
+export function vdWPressure({ V, T, n, a, b }) {
+  if (V <= 0 || T <= 0 || n <= 0) return 0;
+  const denom = V - n * b;
+  if (denom <= 0) return Infinity;
+  return (n * R_GAS * T) / denom - (a * n * n) / (V * V);
+}

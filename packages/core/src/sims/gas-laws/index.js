@@ -3,7 +3,7 @@
  * Step 5b will add multiple species, VdW, MB distribution graph,
  * teacher presets, and HL Ideal-vs-Real comparison.
  */
-import { idealPressure, avgKineticEnergy, visualParticleCount } from './physics.js';
+import { idealPressure, avgKineticEnergy, visualParticleCount, vdWPressure } from './physics.js';
 import { createParticleField } from '../../engine/particles.js';
 import { createSlider, createButton, createDropdown } from '../../engine/controls.js';
 import { createGraph } from '../../engine/graph.js';
@@ -169,7 +169,11 @@ const sim = {
       })
     );
 
-    this._pressureFn = (state) => idealPressure(state);
+    this._pressureFn = (state) => {
+      const sp = SPECIES[state.species ?? 'ideal'];
+      if (sp.a === 0 && sp.b === 0) return idealPressure(state);
+      return vdWPressure({ ...state, a: sp.a, b: sp.b });
+    };
     this._updateReadouts(host);
     this._lastHost = host;
     this._frameCount = 0;
