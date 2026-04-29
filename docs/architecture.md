@@ -53,9 +53,17 @@ registerSim(gasLaws);
 3. `attributeChangedCallback` mirrors observed attributes into state. Toggling `level` also emits `level-changed`.
 4. `disconnectedCallback` stops the recorder and calls `sim.dispose()` if defined.
 
-### Imperative API
+### Imperative API (implemented in step 4)
 
-`reset()`, `recordTrial()`, `exportCSV()`, `setVariable(key, value)`, `scenario(presetId)`, `dismissCoachmark(id)`.
+`reset()`, `recordTrial()`, `exportCSV()`, `setVariable(key, value)`, `scenario(presetId)`.
+
+### Reactive attributes (observed in step 4)
+
+`sim`, `level`, `language`, `difficulty`, `show-graph`, `show-exit-ticket`, `teacher-view`. Each (except `sim`, set once at mount) mirrors into state on change. Toggling `level` also emits `level-changed`.
+
+### Events emitted (step 4)
+
+`sim-ready` (after `sim.init` completes), `level-changed` (`detail: { from, to }`), `trial-recorded` (`detail: { trialNum, values, derived }`). All bubble and cross shadow boundaries.
 
 ### Sim module contract
 
@@ -65,6 +73,9 @@ Required exports: `id`, `syllabus`, `init(host, dataLoader)`, `controls`, `scena
 
 - Real chemistry sim — Gas Laws lands in step 5.
 - `requestAnimationFrame` loop — `<sim-engine>` will own it, calling `sim.step(dt)` and `sim.render(ctx)` per frame, but that wiring lands when the first sim consumes it.
-- `dismissCoachmark` real implementation — step 6 (when `<sim-coachmark>` ships).
+- `dismissCoachmark(id)` imperative method — step 6 (when `<sim-coachmark>` ships).
+- `data-source` attribute — step 7, blocked on the database drop. Not yet in `observedAttributes`.
+- `show-tweaks-panel` attribute — step 6 (when `<sim-tweaks-panel>` ships). Not yet in `observedAttributes`.
+- `exit-submitted` event — step 6 (when the exit ticket lands).
+- `coachmark-shown` event — step 6.
 - Coachmarks, data pills, glossary terms — step 6.
-- Real `dataLoader` — step 7, blocked on the database drop.
