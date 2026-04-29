@@ -109,6 +109,10 @@ export function createParticleField(opts) {
       particles.length = 0;
       spawn(count, temperature);
     },
+
+    getSpeeds() {
+      return particles.map((p) => Math.hypot(p.vx, p.vy));
+    },
   };
 }
 

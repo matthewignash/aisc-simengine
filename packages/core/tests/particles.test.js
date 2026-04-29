@@ -178,4 +178,21 @@ describe('createParticleField', () => {
       expect(Math.abs(p.vx) + Math.abs(p.vy)).toBeGreaterThan(0); // re-energized
     }
   });
+
+  it('getSpeeds() returns the speed magnitude of each particle', () => {
+    const field = createParticleField({
+      count: 3,
+      bounds: { width: 600, height: 400 },
+      temperature: 300,
+    });
+    // Override velocities for known speeds
+    field.particles[0].vx = 3;
+    field.particles[0].vy = 4;
+    field.particles[1].vx = 0;
+    field.particles[1].vy = 5;
+    field.particles[2].vx = -6;
+    field.particles[2].vy = 8;
+    const speeds = field.getSpeeds();
+    expect(speeds).toEqual([5, 5, 10]);
+  });
 });

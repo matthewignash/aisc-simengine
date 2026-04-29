@@ -3,7 +3,14 @@
  * Step 5b will add multiple species, VdW, MB distribution graph,
  * teacher presets, and HL Ideal-vs-Real comparison.
  */
-import { idealPressure, avgKineticEnergy, visualParticleCount, vdWPressure } from './physics.js';
+import {
+  idealPressure,
+  avgKineticEnergy,
+  visualParticleCount,
+  vdWPressure,
+  speedHistogram,
+  maxwellBoltzmann2D,
+} from './physics.js';
 import { createParticleField } from '../../engine/particles.js';
 import { createSlider, createButton, createDropdown } from '../../engine/controls.js';
 import { createGraph } from '../../engine/graph.js';
@@ -128,6 +135,23 @@ const sim = {
       ],
     });
 
+    // Maxwell-Boltzmann distribution graph — always visible.
+    const mbCanvas = document.createElement('canvas');
+    mbCanvas.width = 320;
+    mbCanvas.height = 220;
+    mbCanvas.setAttribute('aria-label', 'Maxwell-Boltzmann speed distribution');
+    rail.appendChild(mbCanvas);
+
+    this._mbGraph = createGraph({
+      canvas: mbCanvas,
+      xAxis: { label: 'speed', min: 0, max: 200 },
+      yAxis: { label: 'P(v)', min: 0, max: 0.05 },
+      traces: [
+        { id: 'observed', color: 'rgba(42, 157, 143, 0.7)', kind: 'dots' },
+        { id: 'theory', color: 'rgb(231, 111, 81)', kind: 'line' },
+      ],
+    });
+
     // Sliders
     for (const c of this.controls) {
       rail.appendChild(
@@ -237,6 +261,16 @@ const sim = {
       this._graph.addPoint('path', state.V, this._pressureFn(state));
       this._graph.redraw();
     }
+    if (this._frameCount % 15 === 0 && this._mbGraph && this._field && this._lastHost) {
+      const speeds = this._field.getSpeeds();
+      const T = this._lastHost._state.get('T');
+      this._mbGraph.clearAll();
+      const hist = speedHistogram(speeds, 200);
+      const theory = maxwellBoltzmann2D(T, 200);
+      for (const pt of hist) this._mbGraph.addPoint('observed', pt.x, pt.y);
+      for (const pt of theory) this._mbGraph.addPoint('theory', pt.x, pt.y);
+      this._mbGraph.redraw();
+    }
   },
 
   derived(state) {
@@ -251,6 +285,7 @@ const sim = {
     this._graph = null;
     this._hlGraph = null;
     this._hlContainer = null;
+    this._mbGraph = null;
     this._lastHost = null;
   },
 

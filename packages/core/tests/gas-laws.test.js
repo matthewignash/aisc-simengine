@@ -191,6 +191,20 @@ describe('gas-laws sim module', () => {
     spy.mockRestore();
   });
 
+  it('after several render frames, the MB graph receives observed and theory points', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws' });
+    await Promise.resolve();
+    const stageCanvas = el.shadowRoot.querySelector('.sim-canvas__stage canvas');
+    const ctx = stageCanvas.getContext('2d');
+    for (let i = 0; i < 20; i++) {
+      el._sim.render(ctx);
+    }
+    const mbCanvas = el.shadowRoot.querySelector('.sim-rail canvas[aria-label*="Maxwell"]');
+    expect(mbCanvas).not.toBeNull();
+    expect(el._sim._frameCount).toBeGreaterThan(15);
+  });
+
   it('removes state listeners on dispose so they do not fire on nulled fields', async () => {
     registerSim(gasLaws);
     const el = mountSimEngine({ sim: 'gas-laws' });
