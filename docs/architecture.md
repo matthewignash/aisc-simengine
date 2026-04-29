@@ -25,3 +25,57 @@ The repository is a pnpm workspace with three packages:
 - The content authoring pipeline (markdown → HTML, step 8)
 - Reference data schema and citations (step 7, blocked on database drop)
 - Teacher view and data-source map (step 11)
+
+## Step 4 — `<sim-engine>` custom element
+
+The custom element that orchestrates a sim's lifecycle. Imported as a side effect of `@TBD/simengine` (the package's `index.js` registers the element with the global custom element registry).
+
+### Usage
+
+```html
+<sim-engine sim="gas-laws" level="hl" teacher-view>
+  <div class="sim-fallback">No-JS fallback content</div>
+</sim-engine>
+```
+
+```js
+import { registerSim } from '@TBD/simengine';
+import gasLaws from '@TBD/simengine/sims/gas-laws';
+
+registerSim(gasLaws);
+// <sim-engine sim="gas-laws"> now works anywhere on the page.
+```
+
+### Lifecycle
+
+1. `constructor` opens an open shadow root, adopts the host + components + sim-shell stylesheets, and renders the static skeleton (`.sim-main`, `.sim-canvas`, `.sim-rail`, `.sim-transport`).
+2. `connectedCallback` reads attributes into a fresh `state` store, looks up the sim from the registry, calls `sim.init(host, dataLoader=null)`, instantiates a `recorder` keyed by the sim's `controls`, calls `recorder.startRun()`, and emits `sim-ready`.
+3. `attributeChangedCallback` mirrors observed attributes into state. Toggling `level` also emits `level-changed`.
+4. `disconnectedCallback` stops the recorder and calls `sim.dispose()` if defined.
+
+### Imperative API (implemented in step 4)
+
+`reset()`, `recordTrial()`, `exportCSV()`, `setVariable(key, value)`, `scenario(presetId)`.
+
+### Reactive attributes (observed in step 4)
+
+`sim`, `level`, `language`, `difficulty`, `show-graph`, `show-exit-ticket`, `teacher-view`. Each (except `sim`, set once at mount) mirrors into state on change. Toggling `level` also emits `level-changed`.
+
+### Events emitted (step 4)
+
+`sim-ready` (after `sim.init` completes), `level-changed` (`detail: { from, to }`), `trial-recorded` (`detail: { trialNum, values, derived }`). All bubble and cross shadow boundaries.
+
+### Sim module contract
+
+Required exports: `id`, `syllabus`, `init(host, dataLoader)`, `controls`, `scenarios`. Optional: `step(dt)`, `render(ctx)`, `derived(state)`, `validateTrial(state)`, `dispose()`.
+
+### What's deferred
+
+- Real chemistry sim — Gas Laws lands in step 5.
+- `requestAnimationFrame` loop — `<sim-engine>` will own it, calling `sim.step(dt)` and `sim.render(ctx)` per frame, but that wiring lands when the first sim consumes it.
+- `dismissCoachmark(id)` imperative method — step 6 (when `<sim-coachmark>` ships).
+- `data-source` attribute — step 7, blocked on the database drop. Not yet in `observedAttributes`.
+- `show-tweaks-panel` attribute — step 6 (when `<sim-tweaks-panel>` ships). Not yet in `observedAttributes`.
+- `exit-submitted` event — step 6 (when the exit ticket lands).
+- `coachmark-shown` event — step 6.
+- Coachmarks, data pills, glossary terms — step 6.

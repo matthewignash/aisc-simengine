@@ -18,6 +18,20 @@ Foundation phase (steps 1–3 of the broader build sequence) — six commits:
 5. `a11y.js` helpers (`prefersReducedMotion`, `announce`, `trapFocus`, `restoreFocusTo`) and typed stubs for `particles.js` / `graph.js` / `controls.js` that throw "not implemented" on call. Three stub-throw tests bring total to 20.
 6. Documentation stubs: `architecture.md`, `authoring-content.md`, `data-schema.md`.
 
+### Step 4 — `<sim-engine>` custom element shell
+
+Five commits adding the orchestrator that mounts a registered sim, manages reactive attributes, instantiates state and recorder, and emits lifecycle events. No real chemistry yet — that's step 5.
+
+- `chore(core)`: happy-dom + vitest test environment
+- `feat(core)`: sim registry with shape validation (`registerSim`, `lookupSim`)
+- `feat(core)`: `<sim-engine>` shell scaffold (shadow DOM, adopted stylesheets, shell skeleton)
+- `feat(core)`: `<sim-engine>` lifecycle wiring (state, recorder, attributes, events, imperative API)
+- `docs`: this CHANGELOG entry + architecture.md update
+
+**Test count:** 41 (20 foundation + 3 dom-env + 6 registry + 12 sim-engine).
+
+**Public surface added to `@TBD/simengine`:** `registerSim`, `lookupSim`, and the `<sim-engine>` custom element registered as a side effect of importing the package.
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.

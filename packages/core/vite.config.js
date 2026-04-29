@@ -18,7 +18,7 @@ export default defineConfig({
   },
   test: {
     globals: false,
-    environment: 'node',
+    environment: 'happy-dom',
     include: ['tests/**/*.test.js'],
   },
 });
