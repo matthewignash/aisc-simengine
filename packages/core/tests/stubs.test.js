@@ -12,16 +12,9 @@
  */
 import { describe, it, expect } from 'vitest';
 import * as graph from '../src/engine/graph.js';
-import * as controls from '../src/engine/controls.js';
 
 describe('graph.js stub', () => {
   it('createGraph throws "not implemented"', () => {
     expect(() => graph.createGraph({})).toThrow(/not implemented/);
-  });
-});
-
-describe('controls.js stub', () => {
-  it('createSlider throws "not implemented"', () => {
-    expect(() => controls.createSlider({})).toThrow(/not implemented/);
   });
 });
