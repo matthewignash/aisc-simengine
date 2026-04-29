@@ -175,7 +175,7 @@ const sim = {
     this._hlGraph = createGraph({
       canvas: hlGraphCanvas,
       xAxis: { label: 'V / L', min: 0, max: 5.5 },
-      yAxis: { label: 'P / kPa', min: 0, max: 5000 },
+      yAxis: { label: 'P / kPa', min: 0, max: 15000 },
       traces: [
         { id: 'ideal', color: 'rgb(38, 70, 83)', kind: 'line' },
         { id: 'real', color: 'rgb(231, 111, 81)', kind: 'line' },
@@ -344,7 +344,7 @@ const sim = {
     for (let V = 0.1; V <= 5.5 + 1e-9; V += 0.1) {
       this._hlGraph.addPoint('ideal', V, idealPressure({ V, T: state.T, n: state.n }));
       const real = vdWPressure({ V, T: state.T, n: state.n, a: sp.a, b: sp.b });
-      if (Number.isFinite(real)) this._hlGraph.addPoint('real', V, real);
+      if (Number.isFinite(real) && real >= 0) this._hlGraph.addPoint('real', V, real);
     }
     this._hlGraph.redraw();
   },
