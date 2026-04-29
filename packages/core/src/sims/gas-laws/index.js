@@ -68,7 +68,27 @@ const sim = {
     },
   ],
 
-  scenarios: [],
+  scenarios: [
+    {
+      id: 'boyle',
+      label: "Boyle's Law (isothermal)",
+      description: 'Constant T = 300 K. Vary V and watch P change inversely.',
+      values: { T: 300, V: 2, n: 3, species: 'ideal' },
+    },
+    {
+      id: 'charles',
+      label: "Charles's Law (isobaric)",
+      description: 'Hold V constant. Vary T and watch P scale linearly.',
+      values: { T: 200, V: 2, n: 3, species: 'ideal' },
+    },
+    {
+      id: 'idealVsReal',
+      label: 'Ideal vs Real (HL)',
+      description: 'High-pressure CO₂ — observe deviation from PV = nRT.',
+      values: { T: 150, V: 0.8, n: 8, species: 'co2', level: 'hl' },
+      requiresHL: true,
+    },
+  ],
 
   init(host) {
     const root = host.shadowRoot;
@@ -98,6 +118,33 @@ const sim = {
       bounds: boundsForVolume(initial.V),
       temperature: initial.T,
     });
+
+    // Preset dropdown at the top of the rail.
+    const presetDropdown = createDropdown({
+      key: 'preset',
+      label: 'Scenario',
+      options: [
+        { value: '', label: '— custom —' },
+        ...this.scenarios.map((s) => ({ value: s.id, label: s.label })),
+      ],
+      value: '',
+      onChange: (id) => {
+        if (!id) return;
+        const preset = this.scenarios.find((s) => s.id === id);
+        if (!preset) return;
+        // If the preset declares a level, write it as an attribute (mirrors back
+        // into state via attributeChangedCallback). Other values use setVariable.
+        const valuesWithoutLevel = { ...preset.values };
+        if ('level' in valuesWithoutLevel) {
+          host.setAttribute('level', valuesWithoutLevel.level);
+          delete valuesWithoutLevel.level;
+        }
+        for (const [k, v] of Object.entries(valuesWithoutLevel)) {
+          host.setVariable(k, v);
+        }
+      },
+    });
+    rail.appendChild(presetDropdown);
 
     // P-V graph
     const graphCanvas = document.createElement('canvas');

@@ -205,6 +205,55 @@ describe('gas-laws sim module', () => {
     expect(el._sim._frameCount).toBeGreaterThan(15);
   });
 
+  it('exposes 3 scenarios with id, label, values', () => {
+    expect(Array.isArray(gasLaws.scenarios)).toBe(true);
+    expect(gasLaws.scenarios.length).toBe(3);
+    const ids = gasLaws.scenarios.map((s) => s.id);
+    expect(ids).toEqual(['boyle', 'charles', 'idealVsReal']);
+    for (const s of gasLaws.scenarios) {
+      expect(typeof s.label).toBe('string');
+      expect(typeof s.values).toBe('object');
+    }
+  });
+
+  it('renders a preset dropdown in the rail with — custom — + 3 scenarios', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws' });
+    await Promise.resolve();
+    const presetDropdown = el.shadowRoot.querySelector(
+      '.sim-rail .sim-dropdown[data-var="preset"]'
+    );
+    expect(presetDropdown).not.toBeNull();
+    const select = presetDropdown.querySelector('select');
+    expect(select.options.length).toBe(4); // custom + 3
+    expect(select.options[0].value).toBe('');
+    expect(select.options[0].textContent).toContain('custom');
+  });
+
+  it('selecting Boyle preset applies T=300, V=2, n=3, species=ideal', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws' });
+    await Promise.resolve();
+    const select = el.shadowRoot.querySelector('.sim-dropdown[data-var="preset"] select');
+    select.value = 'boyle';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(el._state.get('T')).toBe(300);
+    expect(el._state.get('V')).toBe(2);
+    expect(el._state.get('n')).toBe(3);
+    expect(el._state.get('species')).toBe('ideal');
+  });
+
+  it('selecting idealVsReal preset sets level attribute to hl (self-promotes)', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws', level: 'sl' });
+    await Promise.resolve();
+    const select = el.shadowRoot.querySelector('.sim-dropdown[data-var="preset"] select');
+    select.value = 'idealVsReal';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(el.getAttribute('level')).toBe('hl');
+    expect(el._state.get('species')).toBe('co2');
+  });
+
   it('removes state listeners on dispose so they do not fire on nulled fields', async () => {
     registerSim(gasLaws);
     const el = mountSimEngine({ sim: 'gas-laws' });
