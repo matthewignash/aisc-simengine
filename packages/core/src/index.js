@@ -11,6 +11,7 @@
  */
 export { createState } from './engine/state.js';
 export { createRecorder } from './engine/recorder.js';
+export { registerSim, lookupSim } from './sims/registry.js';
 
 export { prefersReducedMotion, announce, trapFocus, restoreFocusTo } from './engine/a11y.js';
 
