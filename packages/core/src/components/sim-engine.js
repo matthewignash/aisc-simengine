@@ -27,6 +27,7 @@ import simShellCss from '../styles/sim-shell.css?inline';
 import { createState } from '../engine/state.js';
 import { createRecorder } from '../engine/recorder.js';
 import { lookupSim } from '../sims/registry.js';
+import { prefersReducedMotion } from '../engine/a11y.js';
 
 const hostSheet = new CSSStyleSheet();
 hostSheet.replaceSync(':host { display: block; } :host([hidden]) { display: none; }');
@@ -74,6 +75,7 @@ class SimEngineElement extends HTMLElement {
   connectedCallback() {
     if (this._initialized) return;
     this._initialized = true;
+    this._rafHandle = null;
 
     this._state = createState({
       level: this.getAttribute('level') ?? 'sl',
@@ -82,6 +84,8 @@ class SimEngineElement extends HTMLElement {
       showGraph: this.hasAttribute('show-graph'),
       showExitTicket: this.hasAttribute('show-exit-ticket'),
       teacherView: this.hasAttribute('teacher-view'),
+      playing: true,
+      dt: 0,
     });
 
     const simId = this.getAttribute('sim');
@@ -100,6 +104,8 @@ class SimEngineElement extends HTMLElement {
     this._recorder.startRun();
 
     this.dispatchEvent(new CustomEvent('sim-ready', { bubbles: true, composed: true }));
+
+    this._startLoop();
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -135,6 +141,7 @@ class SimEngineElement extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this._stopLoop();
     if (this._recorder) this._recorder.stopRun();
     if (this._sim && typeof this._sim.dispose === 'function') {
       try {
@@ -214,6 +221,76 @@ class SimEngineElement extends HTMLElement {
   reset() {
     if (this._state) this._state.reset();
     if (this._recorder) this._recorder.startRun();
+  }
+
+  /**
+   * Start the requestAnimationFrame loop. Each tick reads playing/dt from
+   * state, calls sim.step(dt), and paints once via _paintOnce. When a user
+   * prefers reduced motion, a single paint is performed and no loop runs.
+   * Idempotent: a no-op when a loop is already running.
+   */
+  _startLoop() {
+    if (this._rafHandle != null) return;
+    if (prefersReducedMotion()) {
+      this._paintOnce();
+      return;
+    }
+    this._lastFrameTime = performance.now();
+    const tick = (now) => {
+      if (!this._state || !this._state.get('playing')) {
+        this._rafHandle = null;
+        return;
+      }
+      const dt = (now - this._lastFrameTime) / 1000;
+      this._lastFrameTime = now;
+      this._state.set('dt', dt);
+      if (typeof this._sim?.step === 'function') this._sim.step(dt);
+      this._paintOnce();
+      this._rafHandle = requestAnimationFrame(tick);
+    };
+    this._rafHandle = requestAnimationFrame(tick);
+  }
+
+  /**
+   * Cancel any active rAF tick and clear the handle so _startLoop can later
+   * resume the loop.
+   */
+  _stopLoop() {
+    if (this._rafHandle != null) {
+      cancelAnimationFrame(this._rafHandle);
+      this._rafHandle = null;
+    }
+  }
+
+  /**
+   * Paint a single frame by passing the stage canvas's 2D context to the
+   * sim's render function. No-op when there is no canvas in the stage or
+   * the sim does not implement render.
+   */
+  _paintOnce() {
+    if (typeof this._sim?.render !== 'function') return;
+    const canvas = this.shadowRoot.querySelector('.sim-canvas__stage canvas');
+    const ctx = canvas?.getContext('2d');
+    if (ctx) this._sim.render(ctx);
+  }
+
+  /**
+   * Resume the rAF loop. Sets state.playing to true and (re)starts the loop
+   * when no rAF is active.
+   */
+  play() {
+    if (!this._state) return;
+    this._state.set('playing', true);
+    this._startLoop();
+  }
+
+  /**
+   * Pause the rAF loop. Flips state.playing to false; the next tick observes
+   * this and exits without rescheduling.
+   */
+  pause() {
+    if (!this._state) return;
+    this._state.set('playing', false);
   }
 
   /**

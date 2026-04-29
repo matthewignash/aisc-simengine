@@ -32,6 +32,26 @@ Five commits adding the orchestrator that mounts a registered sim, manages react
 
 **Public surface added to `@TBD/simengine`:** `registerSim`, `lookupSim`, and the `<sim-engine>` custom element registered as a side effect of importing the package.
 
+### Step 5 — Gas Laws sim module
+
+Nine commits implementing the foundation-stub engine modules and porting an ideal-gas Gas Laws sim. The eight planned commits plus one in-flight fix-up (`fix(core): particles.js — hex fillStyle, defensive setTemperature(0)`) addressing a code-review-identified Canvas/CSS gotcha and a divide-by-zero edge case before the bug could land in any consumer.
+
+- `feat(core)`: implement `particles.js` with elastic wall collisions (Box-Muller speed sampling, Mulberry32 seeded PRNG, substepping at 1/60 against tunneling)
+- `fix(core)`: `particles.js` — hex `fillStyle` (Canvas 2D doesn't resolve CSS `var()`); defensive `setTemperature(0)`
+- `feat(core)`: implement `controls.js` with slider and button factories (slider supports Shift+arrow ±5×step; dropdown/toggle/initKeyboard remain stubbed)
+- `feat(core)`: implement `graph.js` with declarative traces (line | dots; out-of-range clamping; deletes the now-empty `stubs.test.js`)
+- `feat(core)`: add rAF loop to `<sim-engine>` with reduced-motion respect (`_startLoop` / `_stopLoop` / `_paintOnce` / `play` / `pause`)
+- `feat(core)`: scaffold `gas-laws` sim — physics (`R_GAS`, `idealPressure`, `avgKineticEnergy`, `visualParticleCount`) and render helpers (`drawContainer`, `drawParticle`)
+- `feat(core)`: wire `gas-laws` sim — `init(host)` builds canvas + P-V graph + 3 sliders + 4 transport buttons + 3 readouts; state listeners on T/V/n; auto-registered. Adds defensive null-ctx guards to `particles.render` and `graph.redraw` to support headless test environments.
+- `feat(examples)`: smoke-test page mounts `<sim-engine sim="gas-laws">` and imports the ESM bundle
+- `docs`: this CHANGELOG entry + architecture.md update
+
+**Test count:** 74 (was 41 after step 4; -3 stubs deleted, +36 new).
+
+**Public surface added:** `<sim-engine sim="gas-laws">` works out of the box (registered as a side effect of importing the package). Imperative `play()` / `pause()` methods on the element instance.
+
+**Deferred to step 5b:** VdW physics; HL toggle and Ideal-vs-Real comparison graph; multiple gas species (He, N₂, CO₂); Maxwell-Boltzmann distribution graph; teacher presets (Boyle's, Charles's); search palette UI; particle-particle collisions; measured pressure (wall-collision smoothed) alongside computed; `createDropdown` / `createToggle` / `initKeyboard`; `exportPNG`. Also: listener-leak fix on sim dispose, `dt` clamping at the rAF boundary, weaker-than-ideal graph test assertions, and several other minor sweep tasks captured in step 5 brainstorming notes.
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.

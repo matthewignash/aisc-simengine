@@ -1,13 +1,17 @@
 /**
  * @aisc/simengine — public exports.
  *
- * Foundation phase complete (commits 4 + 5):
- *   - createState, createRecorder       — clean ports, fully implemented
- *   - a11y helpers                      — net new, fully implemented
- *   - particles, graph, controls        — typed stubs, throw on call
+ * Step 5 complete. Public surface:
+ *   - createState, createRecorder       — foundation factories
+ *   - a11y helpers                      — focus trap, screen-reader announce, etc.
+ *   - registerSim, lookupSim            — sim registry
+ *   - <sim-engine> custom element       — defined as a side effect
+ *   - particles, graph, controls        — engine modules (now real, no longer stubs)
+ *   - 'gas-laws' sim                    — auto-registered, mount with <sim-engine sim="gas-laws">
  *
- * The <sim-engine> custom element and per-sim modules land in steps 4–5
- * of the broader build sequence.
+ * Future steps add VdW physics, multiple species, MB distribution, presets,
+ * supporting components (data pills, coachmarks), content authoring pipeline,
+ * and reference data integration.
  */
 export { createState } from './engine/state.js';
 export { createRecorder } from './engine/recorder.js';
@@ -16,9 +20,13 @@ export { registerSim, lookupSim } from './sims/registry.js';
 // Side-effect import: defines the <sim-engine> custom element.
 import './components/sim-engine.js';
 
+import gasLaws from './sims/gas-laws/index.js';
+import { registerSim as _registerForBoot } from './sims/registry.js';
+_registerForBoot(gasLaws);
+
 export { prefersReducedMotion, announce, trapFocus, restoreFocusTo } from './engine/a11y.js';
 
-// Stub namespaces — every export throws "not implemented" until step 5.
+// Engine module namespaces. createParticleField, createGraph, createSlider/createButton, etc.
 export * as particles from './engine/particles.js';
 export * as graph from './engine/graph.js';
 export * as controls from './engine/controls.js';

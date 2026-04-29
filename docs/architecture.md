@@ -79,3 +79,34 @@ Required exports: `id`, `syllabus`, `init(host, dataLoader)`, `controls`, `scena
 - `exit-submitted` event — step 6 (when the exit ticket lands).
 - `coachmark-shown` event — step 6.
 - Coachmarks, data pills, glossary terms — step 6.
+
+## Step 5 — Gas Laws sim module
+
+Ideal-gas simulation registered as `'gas-laws'`. Mounted via:
+
+```html
+<sim-engine sim="gas-laws"></sim-engine>
+```
+
+The sim is auto-registered when `@TBD/simengine` is imported (see `packages/core/src/index.js`), so consumers don't need to call `registerSim` manually.
+
+### Engine modules implemented in step 5
+
+- `particles.js` — 2D ideal-gas particle field with elastic wall collisions, Maxwell-Boltzmann initial speed distribution (Box-Muller), substepping at 1/60 to prevent tunneling. Injectable RNG (Mulberry32 PRNG) for reproducible test layouts. Defensive null-ctx guard in `render`.
+- `controls.js` — `createSlider` (matches AISC `.sim-slider` markup, native range input + Shift+arrow ±5×step), `createButton` (default/primary/record variants). Dropdown / toggle / `initKeyboard` remain stubbed for step 6+.
+- `graph.js` — `createGraph` with declarative traces (`line` | `dots`), linear axes, out-of-range clipping. Defensive null-ctx guard in `redraw`. `exportPNG` returns `null` until visual regression infra arrives.
+
+### `<sim-engine>` enhancements in step 5
+
+`requestAnimationFrame` loop with `_startLoop` / `_stopLoop` / `_paintOnce` / `play` / `pause`. Loop computes `dt` from `performance.now`, writes to `state.dt`, calls `sim.step(dt)` and `_paintOnce` per frame. Respects `prefers-reduced-motion`: when true, the loop does not start; users can call `play()` to override.
+
+### Gas Laws sim shape
+
+- **Controls:** 3 sliders — T (100..1000 K, step 1), V (0.5..5 L, step 0.1), n (0.5..5 mol, step 0.1).
+- **Scenarios:** none in step 5 (presets are step 5b).
+- **Physics:** PV = nRT only. No VdW, no measured pressure.
+- **Visuals:** particles animate inside a 600×360 canvas; container outline narrows as V decreases; P-V graph in the rail traces dots at the user's path through (V, P) space; live readouts update for Pressure, Avg KE, particle count.
+
+### What's deferred to step 5b
+
+VdW physics; HL toggle + Ideal-vs-Real graph; multiple species (He, N₂, CO₂); Maxwell-Boltzmann distribution; teacher presets; search palette; measured pressure; particle-particle collisions; `createDropdown` / `createToggle` / `initKeyboard`; `exportPNG`. Plus several smaller polish items captured in the step 5 sweep notes (listener leak on dispose, `dt` clamping at the rAF boundary, stronger graph test assertions).

@@ -3,6 +3,17 @@ import { registerSim, clearRegistry } from '../src/sims/registry.js';
 import fakeSim, { fakeSimCalls, resetFakeSimCalls } from './_fixtures/fake-sim.js';
 import '../src/components/sim-engine.js';
 
+function mountSimEngine(attrs = {}) {
+  document.body.replaceChildren();
+  const el = document.createElement('sim-engine');
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v === true) el.setAttribute(k, '');
+    else if (v !== false) el.setAttribute(k, String(v));
+  }
+  document.body.appendChild(el);
+  return el;
+}
+
 describe('<sim-engine> — shell scaffolding', () => {
   beforeEach(() => {
     clearRegistry();
@@ -156,5 +167,65 @@ describe('<sim-engine> — shell scaffolding', () => {
     el.remove();
     el._recorder.record();
     expect(el._recorder.snapshot()).toHaveLength(1);
+  });
+});
+
+describe('<sim-engine> — rAF loop', () => {
+  beforeEach(() => {
+    clearRegistry();
+    registerSim(fakeSim);
+    resetFakeSimCalls();
+    document.body.replaceChildren();
+  });
+
+  it('starts a rAF loop on connect that calls sim.step on each tick', async () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
+    mountSimEngine({ sim: 'fake-sim' });
+    await Promise.resolve();
+    vi.advanceTimersByTime(50);
+    expect(fakeSimCalls.step).toBeGreaterThan(0);
+    vi.useRealTimers();
+  });
+
+  it('pause() stops further sim.step calls; play() resumes', async () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
+    const el = mountSimEngine({ sim: 'fake-sim' });
+    await Promise.resolve();
+    vi.advanceTimersByTime(50);
+    const before = fakeSimCalls.step;
+    el.pause();
+    vi.advanceTimersByTime(100);
+    expect(fakeSimCalls.step).toBe(before);
+    el.play();
+    vi.advanceTimersByTime(50);
+    expect(fakeSimCalls.step).toBeGreaterThan(before);
+    vi.useRealTimers();
+  });
+
+  it('disconnectedCallback stops the rAF loop', async () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
+    const el = mountSimEngine({ sim: 'fake-sim' });
+    await Promise.resolve();
+    vi.advanceTimersByTime(50);
+    const before = fakeSimCalls.step;
+    el.remove();
+    vi.advanceTimersByTime(100);
+    expect(fakeSimCalls.step).toBe(before);
+    vi.useRealTimers();
+  });
+
+  it('prefers-reduced-motion disables the rAF loop', async () => {
+    const matchMediaSpy = vi.spyOn(window, 'matchMedia').mockImplementation((q) => ({
+      matches: q.includes('reduce'),
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+    const el = mountSimEngine({ sim: 'fake-sim' });
+    await Promise.resolve();
+    // Wait one event loop tick — if the loop is running, it would have called step by now.
+    await new Promise((r) => setTimeout(r, 20));
+    expect(fakeSimCalls.step).toBe(0);
+    expect(el._rafHandle).toBeNull();
+    matchMediaSpy.mockRestore();
   });
 });
