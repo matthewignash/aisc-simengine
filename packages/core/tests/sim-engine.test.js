@@ -230,15 +230,28 @@ describe('<sim-engine> — rAF loop', () => {
   });
 
   it('clamps dt to 0.1 when the rAF callback fires after a long delay (backgrounded tab)', async () => {
-    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
-    const el = mountSimEngine({ sim: 'fake-sim' });
-    await Promise.resolve();
-    // Advance one frame normally to capture lastFrameTime
-    vi.advanceTimersByTime(20);
-    // Now simulate a long pause (5 seconds of backgrounded throttling)
-    vi.advanceTimersByTime(5000);
-    // After the next tick, state.dt should be clamped at 0.1, not ~5.0
-    expect(el._state.get('dt')).toBeLessThanOrEqual(0.1);
-    vi.useRealTimers();
+    // Capture the rAF callback so we can invoke it with a controlled `now`.
+    const originalRAF = globalThis.requestAnimationFrame;
+    let capturedTick = null;
+    globalThis.requestAnimationFrame = (fn) => {
+      capturedTick = fn;
+      return 1; // dummy handle
+    };
+
+    try {
+      const el = mountSimEngine({ sim: 'fake-sim' });
+      await Promise.resolve();
+      // _startLoop scheduled the first tick — capturedTick is now the loop's `tick`.
+      expect(typeof capturedTick).toBe('function');
+      // Manually advance: pretend we backgrounded for 5 seconds and resumed.
+      const start = el._lastFrameTime;
+      const longLater = start + 5000; // ms — 5 seconds elapsed
+      capturedTick(longLater);
+      // Without the clamp, state.dt would be ~5.0; with it, exactly 0.1.
+      expect(el._state.get('dt')).toBeLessThanOrEqual(0.1);
+      expect(el._state.get('dt')).toBeGreaterThan(0); // sanity: dt was actually computed
+    } finally {
+      globalThis.requestAnimationFrame = originalRAF;
+    }
   });
 });
