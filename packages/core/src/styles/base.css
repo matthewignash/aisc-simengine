@@ -1,0 +1,96 @@
+/* =============================================================
+   AISC IB Sciences — Base styles & shared layout utilities
+   ============================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;0,8..60,800;1,8..60,400&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-16);
+  line-height: var(--lh-loose);
+  color: var(--ib-ink-900);
+  background: var(--ib-paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-style: italic;                     /* Variant A — italic serif display */
+  line-height: var(--lh-tight);
+  color: var(--ib-navy-900);
+  margin: 0 0 var(--sp-4);
+  letter-spacing: var(--ls-tight);
+  text-wrap: balance;
+}
+h1 { font-size: var(--fs-64); font-weight: 700; }
+h2 { font-size: var(--fs-48); }
+h3 { font-size: var(--fs-36); }
+h4 { font-size: var(--fs-30); }
+h5 { font-size: var(--fs-24); }
+h6 { font-size: var(--fs-20); }
+
+/* Drop-cap utility — classic academic opening */
+.drop::first-letter {
+  font-family: var(--font-serif);
+  float: left; font-size: 4.2em; line-height: 0.85;
+  padding: 6px 10px 0 0;
+  color: var(--ib-navy-800); font-weight: 700; font-style: italic;
+}
+
+/* Double-rule — book section break */
+.rule-double {
+  border: 0; border-top: 3px double var(--ib-navy-800);
+  margin: var(--sp-10) auto;
+  max-width: 88px;
+}
+
+p { margin: 0 0 var(--sp-4); text-wrap: pretty; max-width: 68ch; }
+strong { color: var(--ib-navy-900); font-weight: 700; }
+em { color: var(--ib-navy-700); }
+
+code, kbd, samp {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--ib-navy-050);
+  color: var(--ib-navy-800);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+}
+
+a {
+  color: var(--ib-navy-700);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color var(--t-fast) var(--ease-out);
+}
+a:hover { color: var(--ib-navy-500); }
+a:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: 2px; }
+
+hr {
+  border: 0;
+  border-top: var(--rule-hair);
+  margin: var(--sp-8) 0;
+}
+
+ul, ol { padding-left: 1.25em; margin: 0 0 var(--sp-4); }
+li { margin-bottom: var(--sp-2); }
+
+::selection { background: var(--ib-navy-200); color: var(--ib-navy-900); }
+
+/* Slide-specific reset when inside <deck-stage> */
+section[data-deck-slide] {
+  background: var(--ib-paper);
+  color: var(--ib-ink-900);
+  padding: var(--slide-pad);
+  font-size: 28px;
+}
+section[data-deck-slide] td,
+section[data-deck-slide] th,
+section[data-deck-slide] p,
+section[data-deck-slide] li,
+section[data-deck-slide] caption { color: inherit; }

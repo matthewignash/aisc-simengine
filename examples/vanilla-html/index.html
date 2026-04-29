@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SimEngine — design system smoke test</title>
+    <link rel="stylesheet" href="../../packages/core/src/styles/tokens.css" />
+    <link rel="stylesheet" href="../../packages/core/src/styles/base.css" />
+    <link rel="stylesheet" href="../../packages/core/src/styles/components.css" />
+    <link rel="stylesheet" href="../../packages/core/src/styles/sim-shell.css" />
+  </head>
+  <body data-subject="chemistry">
+    <div class="sim-wrap">
+      <!-- Top strip -->
+      <nav class="sim-topstrip">
+        <div>
+          <a href="#">AISC · IB Sciences</a> &nbsp;·&nbsp; Chemistry HL &nbsp;·&nbsp; Unit 1.5
+          &nbsp;·&nbsp;
+          <span style="color: var(--ib-navy-800)">Gas Laws</span>
+        </div>
+        <div class="sim-topstrip__right">
+          <span class="sim-topstrip__badge">SimEngine v0.0 · foundation</span>
+          <span>Smoke test</span>
+        </div>
+      </nav>
+
+      <!-- Header -->
+      <header class="sim-head">
+        <div>
+          <div class="sim-head__kicker">Design system · Foundation phase</div>
+          <h1 class="sim-head__title">CSS port works <em>end to end</em>.</h1>
+          <p class="sim-head__lede">
+            This page exists only to verify that the four CSS files (<code>tokens.css</code>,
+            <code>base.css</code>, <code>components.css</code>, <code>sim-shell.css</code>) load
+            without parse errors and render the AISC design system shell. The actual
+            <code>&lt;sim-engine&gt;</code> custom element lands in step 4.
+          </p>
+        </div>
+        <div class="sim-head__meta">
+          <span>Phase<br /><b>Foundation</b></span>
+          <span>Commit<br /><b>3 of 6</b></span>
+          <span>Status<br /><b>Smoke test</b></span>
+        </div>
+      </header>
+
+      <!-- LI / SC strip -->
+      <div class="sim-lisc">
+        <div class="sim-lisc__col sim-lisc__col--li">
+          <span class="sim-lisc__label">What this page proves</span>
+          <ul class="sim-lisc__list">
+            <li>Design tokens load (light, typography, spacing).</li>
+            <li>Base reset and body defaults apply.</li>
+            <li>Component classes (<code>.ib-*</code>, <code>.sim-*</code>) render.</li>
+            <li>
+              Shell layout (<code>.sim-wrap</code>, <code>.sim-topstrip</code>,
+              <code>.sim-head</code>, <code>.sim-lisc</code>) holds together.
+            </li>
+          </ul>
+        </div>
+        <div class="sim-lisc__col sim-lisc__col--sc">
+          <span class="sim-lisc__label">Out of scope for this smoke test</span>
+          <ul class="sim-lisc__list">
+            <li>Interactive sim canvas (lands with <code>&lt;sim-engine&gt;</code>, step 4).</li>
+            <li>Live readouts, sliders, transport controls (engine modules, step 5+).</li>
+            <li>Glossary, data pills, coachmarks (supporting components, step 6).</li>
+            <li>Teacher view and data-source map (step 11).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Placeholder for the sim canvas -->
+      <div
+        class="sim-canvas"
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 300px;
+          font-family: var(--font-mono);
+          color: var(--ib-ink-500);
+        "
+      >
+        &lt;sim-engine&gt; mounts here in step 4
+      </div>
+    </div>
+  </body>
+</html>

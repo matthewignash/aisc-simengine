@@ -1,0 +1,180 @@
+/* =============================================================
+   AISC IB Sciences — Design Tokens (v2)
+   Inspired by Pearson's deep-navy academic palette
+   Built for Biology, Chemistry & Physics (SL & HL)
+   Accessibility-first: EAL + dyslexia considerations
+   ============================================================= */
+
+:root {
+  /* ─── Core brand ─────────────────────────────────────────── */
+  --ib-navy-900: #061434;  /* densest — headings on dark, print covers */
+  --ib-navy-800: #0B2265;  /* ★ primary brand anchor */
+  --ib-navy-700: #173080;
+  --ib-navy-600: #2A46A3;
+  --ib-navy-500: #4863C4;
+  --ib-navy-400: #7A90D8;
+  --ib-navy-300: #AEBCE6;
+  --ib-navy-200: #D4DCF1;
+  --ib-navy-100: #EBF0FA;
+  --ib-navy-050: #F5F7FC;
+
+  /* ─── Neutrals (warm-cool balanced paper) ────────────────── */
+  --ib-ink-900: #111827;   /* body text on light */
+  --ib-ink-700: #374151;
+  --ib-ink-500: #6B7280;
+  --ib-ink-400: #9CA3AF;
+  --ib-ink-300: #D1D5DB;
+  --ib-ink-200: #E5E7EB;
+  --ib-ink-100: #F3F4F6;
+  --ib-paper:   #F4EEDF;   /* book-cream — warm, classic academic paper */
+  --ib-paper-2: #EBE3CF;   /* deeper cream for panels & cards on paper */
+  --ib-cream-rule: #D4C7A0; /* warm rule on cream */
+  --ib-white:   #FFFFFF;
+
+  /* ─── Subject accents (oklch-harmonized) ─────────────────── */
+  /* Biology — chlorophyll green */
+  --bio-700: #1F6B3E;
+  --bio-500: #2E9E59;
+  --bio-300: #8ED3A6;
+  --bio-100: #DFF1E5;
+
+  /* Chemistry — laboratory teal */
+  --chem-700: #0B6E6C;
+  --chem-500: #00A3A1;
+  --chem-300: #6BD4D2;
+  --chem-100: #D5F0EF;
+
+  /* Physics — energy amber */
+  --phy-700: #8A4A00;
+  --phy-500: #D97706;
+  --phy-300: #F4BE7A;
+  --phy-100: #FBEBD3;
+
+  /* ─── Semantic colors ────────────────────────────────────── */
+  --ok-700: #15803D;  --ok-500: #22C55E;  --ok-100: #DCFCE7;
+  --warn-700: #B45309;  --warn-500: #F59E0B;  --warn-100: #FEF3C7;
+  --danger-700: #B91C1C; --danger-500: #DC2626; --danger-100: #FEE2E2;
+  --info-700: #1D4ED8;  --info-500: #3B82F6;  --info-100: #DBEAFE;
+
+  /* ─── Pearson-style named call-outs ─────────────────────── */
+  --tok-700: #8E1B2F;   --tok-500: #C8102E;   --tok-100: #FBE4E7;  /* Theory of Knowledge — Pearson red */
+  --nos-700: #0E6B7A;   --nos-500: #1AA3B8;   --nos-100: #D6F0F4;  /* Nature of Science — teal/cyan */
+  --worked-700: #8A6A00; --worked-500: #F2C94C; --worked-100: #FFF6D6; /* Worked Example — yellow-cream */
+  --ia-700: #9A4A00;    --ia-500: #E8751A;    --ia-100: #FDE6D1;    /* Internal Assessment — orange */
+  --exam-700: #0B2265;  --exam-500: #173080;  --exam-100: #D4DCF1;  /* Exam-style — navy */
+  --skills-700: #1F6B3E; --skills-500: #2E9E59; --skills-100: #DFF1E5; /* Skills / Practical — green */
+  --link-700: #374151;  --link-500: #6B7280;  --link-100: #E5E7EB;  /* Linking Question — grey */
+
+  /* ─── AISC classroom workflow call-outs ─────────────────── */
+  --li-700: #4C1D95;    --li-500: #7C3AED;    --li-100: #EDE3FC;   /* Learning Intentions — violet */
+  --sc-700: #065F46;    --sc-500: #10B981;    --sc-100: #D1FAE5;   /* Success Criteria — emerald */
+  --bell-700: #9A3412;  --bell-500: #F97316;  --bell-100: #FFE7D1; /* Bell Ringer — sunrise orange */
+  --exit-700: #5B21B6;  --exit-500: #8B5CF6;  --exit-100: #EDE9FE; /* Exit Ticket / Reflection — purple */
+  --waag-700: #0C4A6E;  --waag-500: #0284C7;  --waag-100: #E0F2FE; /* Week at a Glance — sky blue */
+
+  /* ─── Type scale ─────────────────────────────────────────── */
+  --font-serif: "Source Serif 4", "Charter", Georgia, "Times New Roman", serif;
+  --font-sans:  "Atkinson Hyperlegible", "Lexend", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:  "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-dyslexic: "OpenDyslexic", "Atkinson Hyperlegible", system-ui, sans-serif;
+
+  /* Modular scale — 1.200 minor third, tuned for long reading sessions */
+  --fs-12: 0.75rem;     /* 12 — fine print */
+  --fs-14: 0.875rem;    /* 14 — captions */
+  --fs-16: 1rem;        /* 16 — body (min for EAL readability) */
+  --fs-18: 1.125rem;    /* 18 — emphasized body */
+  --fs-20: 1.25rem;     /* 20 — lead, H6 */
+  --fs-24: 1.5rem;      /* 24 — H5, callout titles */
+  --fs-30: 1.875rem;    /* 30 — H4 */
+  --fs-36: 2.25rem;     /* 36 — H3 */
+  --fs-48: 3rem;        /* 48 — H2, slide subtitles */
+  --fs-64: 4rem;        /* 64 — H1, slide titles */
+  --fs-96: 6rem;        /* 96 — display, section covers */
+
+  /* Line heights — generous for EAL and dyslexic readers */
+  --lh-tight: 1.15;
+  --lh-snug:  1.3;
+  --lh-normal: 1.55;
+  --lh-loose: 1.75;      /* recommended for paragraph body */
+
+  /* Letter spacing — slightly loose improves decodability */
+  --ls-tight:   -0.01em;
+  --ls-normal:   0;
+  --ls-relaxed:  0.01em;
+  --ls-wide:     0.04em;
+  --ls-caps:     0.08em;
+
+  /* ─── Spacing (8-pt grid) ────────────────────────────────── */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-20: 80px;
+  --sp-24: 96px;
+  --sp-32: 128px;
+
+  /* ─── Radii ──────────────────────────────────────────────── */
+  --r-none: 0;
+  --r-sm:   4px;
+  --r-md:   8px;
+  --r-lg:   12px;
+  --r-xl:   16px;
+  --r-2xl:  24px;
+  --r-pill: 999px;
+
+  /* ─── Elevation (restrained — academic, not SaaS) ────────── */
+  --el-1: 0 1px 2px rgba(11,34,101,.06), 0 1px 1px rgba(11,34,101,.04);
+  --el-2: 0 2px 6px rgba(11,34,101,.08), 0 1px 2px rgba(11,34,101,.05);
+  --el-3: 0 8px 24px rgba(11,34,101,.10), 0 2px 6px rgba(11,34,101,.06);
+  --el-inset: inset 0 0 0 1px rgba(11,34,101,.10);
+
+  /* ─── Motion ─────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(.2,.8,.2,1);
+  --ease-in-out: cubic-bezier(.4,0,.2,1);
+  --t-fast: 140ms;
+  --t-base: 220ms;
+  --t-slow: 420ms;
+
+  /* ─── Component tokens ───────────────────────────────────── */
+  --rule-hair: 1px solid var(--ib-ink-200);
+  --rule-strong: 2px solid var(--ib-navy-800);
+  --focus-ring: 0 0 0 3px var(--ib-navy-300);
+
+  /* Slide canvas sizing */
+  --slide-w: 1920px;
+  --slide-h: 1080px;
+  --slide-pad: 96px;      /* safe margins on slides */
+}
+
+/* ─── Subject scoping ──────────────────────────────────────── */
+[data-subject="biology"]   { --accent-700: var(--bio-700);  --accent-500: var(--bio-500);  --accent-300: var(--bio-300);  --accent-100: var(--bio-100); }
+[data-subject="chemistry"] { --accent-700: var(--chem-700); --accent-500: var(--chem-500); --accent-300: var(--chem-300); --accent-100: var(--chem-100); }
+[data-subject="physics"]   { --accent-700: var(--phy-700);  --accent-500: var(--phy-500);  --accent-300: var(--phy-300);  --accent-100: var(--phy-100); }
+:root { --accent-700: var(--ib-navy-800); --accent-500: var(--ib-navy-600); --accent-300: var(--ib-navy-300); --accent-100: var(--ib-navy-100); }
+
+/* ─── Accessibility: dyslexia-friendly mode ────────────────── */
+[data-a11y="dyslexia"] {
+  --font-serif: var(--font-dyslexic);
+  --font-sans:  var(--font-dyslexic);
+  --lh-normal:  1.7;
+  --lh-loose:   1.9;
+  --ls-relaxed: 0.03em;
+}
+[data-a11y="dyslexia"] body { background: #FFF8E7; } /* cream reduces glare */
+
+/* ─── Accessibility: high-contrast mode ────────────────────── */
+[data-a11y="high-contrast"] {
+  --ib-ink-900: #000;
+  --ib-paper: #fff;
+  --rule-hair: 1px solid #000;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
