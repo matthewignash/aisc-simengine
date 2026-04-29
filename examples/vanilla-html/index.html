@@ -46,9 +46,13 @@
       </sim-engine>
     </div>
 
-    <script type="module">
-      // Side-effect import — registers the gas-laws sim and defines <sim-engine>.
-      import '../../packages/core/dist/index.js';
-    </script>
+    <!--
+      The IIFE bundle is used here (not <script type="module">) so the page works
+      when opened directly via file:// — modern browsers block ESM imports across
+      file:// origins for security. The IIFE bundle's side effects register the
+      gas-laws sim and define the <sim-engine> custom element, same as the ESM
+      module does for npm consumers.
+    -->
+    <script src="../../packages/core/dist/index.global.js"></script>
   </body>
 </html>
