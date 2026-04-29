@@ -113,6 +113,40 @@ describe('gas-laws sim module', () => {
     expect(translateIdx).toBeGreaterThan(strokeIdx);
   });
 
+  it('renders a species dropdown in the rail with 4 options, default ideal', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws' });
+    await Promise.resolve();
+    const dropdown = el.shadowRoot.querySelector('.sim-rail .sim-dropdown[data-var="species"]');
+    expect(dropdown).not.toBeNull();
+    const select = dropdown.querySelector('select');
+    expect(select.options.length).toBe(4);
+    expect(select.value).toBe('ideal');
+  });
+
+  it('changing species updates state.species', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws' });
+    await Promise.resolve();
+    const select = el.shadowRoot.querySelector('.sim-dropdown[data-var="species"] select');
+    select.value = 'co2';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(el._state.get('species')).toBe('co2');
+  });
+
+  it('readouts include a "Species" entry showing the human label', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws' });
+    await Promise.resolve();
+    const speciesReadout = el.shadowRoot.querySelector(
+      '[data-readout="species"] .sim-readout__value-text'
+    );
+    expect(speciesReadout.textContent).toBe('Ideal gas');
+    // Change species; readout updates.
+    el.setVariable('species', 'co2');
+    expect(speciesReadout.textContent).toBe('CO₂ · Carbon dioxide');
+  });
+
   it('removes state listeners on dispose so they do not fire on nulled fields', async () => {
     registerSim(gasLaws);
     const el = mountSimEngine({ sim: 'gas-laws' });

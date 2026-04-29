@@ -134,6 +134,30 @@ describe('createParticleField', () => {
     expect(lastFill).toMatch(/^#[0-9a-f]{3,8}$/i); // hex color, not 'var(...)'
   });
 
+  it('render(ctx, { fillStyle }) uses the supplied fillStyle for particles', () => {
+    const field = createParticleField({
+      count: 3,
+      bounds: { width: 600, height: 400 },
+      temperature: 300,
+    });
+    let lastFill = '';
+    const ctx = {
+      canvas: { width: 600, height: 400 },
+      clearRect: () => {},
+      set fillStyle(v) {
+        lastFill = v;
+      },
+      get fillStyle() {
+        return lastFill;
+      },
+      beginPath: () => {},
+      arc: () => {},
+      fill: () => {},
+    };
+    field.render(ctx, { fillStyle: '#abcdef' });
+    expect(lastFill).toBe('#abcdef');
+  });
+
   it('setTemperature can recover from temperature=0 by resampling, not by rescaling', () => {
     const field = createParticleField({
       count: 5,

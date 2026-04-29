@@ -5,9 +5,10 @@
  */
 import { idealPressure, avgKineticEnergy, visualParticleCount } from './physics.js';
 import { createParticleField } from '../../engine/particles.js';
-import { createSlider, createButton } from '../../engine/controls.js';
+import { createSlider, createButton, createDropdown } from '../../engine/controls.js';
 import { createGraph } from '../../engine/graph.js';
 import { drawContainer } from './render.js';
+import { SPECIES, SPECIES_OPTIONS } from './species.js';
 
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 360;
@@ -115,6 +116,17 @@ const sim = {
       );
     }
 
+    // Species selector — append after sliders.
+    if (host._state.get('species') === undefined) host._state.set('species', 'ideal');
+    const speciesDropdown = createDropdown({
+      key: 'species',
+      label: 'Gas',
+      options: SPECIES_OPTIONS,
+      value: host._state.get('species'),
+      onChange: (v) => host.setVariable('species', v),
+    });
+    rail.appendChild(speciesDropdown);
+
     // Transport buttons
     transport.append(
       createButton({ label: 'Play', variant: 'primary', onClick: () => host.play() }),
@@ -127,7 +139,8 @@ const sim = {
     readouts.append(
       makeReadout('Pressure', 'P', 'kPa'),
       makeReadout('Avg KE', 'KE', 'zJ'),
-      makeReadout('Particles', 'N', '')
+      makeReadout('Particles', 'N', ''),
+      makeReadout('Species', 'species', '')
     );
 
     // Wire state listeners — collect unsubs for dispose to clean up.
@@ -147,6 +160,11 @@ const sim = {
     this._unsubs.push(
       host._state.on('n', (n) => {
         this._field.setCount(visualParticleCount(n));
+        this._updateReadouts(host);
+      })
+    );
+    this._unsubs.push(
+      host._state.on('species', () => {
         this._updateReadouts(host);
       })
     );
@@ -172,7 +190,8 @@ const sim = {
       drawContainer(ctx, { width: CANVAS_WIDTH, height: CANVAS_HEIGHT, V, Vmax: V_MAX });
       ctx.save();
       ctx.translate(CONTAINER_MARGIN_X, CONTAINER_MARGIN_Y);
-      this._field?.render(ctx);
+      const sp = SPECIES[this._lastHost?._state.get('species') ?? 'ideal'];
+      this._field?.render(ctx, { fillStyle: sp.color });
       ctx.restore();
     }
     this._frameCount = (this._frameCount ?? 0) + 1;
@@ -206,6 +225,7 @@ const sim = {
     set('P', this._pressureFn(state).toFixed(1));
     set('KE', avgKineticEnergy(state.T).toFixed(2));
     set('N', String(visualParticleCount(state.n)));
+    set('species', SPECIES[state.species ?? 'ideal'].label);
   },
 };
 
