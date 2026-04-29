@@ -13,6 +13,9 @@ export { createState } from './engine/state.js';
 export { createRecorder } from './engine/recorder.js';
 export { registerSim, lookupSim } from './sims/registry.js';
 
+// Side-effect import: defines the <sim-engine> custom element.
+import './components/sim-engine.js';
+
 export { prefersReducedMotion, announce, trapFocus, restoreFocusTo } from './engine/a11y.js';
 
 // Stub namespaces — every export throws "not implemented" until step 5.
