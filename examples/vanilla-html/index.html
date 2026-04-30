@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SimEngine — Gas Laws (step 5b smoke test)</title>
+    <title>SimEngine — Gas Laws (step 6 smoke test)</title>
     <link rel="stylesheet" href="../../packages/core/src/styles/tokens.css" />
     <link rel="stylesheet" href="../../packages/core/src/styles/base.css" />
     <link rel="stylesheet" href="../../packages/core/src/styles/components.css" />
@@ -18,40 +18,47 @@
           <span style="color: var(--ib-navy-800)">Gas Laws</span>
         </div>
         <div class="sim-topstrip__right">
-          <span class="sim-topstrip__badge">SimEngine v0.0 · step 5b</span>
+          <span class="sim-topstrip__badge">SimEngine v0.0 · step 6</span>
           <span>Smoke test</span>
         </div>
       </nav>
 
       <header class="sim-head">
         <div>
-          <div class="sim-head__kicker">Step 5b — Gas Laws sim</div>
+          <div class="sim-head__kicker">Step 6 — Gas Laws sim + supporting components</div>
           <h1 class="sim-head__title">PV = <em>nRT</em>, plus van der Waals.</h1>
           <p class="sim-head__lede">
-            The <code>&lt;sim-engine sim="gas-laws"&gt;</code> below mounts an animated gas-law
-            simulation with adjustable T/V/n, gas species selector, live readouts, and three graphs
-            (P-V, Maxwell-Boltzmann distribution, and an HL-only Ideal-vs-Real comparison). Toggle
-            HL mode to reveal the Ideal-vs-Real graph; pick a teacher preset to jump to a canonical
-            IB Chemistry scenario.
+            An animated <sim-glossary-term ref="ideal-gas">ideal gas</sim-glossary-term> in a piston
+            container. The ideal gas equation
+            <code>PV = <sim-data-pill ref="gas-constant-R"></sim-data-pill>nT</code> ties together
+            <sim-glossary-term ref="pressure">pressure</sim-glossary-term>, volume, temperature, and
+            the amount of gas. Selecting CO₂ adds the
+            <sim-glossary-term ref="van-der-waals">van der Waals correction</sim-glossary-term>
+            for non-ideal behavior.
           </p>
         </div>
         <div class="sim-head__meta">
-          <span>Phase<br /><b>Step 5b</b></span>
+          <span>Phase<br /><b>Step 6</b></span>
           <span>Status<br /><b>Smoke test</b></span>
         </div>
       </header>
 
-      <label class="sim-switch" style="margin: 16px 0">
-        <input type="checkbox" id="hl-toggle" />
-        <span class="sim-switch__track" aria-hidden="true"></span>
-        <span class="sim-switch__label">HL mode (shows Ideal vs Real graph)</span>
-      </label>
+      <div style="display: flex; gap: 16px; align-items: center; margin: 16px 0">
+        <label class="sim-switch">
+          <input type="checkbox" id="hl-toggle" />
+          <span class="sim-switch__track" aria-hidden="true"></span>
+          <span class="sim-switch__label">HL mode (shows Ideal vs Real graph)</span>
+        </label>
+        <button class="ib-btn ib-btn--ghost" id="tweaks-button">⚙ Tweaks</button>
+      </div>
 
       <sim-engine sim="gas-laws" id="sim">
         <div class="sim-fallback">
           <p>Loading the simulation… enable JavaScript to run it.</p>
         </div>
       </sim-engine>
+
+      <sim-tweaks-panel for="sim"></sim-tweaks-panel>
     </div>
 
     <!--
@@ -68,6 +75,11 @@
       document.getElementById('hl-toggle').addEventListener('change', (e) => {
         const sim = document.getElementById('sim');
         sim.setAttribute('level', e.target.checked ? 'hl' : 'sl');
+      });
+
+      // Tweaks button: toggles the data-open attribute on the panel.
+      document.getElementById('tweaks-button').addEventListener('click', () => {
+        document.querySelector('sim-tweaks-panel').toggleAttribute('data-open');
       });
     </script>
   </body>
