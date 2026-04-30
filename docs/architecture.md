@@ -254,3 +254,50 @@ Step 8 is intentionally narrower than the spec's combined §8–§11. This phase
 | 9      | Author full Gas Laws content (real prose for all 14 sections) | Deferred (future "step 8c") |
 | 11     | Teacher view (`<sim-data-map>`, lesson plan tie-in)           | Deferred (future "step 9")  |
 | 12     | Print stylesheet, print button                                | Deferred (polish phase)     |
+
+## Phase 10A — Interactive success-criteria checklist + export
+
+A new `<sim-checklist>` custom element makes the topic page's success-criteria column interactive. Students tick items, write a free-text reflection, and export their work as `.md` or PDF. State persists per-topic-per-level via localStorage.
+
+### Architecture
+
+- One `<sim-checklist>` per use site. The topic page mounts one inside the existing `.ib-lisc__col--sc` column (kicker + title preserved; the static `<ul>` becomes a `<sim-checklist>` with slotted `<li>` items).
+- Slot-based item API: page authors include plain `<li>` elements as children. The component reads them at upgrade, captures `textContent`, clears the host's light DOM, and renders interactive checkbox-rows in shadow DOM.
+- Per-topic-per-level localStorage key: `aisc-simengine:checklist:<topic>:<level>`. State JSON: `{ checkedItems: number[], freeText: string }`.
+- Auto-save on check toggle (immediate); on textarea input (300ms debounce). The `level` attribute change force-flushes the pending textarea save to the OLD key before switching, preventing a race where mid-debounce typing is lost.
+- All DOM rendered via `createElement` + `textContent`. No `.innerHTML` anywhere.
+
+### Export pipeline
+
+**Markdown** — one-click download. The component generates a markdown string (topic title, level, date, `[x]`/`[ ]` checklist items, optional `## My reflection` section if the textarea has content), wraps it in a `Blob`, creates a temporary `<a download="<topic>-<level>-reflection.md">`, programmatically clicks it, and revokes the object URL on the next tick.
+
+**PDF** — via the browser's native print dialog. The component synthesizes a `#print-reflection-output` element in `document.body` (the same element is reused across exports via `replaceWith`), adds `body.printing-reflection`, and calls `window.print()`. The `@media print` rules in global `components.css` hide everything except `#print-reflection-output` while `body.printing-reflection` is set. An `afterprint` listener (registered on `window` in `connectedCallback`) clears the body class when the dialog closes — regardless of whether the user printed or canceled.
+
+This print pipeline is **reflection-only**. The whole-topic-page print stylesheet remains the deferred §12 polish item.
+
+### Topic-page integration
+
+The Gas Laws topic page's `applyLevel(level)` inline function (added in step 8) gains a fourth step: push the new level to every `<sim-checklist>` element via `setAttribute('level', ...)`. The HL/SL toggle in the sticky header now swaps:
+
+1. The variant-content blocks (existing).
+2. The sim's `level` attribute (existing).
+3. The HL toggle's checked state (existing).
+4. **The checklist's per-level state.** (Phase 10A.)
+
+### What ships vs what's deferred
+
+| Concern                                             | Status                                    |
+| --------------------------------------------------- | ----------------------------------------- |
+| Generic `<sim-checklist>` with slotted `<li>`s      | Shipped                                   |
+| Per-topic-per-level localStorage                    | Shipped                                   |
+| Free-text reflection textarea (debounced auto-save) | Shipped                                   |
+| .md download                                        | Shipped                                   |
+| Save as PDF (reflection-only via `window.print()`)  | Shipped                                   |
+| Reset button with confirm                           | Shipped                                   |
+| Bell ringer / practice / exit ticket interactivity  | Deferred to Phase 10B                     |
+| `<sim-reflection-export>` portfolio aggregator      | Deferred to Phase 10B                     |
+| Whole-topic-page print stylesheet                   | Deferred to spec §12 polish               |
+| Mobile/tablet responsive tweaks                     | Deferred (polish phase)                   |
+| Animated check transitions, fancy progress bar      | Deferred                                  |
+| `<sim-engine>` public API → public                  | Deferred (still on step-6 follow-up list) |
+| `<slot>` reinstatement in `<sim-coachmark>`         | Deferred (still on step-6 follow-up list) |

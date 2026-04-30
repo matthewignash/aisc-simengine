@@ -147,6 +147,40 @@ Four commits composing the step-6 components into a polished Gas Laws topic page
 - Real "What's next" topic link (deferred until a second topic exists).
 - Two follow-up tasks from step 6 still queued: promote `<sim-engine>` private API to public, reinstate `<slot>` in `<sim-coachmark>`.
 
+### Phase 10A — Interactive success-criteria checklist + export
+
+Three commits introducing `<sim-checklist>` — a generic interactive checklist web component. The Gas Laws topic page's static success-criteria column becomes interactive: students tick items, write a free-text reflection, and export their work as `.md` (one-click download) or PDF (via `window.print()`).
+
+- `feat(core)`: `<sim-checklist>` custom element (component + tests + side-effect import + print stylesheet)
+- `feat(examples)`: topic-page replaces static success-criteria with `<sim-checklist>`
+- `docs`: this CHANGELOG entry + architecture.md update
+
+**Test count:** +7 net, all in `packages/core/tests/sim-checklist.test.js`.
+
+**Public surface added (`@TBD/simengine`):**
+
+- New custom element `<sim-checklist topic="..." level="..." label="...">` with slotted `<li>` API. Auto-defined as a side effect of importing the core package.
+- Three new events (bubbles + composed): `checklist-changed`, `checklist-exported`, `checklist-reset`.
+- Imperative API on the element instance: `getState()`, `exportMarkdown(triggerDownload?)`, `exportPDF()`.
+- Print stylesheet rules for `body.printing-reflection` and `#print-reflection-output` in `components.css` — used by `exportPDF()` to print the reflection without the rest of the page.
+
+**Persistence:** localStorage key `aisc-simengine:checklist:<topic>:<level>` (separate state per level).
+
+**Bundle delta:** +11.05 kB IIFE (the plan estimate of +3 kB was too optimistic; the component is ~530 lines including the inline HOST_STYLES template, two export pipelines, and lifecycle for two observed attributes — the real cost matches `<sim-tweaks-panel>` density from step 6).
+
+**Known follow-ups (deferred to Phase 10B):**
+
+- `<sim-text-response>` for bell ringer + exit ticket interactivity.
+- `<sim-practice-question>` with answer-reveal-and-compare flow.
+- `<sim-reflection-export>` aggregator that pulls state from all interactive components on the page into a single portfolio export. Phase 10A's export pipeline is the foundation; 10B refactors export OUT of the checklist into the aggregator.
+
+**Other deferred polish (still queued):**
+
+- Mobile/tablet responsive tweaks for the checklist on narrow viewports.
+- Whole-topic-page print stylesheet (spec §12 polish — distinct from the reflection-only print added in 10A).
+- Animated check transitions; fancy progress bar.
+- The two follow-up tasks from step 6 — `<sim-engine>` private API to public; reinstate `<slot>` in `<sim-coachmark>`.
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.
