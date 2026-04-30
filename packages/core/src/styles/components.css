@@ -953,3 +953,53 @@
   font-weight: 800; letter-spacing: var(--ls-caps); text-transform: uppercase;
   background: var(--exam-100); color: var(--exam-700);
 }
+
+/* iOS-style toggle switch (used by smoke-test HL toggle and tweaks panel). */
+.sim-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+  cursor: pointer;
+  user-select: none;
+}
+.sim-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.sim-switch__track {
+  width: 40px;
+  height: 22px;
+  background: var(--ib-ink-300, #c9cdd6);
+  border-radius: 11px;
+  position: relative;
+  transition: background 0.18s ease;
+  flex-shrink: 0;
+}
+.sim-switch__track::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.18s ease;
+}
+.sim-switch input:checked ~ .sim-switch__track {
+  /* iOS-style active teal — intentionally outside the brand palette
+     to read as a neutral "on" affordance. */
+  background: #2a9d8f;
+}
+.sim-switch input:checked ~ .sim-switch__track::before {
+  transform: translateX(18px);
+}
+.sim-switch input:focus-visible ~ .sim-switch__track {
+  box-shadow: var(--focus-ring, 0 0 0 2px #5b9dff);
+}
+.sim-switch__label {
+  font-family: var(--font-sans, sans-serif);
+  font-size: var(--fs-14, 14px);
+}
