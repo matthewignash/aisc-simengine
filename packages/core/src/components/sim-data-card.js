@@ -1,31 +1,57 @@
 /**
- * <sim-data-card ref="..."> — popover with the full data entry view.
+ * <sim-data-card ref="..."> — singleton slide-out side panel.
  *
- * Typically rendered as a child of <sim-data-pill> (toggled hidden).
- * Self-contained: looks up its data via getValue + getSource. Provides
- * a "Copy citation" button (writes to clipboard) and an optional
- * "View source" link when getSource(...).url is present.
+ * Lives in the page's light DOM (one per page). Listens on document for
+ * `data-pill-clicked` events; on receive, sets its own `ref` attribute,
+ * looks up the data via getValue + getSource, and slides into view from the
+ * left edge of the viewport via the [data-open] attribute.
  *
- * Focus-trap modal-like behavior via foundation a11y trapFocus helper.
+ * Multi-pill behavior:
+ *   - First pill click: opens with that pill's data.
+ *   - Different pill clicked while open: content swaps in place (no
+ *     close-then-reopen flicker).
+ *   - Same pill clicked again: closes (toggle).
+ *   - Outside-click, Escape, close button: all close.
+ *
+ * Provides "Copy citation" (writes to clipboard) and an optional "View
+ * source" link when getSource(...).url is present. Focus-trap modal-like
+ * behavior via foundation a11y trapFocus helper. On close, focus restores
+ * to the pill that triggered the open.
  */
 import { getValue, getSource } from '@TBD/simengine-data';
 import { trapFocus, restoreFocusTo } from '../engine/a11y.js';
 
 const HOST_STYLES = `
-  :host { display: block; }
-  :host([hidden]) { display: none; }
-  .sim-data-card {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    z-index: 100;
+  :host {
+    position: fixed;
+    top: 80px;
+    left: 16px;
     width: 320px;
+    z-index: 100;
+    transform: translateX(-120%);
+    visibility: hidden;
+    /* Hidden state also makes the panel inert. visibility transition delayed
+       to wait for the slide-out to complete before hiding (matches the
+       tweaks-panel pattern from step 6 commit 7). */
+    transition: transform 0.18s ease, visibility 0s linear 0.18s;
+    font-family: var(--font-sans, sans-serif);
+  }
+  :host([data-open]) {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.18s ease, visibility 0s linear 0s;
+  }
+  .sim-data-card {
+    width: 100%;
     background: var(--ib-white, #fff);
     border: 1px solid var(--ib-ink-200, #ddd);
     border-radius: var(--r-md, 6px);
-    box-shadow: var(--el-2, 0 4px 12px rgba(0,0,0,0.15));
+    box-shadow: var(--el-3, 0 8px 24px rgba(11, 34, 101, 0.18));
     padding: var(--sp-4, 16px);
-    font-family: var(--font-sans, sans-serif);
+    /* Long content scrolls within the panel rather than running off the
+       viewport. 96px = 80px top offset + 16px breathing room. */
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
   }
   .sim-data-card__head {
     display: flex;
@@ -90,45 +116,89 @@ sheet.replaceSync(HOST_STYLES);
 
 class SimDataCardElement extends HTMLElement {
   static get observedAttributes() {
-    return ['ref', 'hidden'];
+    return ['ref'];
   }
 
   constructor() {
     super();
     const root = this.attachShadow({ mode: 'open' });
     root.adoptedStyleSheets = [sheet];
+    this._currentRef = null;
+    this._previouslyFocused = null;
   }
 
   connectedCallback() {
     if (this._initialized) return;
     this._initialized = true;
+
+    // Render initial empty shell (no ref → no data fetch yet).
     this._render();
-    if (!this.hidden) this._activate();
+
+    // Listen globally for pill clicks anywhere in the document.
+    this._pillClickHandler = (e) => this._onPillClicked(e);
+    document.addEventListener('data-pill-clicked', this._pillClickHandler);
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(name) {
     if (!this._initialized) return;
-    if (name === 'hidden') {
-      if (newValue === null) this._activate();
-      else this._deactivate();
-    } else if (name === 'ref') {
+    if (name === 'ref') {
       this._render();
-      // Re-arm focus trap if we're still visible after the re-render.
-      if (!this.hidden) this._activate();
+      // Re-arm focus trap if we're still visible after the re-render
+      // (content swap while [data-open] is set).
+      if (this.hasAttribute('data-open')) {
+        this._deactivate({ skipFocusRestore: true });
+        this._activate();
+      }
+    }
+  }
+
+  /** @param {CustomEvent} e */
+  _onPillClicked(e) {
+    const ref = e.detail?.ref;
+    if (!ref) return;
+
+    // Save the triggering pill's host element for focus restoration.
+    // composedPath()[0] is the inner button (in pill's shadow); its
+    // getRootNode() is the pill's ShadowRoot; .host is the pill element.
+    const pillHost = e.composedPath()[0]?.getRootNode()?.host || e.target;
+
+    // Same pill clicked again while open → toggle close.
+    if (this.hasAttribute('data-open') && this._currentRef === ref) {
+      this._dismiss();
+      return;
+    }
+
+    // Different ref (or first click): open or swap in place.
+    this._previouslyFocused = pillHost;
+    this._currentRef = ref;
+    this.setAttribute('ref', ref); // triggers attributeChangedCallback → _render
+
+    if (!this.hasAttribute('data-open')) {
+      this.setAttribute('data-open', '');
+      this._activate();
     }
   }
 
   _render() {
-    // Tear down any active state from a previous render (e.g. ref changed
-    // while card was visible) so we don't leak listeners or stale refs.
-    this._deactivate();
+    // Tear down any active state from a previous render so we don't leak
+    // listeners or stale refs. Skip focus restore — the next _activate will
+    // re-grab the activeElement appropriately.
+    this._deactivate({ skipFocusRestore: true });
     this._cardEl = null;
     this._closeBtn = null;
+
     const ref = this.getAttribute('ref');
-    const data = getValue(ref);
-    const source = data ? getSource(data.source) : null;
     const root = this.shadowRoot;
     root.replaceChildren();
+
+    if (!ref) {
+      // Empty shell — no ref yet, panel is closed; nothing to render.
+      return;
+    }
+
+    const data = getValue(ref);
+    const source = data ? getSource(data.source) : null;
+
     if (!data) {
       const errEl = document.createElement('div');
       errEl.className = 'sim-data-card';
@@ -226,31 +296,59 @@ class SimDataCardElement extends HTMLElement {
   }
 
   _activate() {
-    this._previouslyFocused = document.activeElement;
     if (this._cardEl) {
       this._trap = trapFocus(this._cardEl);
       if (this._closeBtn) this._closeBtn.focus();
     }
+
+    // Escape closes.
     this._escapeHandler = (e) => {
       if (e.key === 'Escape') this._dismiss();
     };
     document.addEventListener('keydown', this._escapeHandler);
+
+    // Outside-click closes — but a click on a <sim-data-pill> is treated as
+    // a swap (the pill emits data-pill-clicked, which the global listener
+    // handles), not an outside-click close.
+    this._outsideClickHandler = (e) => {
+      // Inside the card itself? Not outside.
+      if (e.composedPath().includes(this)) return;
+      // Click on a pill? Let the pill's own dispatch handle it (swap in place).
+      const onPill = e
+        .composedPath()
+        .some((el) => el && el.tagName && el.tagName.toLowerCase() === 'sim-data-pill');
+      if (onPill) return;
+      // Genuine outside click.
+      this._dismiss();
+    };
+    document.addEventListener('click', this._outsideClickHandler);
   }
 
-  _deactivate() {
+  _deactivate({ skipFocusRestore = false } = {}) {
     if (this._trap) this._trap.release();
     this._trap = null;
-    if (this._escapeHandler) document.removeEventListener('keydown', this._escapeHandler);
+    if (this._escapeHandler) {
+      document.removeEventListener('keydown', this._escapeHandler);
+    }
     this._escapeHandler = null;
-    if (this._previouslyFocused) restoreFocusTo(this._previouslyFocused);
-    this._previouslyFocused = null;
+    if (this._outsideClickHandler) {
+      document.removeEventListener('click', this._outsideClickHandler);
+    }
+    this._outsideClickHandler = null;
+    if (!skipFocusRestore && this._previouslyFocused) {
+      restoreFocusTo(this._previouslyFocused);
+    }
   }
 
   _dismiss() {
-    this.hidden = true;
+    const closingRef = this.getAttribute('ref');
+    this.removeAttribute('data-open');
+    this._deactivate();
+    this._currentRef = null;
+    this._previouslyFocused = null;
     this.dispatchEvent(
       new CustomEvent('data-card-closed', {
-        detail: { ref: this.getAttribute('ref') },
+        detail: { ref: closingRef },
         bubbles: true,
         composed: true,
       })
@@ -258,7 +356,13 @@ class SimDataCardElement extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this._deactivate();
+    this._deactivate({ skipFocusRestore: true });
+    if (this._pillClickHandler) {
+      document.removeEventListener('data-pill-clicked', this._pillClickHandler);
+    }
+    this._pillClickHandler = null;
+    this._currentRef = null;
+    this._previouslyFocused = null;
     // Allow re-render if the element is moved/reattached.
     this._initialized = false;
   }
