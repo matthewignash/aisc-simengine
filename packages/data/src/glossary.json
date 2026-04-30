@@ -1,0 +1,20 @@
+{
+  "terms": {
+    "pressure": {
+      "term": "pressure",
+      "definition": "The force that gas particles apply to the walls of their container, divided by the area of those walls. Measured in pascals (Pa) or kilopascals (kPa)."
+    },
+    "ideal-gas": {
+      "term": "ideal gas",
+      "definition": "A theoretical gas whose particles have no volume of their own and don't attract each other. Real gases approximate this at low pressure and high temperature."
+    },
+    "van-der-waals": {
+      "term": "van der Waals equation",
+      "definition": "An equation that improves on PV = nRT for real gases by adding two correction terms: one for the volume of the particles themselves, and one for the attractive forces between them."
+    },
+    "kinetic-energy": {
+      "term": "kinetic energy",
+      "definition": "The energy a particle has due to its motion. Higher temperature means higher average kinetic energy."
+    }
+  }
+}

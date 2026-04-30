@@ -35,7 +35,11 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(happy-dom@15.11.7)
 
-  packages/data: {}
+  packages/data:
+    devDependencies:
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(happy-dom@15.11.7)
 
 packages:
 
