@@ -60,6 +60,85 @@
         </div>
       </header>
 
+      <!-- 4. Bell ringer -->
+      <section class="ib-bellringer">
+        <h2>Bell ringer</h2>
+        <p><strong>5 minutes — from memory:</strong></p>
+        <ol>
+          <li>Write the ideal gas equation. Label every symbol.</li>
+          <li>
+            Circle the variable that is <em>inversely</em> proportional to pressure at constant
+            temperature and amount of gas.
+          </li>
+          <li>
+            In one sentence, describe what happens to the speed of gas particles when temperature
+            doubles at constant volume.
+          </li>
+        </ol>
+      </section>
+
+      <!-- 5. Topic intro — adaptive prose, default-sl and default-hl variants -->
+      <section class="topic-intro">
+        <h2>Topic introduction</h2>
+
+        <div data-variant="default-sl">
+          <p>
+            A gas in a sealed container is made up of fast-moving particles that constantly bump
+            into the walls. Each collision pushes outward — that push, spread over the area of the
+            wall, is what we call
+            <sim-glossary-term ref="pressure">pressure</sim-glossary-term>.
+          </p>
+          <p>
+            Three properties of the gas determine how strong that push is: how hot the gas is
+            (temperature, T), how much room it has (volume, V), and how many particles are present
+            (amount in moles, n). The
+            <sim-glossary-term ref="ideal-gas">ideal gas</sim-glossary-term>
+            equation <code>PV = nRT</code> brings these together. R is a fixed number — the gas
+            constant — that makes the units balance.
+          </p>
+          <p>
+            Use the simulation below to see how flipping any one of T, V, or n changes pressure in
+            real time.
+          </p>
+        </div>
+
+        <div data-variant="default-hl">
+          <p>
+            A gas in a sealed container exerts
+            <sim-glossary-term ref="pressure">pressure</sim-glossary-term>
+            on the walls because its particles are constantly colliding with them. The
+            <sim-glossary-term ref="ideal-gas">ideal gas</sim-glossary-term>
+            equation <code>PV = nRT</code> models this push for an ideal gas — one whose particles
+            have negligible volume of their own and exert no attractive forces on each other.
+          </p>
+          <p>
+            Real gases approximate this idealisation at low pressure and high temperature, where the
+            particles spend most of their time far apart. They diverge from <code>PV = nRT</code>
+            when forced together — at high pressure, low temperature, or when the gas itself has
+            strong intermolecular forces (CO₂ being a classic example).
+          </p>
+          <p>
+            The
+            <sim-glossary-term ref="van-der-waals">van der Waals equation</sim-glossary-term>
+            refines <code>PV = nRT</code> for real gases by adding two correction terms: one for the
+            volume the particles themselves occupy, and one for the attractive forces between them.
+            Toggle CO₂ in the simulation below and watch the Ideal-vs-Real graph reveal the
+            divergence.
+          </p>
+        </div>
+      </section>
+
+      <!-- 6. Key concept -->
+      <section class="ib-concept">
+        <h2>Key concept</h2>
+        <p>
+          <em
+            >Pressure, volume, temperature, and amount of gas are linked through the equation
+            <code>PV = nRT</code>.</em
+          >
+        </p>
+      </section>
+
       <!-- 7. Equation panel -->
       <section class="ib-equation">
         <h2>The ideal gas equation</h2>
@@ -72,6 +151,37 @@
           <sim-data-pill ref="vdw-co2-a"></sim-data-pill> and
           <sim-data-pill ref="vdw-co2-b"></sim-data-pill>.
         </p>
+      </section>
+
+      <!-- 8. Learning intentions / success criteria -->
+      <section>
+        <h2>Learning intentions &amp; success criteria</h2>
+        <div class="ib-lisc">
+          <div class="ib-lisc__col ib-lisc__col--li">
+            <div class="ib-lisc__kicker">Learning intentions</div>
+            <h3 class="ib-lisc__title">I will learn to…</h3>
+            <ul class="ib-lisc__list">
+              <li>Describe how P, V, T, and n are related by the ideal gas equation.</li>
+              <li>
+                Use <code>PV = nRT</code> to predict how one variable changes when another is
+                adjusted.
+              </li>
+              <li>
+                Recognise the individual gas laws (Boyle, Charles, Gay-Lussac) as special cases of
+                the ideal gas equation.
+              </li>
+            </ul>
+          </div>
+          <div class="ib-lisc__col ib-lisc__col--sc">
+            <div class="ib-lisc__kicker">Success criteria</div>
+            <h3 class="ib-lisc__title">I can…</h3>
+            <ul class="ib-lisc__list">
+              <li>Describe what happens to P when V halves at constant T and n.</li>
+              <li>Calculate P, V, T, or n given the other three quantities.</li>
+              <li>Explain the shape of a P–V graph at constant temperature and label its axes.</li>
+            </ul>
+          </div>
+        </div>
       </section>
 
       <!-- Tweaks button row above the sim -->
@@ -87,7 +197,95 @@
       </sim-engine>
       <sim-tweaks-panel for="sim"></sim-tweaks-panel>
 
-      <!-- Sections 4, 5, 6, 8, 10-16 land in commit 3 -->
+      <!-- 10. Worked example -->
+      <section class="ib-worked">
+        <h2>Worked example</h2>
+        <p>
+          <strong>Question:</strong> A 2.0 L container holds 0.5 mol of N₂ at 300 K. Calculate the
+          pressure of the gas.
+        </p>
+        <details>
+          <summary>Show solution</summary>
+          <ol>
+            <li>Identify the equation: <code>PV = nRT</code>, so <code>P = nRT / V</code>.</li>
+            <li>
+              Substitute (using R = 8.314 J·K⁻¹·mol⁻¹, V in m³): <br />
+              <code>V = 2.0 L = 2.0 × 10⁻³ m³</code> <br />
+              <code>P = (0.5 × 8.314 × 300) / (2.0 × 10⁻³)</code>
+            </li>
+            <li>Calculate: <code>P = 6.24 × 10⁵ Pa ≈ 624 kPa</code>.</li>
+          </ol>
+        </details>
+      </section>
+
+      <!-- 11. Practice question -->
+      <section class="ib-practice">
+        <h2>Practice question</h2>
+        <p>
+          <strong>Calculate</strong> the volume occupied by 0.25 mol of an ideal gas at 250 K and
+          150 kPa.
+        </p>
+        <details class="ib-answer">
+          <summary>Show answer</summary>
+          <p>
+            <code>V = nRT / P = (0.25 × 8.314 × 250) / (150 × 10³) = 3.46 × 10⁻³ m³ ≈ 3.46 L</code>
+          </p>
+        </details>
+      </section>
+
+      <!-- 12. Command term reminder -->
+      <aside class="ib-command-card">
+        <h3>Command term: <em>calculate</em></h3>
+        <p>
+          Obtain a numerical answer showing the relevant stages in the working. (IB Chemistry Guide
+          2025, Assessment objectives.)
+        </p>
+      </aside>
+
+      <!-- 13. Mark scheme -->
+      <section class="ib-mark">
+        <h3>Mark scheme</h3>
+        <ul>
+          <li>
+            1 mark — correct rearrangement of <code>PV = nRT</code> to <code>V = nRT / P</code>.
+          </li>
+          <li>1 mark — correct numerical answer with appropriate units (m³ or L).</li>
+        </ul>
+      </section>
+
+      <!-- 14. Misconceptions -->
+      <section class="ib-misc">
+        <h2>Common misconceptions</h2>
+        <p><strong>"Gas pressure is caused by gas particles pushing each other."</strong></p>
+        <p>
+          ✗ <em>Wrong:</em> particles only exert measurable force when they collide with the
+          container walls, not when passing each other.
+        </p>
+        <p>
+          ✓ <em>Right:</em> pressure is the force per unit area from particle-wall collisions.
+          Inter-particle collisions redistribute energy but don't directly cause container pressure.
+        </p>
+      </section>
+
+      <!-- 15. Exit ticket -->
+      <section class="ib-exitticket">
+        <h2>Exit ticket</h2>
+        <ol>
+          <li>What surprised you most about how pressure changes with temperature?</li>
+          <li>If you doubled the amount of gas at constant T and V, what happens to P? Why?</li>
+          <li>One thing you'd like to understand more clearly:</li>
+        </ol>
+      </section>
+
+      <!-- 16. What's next — placeholder, disabled -->
+      <a class="topic-next topic-next--disabled" aria-disabled="true">
+        <div class="topic-next__kicker">Next topic — coming soon</div>
+        <div class="topic-next__title">S1.6 — Avogadro's law</div>
+        <div class="topic-next__preview">
+          Equal volumes of any ideal gas, at the same temperature and pressure, contain equal
+          numbers of particles. Lays the groundwork for stoichiometry calculations involving gases.
+        </div>
+      </a>
     </div>
 
     <!--
