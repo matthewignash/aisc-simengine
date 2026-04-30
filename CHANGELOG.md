@@ -119,6 +119,12 @@ Four commits composing the step-6 components into a polished Gas Laws topic page
 - `feat(examples)`: topic-page post-sim sections + variant content (bell ringer, topic intro with `default-sl` + `default-hl` variants, key concept, LISC, worked example, practice + hidden answer, command term, mark scheme, misconceptions, exit ticket, what's next)
 - `docs`: this CHANGELOG entry + architecture.md update
 
+**Phase 8a (post-review polish, three additional commits):**
+
+- `feat(core)`: topic-page polish CSS — adds `.ib-understandings` block style and a `.sim-wrap.topic-page` modifier that caps the topic-page content area at 1100px (down from the default 1440px) so reading-heavy prose doesn't sprawl on large monitors.
+- `refactor(examples)`: align topic-page content to IB S1.5 syllabus. Removes all van der Waals references from the page (the IB Gas Laws syllabus does not cover VdW). Page title, kicker, lede, equation panel, and the HL topic-intro variant are reworked. The HL variant now derives `PV = nRT` from Boyle (1662), Charles (1787), Gay-Lussac (1809), and Avogadro's law. Adds an "IB Understandings" section between Key Concept and Equation Panel with paraphrased S1.5.1–S1.5.4 statements (cited "IB Chemistry Guide 2025"). The "What's next" link updates to S2.1 — The ionic model (the actual next topic in the IB sequence). The `vdw-co2-a`, `vdw-co2-b`, and `van-der-waals` data entries remain in `@TBD/simengine-data` since they're real reference values used by the sim (CO₂ species), just no longer surfaced on the topic page.
+- `docs`: this addendum + architecture.md update.
+
 **Test count:** 140 (unchanged from step 6 — step 8 is HTML + CSS only, no new tests).
 
 **New CSS classes in `components.css`:**
@@ -126,6 +132,8 @@ Four commits composing the step-6 components into a polished Gas Laws topic page
 - `.topic-header` — sticky page-level header
 - `.topic-intro` — adaptive-content prose block with `[data-variant][hidden]` rule
 - `.topic-next` — next-topic link card (with `--disabled` modifier)
+- `.ib-understandings` — IB syllabus understandings block (added in phase 8a)
+- `.sim-wrap.topic-page` — narrower content cap (1100px) for topic pages (added in phase 8a)
 
 **Page-level prefs persistence:** HL/SL toggle saves to `localStorage` under `aisc-simengine:prefs:s1.5-gas-laws`. Reload preserves the choice and restores both the sim's level attribute AND the visible content variant.
 

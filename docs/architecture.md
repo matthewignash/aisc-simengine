@@ -198,13 +198,13 @@ Composes the step-6 components into a polished Gas Laws topic page. Pure HTML + 
 ### File layout
 
 - `examples/topic-page/index.html` (NEW) — the polished Gas Laws topic page.
-- `packages/core/src/styles/components.css` — appends `.topic-header`, `.topic-intro`, `.topic-next` rule blocks (~82 lines total).
+- `packages/core/src/styles/components.css` — appends `.topic-header`, `.topic-intro`, `.topic-next` rule blocks (~82 lines total), plus phase-8a additions for `.ib-understandings` and a `.sim-wrap.topic-page` width modifier.
 
 The topic page loads the four design-system stylesheets and the IIFE bundle (`packages/core/dist/index.global.js`). All five step-6 components are auto-defined via the bundle's existing side-effect imports.
 
 ### Page structure (spec §3)
 
-The topic page renders 14 ordered sections from the spec, omitting teacher-view items (steps 11+) and EAL variants:
+The topic page renders 15 ordered sections (14 from spec §3 plus the new `.ib-understandings` block added in phase 8a), omitting teacher-view items (steps 11+) and EAL variants:
 
 1. Top strip (`.sim-topstrip`)
 2. Sticky page-level header (`.topic-header` — new) with breadcrumb + HL/SL toggle
@@ -212,16 +212,17 @@ The topic page renders 14 ordered sections from the spec, omitting teacher-view 
 4. Bell ringer (`.ib-bellringer`)
 5. Topic intro (`.topic-intro` — new) with `default-sl` and `default-hl` variants
 6. Key concept (`.ib-concept`)
-7. Equation panel (`.ib-equation`) with `<sim-data-pill>` for R and CO₂ VdW constants
-8. Learning intentions / success criteria (`.ib-lisc`)
-9. The sim (`<sim-engine>`) with sibling `<sim-tweaks-panel for="sim">`
-10. Worked example (`.ib-worked`) with stepped-reveal solution
-11. Practice question + hidden answer (`.ib-practice` + `.ib-answer`)
-12. Command term reminder (`.ib-command-card`)
-13. Mark scheme (`.ib-mark`)
-14. Misconceptions (`.ib-misc`)
-15. Exit ticket (`.ib-exitticket`)
-16. What's next (`.topic-next` — new, disabled state)
+7. IB Understandings (`.ib-understandings` — new in phase 8a) with paraphrased S1.5.1–S1.5.4 statements (cited "IB Chemistry Guide 2025")
+8. Equation panel (`.ib-equation`) with `<sim-data-pill>` for R (the gas constant)
+9. Learning intentions / success criteria (`.ib-lisc`)
+10. The sim (`<sim-engine>`) with sibling `<sim-tweaks-panel for="sim">`
+11. Worked example (`.ib-worked`) with stepped-reveal solution
+12. Practice question + hidden answer (`.ib-practice` + `.ib-answer`)
+13. Command term reminder (`.ib-command-card`)
+14. Mark scheme (`.ib-mark`)
+15. Misconceptions (`.ib-misc`)
+16. Exit ticket (`.ib-exitticket`)
+17. What's next (`.topic-next` — new, disabled state) → S2.1 The ionic model
 
 ### Inline script — variant toggle + prefs persistence
 
