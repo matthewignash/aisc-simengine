@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pressure, Volume, and Temperature — IB Chemistry S1.5</title>
+    <link rel="stylesheet" href="../../packages/core/src/styles/tokens.css" />
+    <link rel="stylesheet" href="../../packages/core/src/styles/base.css" />
+    <link rel="stylesheet" href="../../packages/core/src/styles/components.css" />
+    <link rel="stylesheet" href="../../packages/core/src/styles/sim-shell.css" />
+  </head>
+  <body data-subject="chemistry">
+    <!-- 1. Top strip -->
+    <nav class="sim-topstrip">
+      <div>
+        <a href="#">AISC · IB Sciences</a> &nbsp;·&nbsp; Chemistry HL &nbsp;·&nbsp; Unit 1.5
+        &nbsp;·&nbsp;
+        <span style="color: var(--ib-navy-800)">Gas Laws</span>
+      </div>
+      <div class="sim-topstrip__right">
+        <span class="sim-topstrip__badge">SimEngine v0.0 · step 8</span>
+        <span>Topic page</span>
+      </div>
+    </nav>
+
+    <!-- 2. Sticky page-level header -->
+    <header class="topic-header">
+      <div class="topic-header__breadcrumb">
+        <a href="#">AISC</a> › <a href="#">IB Chemistry</a> ›
+        <a href="#">Topic S1.5</a>
+      </div>
+      <div class="topic-header__controls">
+        <label class="sim-switch">
+          <input type="checkbox" id="hl-toggle" />
+          <span class="sim-switch__track" aria-hidden="true"></span>
+          <span class="sim-switch__label">HL mode</span>
+        </label>
+      </div>
+    </header>
+
+    <div class="sim-wrap topic-page">
+      <!-- 3. Header block (kicker, title, lede) -->
+      <header class="sim-head">
+        <div>
+          <div class="sim-head__kicker">Topic S1.5 — Ideal Gases</div>
+          <h1 class="sim-head__title">PV = <em>nRT</em>: pressure, volume, temperature.</h1>
+          <p class="sim-head__lede">
+            An animated <sim-glossary-term ref="ideal-gas">ideal gas</sim-glossary-term> in a piston
+            container. The ideal gas equation
+            <code>PV = <sim-data-pill ref="gas-constant-R"></sim-data-pill>nT</code> ties together
+            <sim-glossary-term ref="pressure">pressure</sim-glossary-term>, volume, temperature, and
+            the amount of gas. Switch to CO₂ to see how a real gas can deviate from the ideal model
+            at low temperature and high pressure.
+          </p>
+        </div>
+        <div class="sim-head__meta">
+          <span>Estimated<br /><b>25 min</b></span>
+          <span>Paper relevance<br /><b>P1 SL/HL</b></span>
+        </div>
+      </header>
+
+      <!-- 4. Bell ringer -->
+      <section class="ib-bellringer">
+        <h2>Bell ringer</h2>
+        <p><strong>5 minutes — from memory:</strong></p>
+        <ol>
+          <li>Write the ideal gas equation. Label every symbol.</li>
+          <li>
+            Circle the variable that is <em>inversely</em> proportional to pressure at constant
+            temperature and amount of gas.
+          </li>
+          <li>
+            In one sentence, describe what happens to the speed of gas particles when temperature
+            doubles at constant volume.
+          </li>
+        </ol>
+      </section>
+
+      <!-- 5. Topic intro — adaptive prose, default-sl and default-hl variants -->
+      <section class="topic-intro">
+        <h2>Topic introduction</h2>
+
+        <div data-variant="default-sl">
+          <p>
+            A gas in a sealed container is made up of fast-moving particles that constantly bump
+            into the walls. Each collision pushes outward — that push, spread over the area of the
+            wall, is what we call
+            <sim-glossary-term ref="pressure">pressure</sim-glossary-term>.
+          </p>
+          <p>
+            Three properties of the gas determine how strong that push is: how hot the gas is
+            (temperature, T), how much room it has (volume, V), and how many particles are present
+            (amount in moles, n). The
+            <sim-glossary-term ref="ideal-gas">ideal gas</sim-glossary-term>
+            equation <code>PV = nRT</code> brings these together. R is a fixed number — the gas
+            constant — that makes the units balance.
+          </p>
+          <p>
+            Use the simulation below to see how flipping any one of T, V, or n changes pressure in
+            real time.
+          </p>
+        </div>
+
+        <div data-variant="default-hl">
+          <p>
+            The <sim-glossary-term ref="ideal-gas">ideal gas</sim-glossary-term> model assumes
+            particles have negligible volume of their own and exert no attractive forces on each
+            other — assumptions that hold well at low
+            <sim-glossary-term ref="pressure">pressure</sim-glossary-term> and high temperature.
+            <code>PV = nRT</code> did not arrive in one step. It is the combination of three
+            empirical proportionalities established before the kinetic-molecular model was complete.
+          </p>
+          <p>
+            Boyle (1662) showed that <code>P</code> is inversely proportional to <code>V</code> at
+            constant temperature and amount of gas. Charles (1787) showed <code>V</code> is directly
+            proportional to <code>T</code> at constant <code>P</code> and <code>n</code>. Gay-Lussac
+            (1809) showed <code>P</code> is directly proportional to <code>T</code> at constant
+            <code>V</code> and <code>n</code>. Each was a separate empirical law. Together they
+            imply that <code>PV / T</code> is a constant for any fixed amount of gas; Avogadro's law
+            (<code>V ∝ n</code> at constant <code>T</code> and <code>P</code>) supplies the
+            proportionality, completing <code>PV = nRT</code>.
+          </p>
+          <p>
+            The combined equation is exact for an ideal gas. Real gases, especially polar or
+            larger-molecule species like CO₂, deviate at low temperature and high pressure where the
+            model's two assumptions break down. Switch the species selector below to CO₂ and toggle
+            the HL Ideal-vs-Real graph to see the divergence.
+          </p>
+        </div>
+      </section>
+
+      <!-- 6. Key concept -->
+      <section class="ib-concept">
+        <h2>Key concept</h2>
+        <p>
+          <em
+            >Pressure, volume, temperature, and amount of gas are linked through the equation
+            <code>PV = nRT</code>.</em
+          >
+        </p>
+      </section>
+
+      <!-- 6.5 IB syllabus understandings (S1.5.1–S1.5.4) -->
+      <section class="ib-understandings">
+        <h2>What the IB syllabus says</h2>
+        <p class="ib-understandings__source">
+          Adapted from the IB Chemistry Guide 2025, Structure 1.5 (Ideal Gases).
+        </p>
+        <ul class="ib-understandings__list">
+          <li>
+            <span class="ib-understandings__code">S1.5.1</span>
+            <span>
+              The kinetic-molecular theory describes an ideal gas as a collection of particles in
+              constant random motion, with negligible volume, no intermolecular forces, and
+              perfectly elastic collisions.
+            </span>
+          </li>
+          <li>
+            <span class="ib-understandings__code">S1.5.2</span>
+            <span>
+              Real gases deviate from ideal behaviour at low temperature and high pressure, where
+              intermolecular forces and the volume of the particles themselves become significant.
+            </span>
+          </li>
+          <li>
+            <span class="ib-understandings__code">S1.5.3</span>
+            <span>
+              At standard temperature and pressure (273.15 K, 100 kPa), the molar volume of an ideal
+              gas is 22.7 dm³ mol⁻¹.
+            </span>
+          </li>
+          <li>
+            <span class="ib-understandings__code">S1.5.4</span>
+            <span>
+              Boyle's law, Charles's law, Gay-Lussac's law, the combined gas law, and the ideal gas
+              equation (<code>PV = nRT</code>) relate pressure, volume, temperature, and amount of
+              gas. All temperatures must be in kelvin.
+            </span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 7. Equation panel -->
+      <section class="ib-equation">
+        <h2>The ideal gas equation</h2>
+        <p>
+          <code>P · V = n · <sim-data-pill ref="gas-constant-R"></sim-data-pill> · T</code>
+        </p>
+        <p style="font-size: 0.9em; color: var(--ib-ink-700)">
+          where P is pressure, V is volume, n is amount of gas in moles, T is absolute temperature
+          in kelvin, and R is the molar gas constant. The four individual gas laws — Boyle, Charles,
+          Gay-Lussac, and Avogadro — are special cases of this single relationship.
+        </p>
+      </section>
+
+      <!-- 8. Learning intentions / success criteria -->
+      <section>
+        <h2>Learning intentions &amp; success criteria</h2>
+        <div class="ib-lisc">
+          <div class="ib-lisc__col ib-lisc__col--li">
+            <div class="ib-lisc__kicker">Learning intentions</div>
+            <h3 class="ib-lisc__title">I will learn to…</h3>
+            <ul class="ib-lisc__list">
+              <li>Describe how P, V, T, and n are related by the ideal gas equation.</li>
+              <li>
+                Use <code>PV = nRT</code> to predict how one variable changes when another is
+                adjusted.
+              </li>
+              <li>
+                Recognise the individual gas laws (Boyle, Charles, Gay-Lussac) as special cases of
+                the ideal gas equation.
+              </li>
+            </ul>
+          </div>
+          <div class="ib-lisc__col ib-lisc__col--sc">
+            <div class="ib-lisc__kicker">Success criteria</div>
+            <h3 class="ib-lisc__title">I can…</h3>
+            <ul class="ib-lisc__list">
+              <li>Describe what happens to P when V halves at constant T and n.</li>
+              <li>Calculate P, V, T, or n given the other three quantities.</li>
+              <li>Explain the shape of a P–V graph at constant temperature and label its axes.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tweaks button row above the sim -->
+      <div style="display: flex; gap: 16px; align-items: center; margin: 16px 0">
+        <button class="ib-btn ib-btn--ghost" id="tweaks-button">⚙ Tweaks</button>
+      </div>
+
+      <!-- 9. The sim -->
+      <sim-engine sim="gas-laws" id="sim">
+        <div class="sim-fallback">
+          <p>Loading the simulation… enable JavaScript to run it.</p>
+        </div>
+      </sim-engine>
+      <sim-tweaks-panel for="sim"></sim-tweaks-panel>
+
+      <!-- 10. Worked example -->
+      <section class="ib-worked">
+        <h2>Worked example</h2>
+        <p>
+          <strong>Question:</strong> A 2.0 L container holds 0.5 mol of N₂ at 300 K. Calculate the
+          pressure of the gas.
+        </p>
+        <details>
+          <summary>Show solution</summary>
+          <ol>
+            <li>Identify the equation: <code>PV = nRT</code>, so <code>P = nRT / V</code>.</li>
+            <li>
+              Substitute (using R = 8.314 J·K⁻¹·mol⁻¹, V in m³): <br />
+              <code>V = 2.0 L = 2.0 × 10⁻³ m³</code> <br />
+              <code>P = (0.5 × 8.314 × 300) / (2.0 × 10⁻³)</code>
+            </li>
+            <li>Calculate: <code>P = 6.24 × 10⁵ Pa ≈ 624 kPa</code>.</li>
+          </ol>
+        </details>
+      </section>
+
+      <!-- 11. Practice question -->
+      <section class="ib-practice">
+        <h2>Practice question</h2>
+        <p>
+          <strong>Calculate</strong> the volume occupied by 0.25 mol of an ideal gas at 250 K and
+          150 kPa.
+        </p>
+        <details class="ib-answer">
+          <summary>Show answer</summary>
+          <p>
+            <code>V = nRT / P = (0.25 × 8.314 × 250) / (150 × 10³) = 3.46 × 10⁻³ m³ ≈ 3.46 L</code>
+          </p>
+        </details>
+      </section>
+
+      <!-- 12. Command term reminder -->
+      <aside class="ib-command-card">
+        <h3>Command term: <em>calculate</em></h3>
+        <p>
+          Obtain a numerical answer showing the relevant stages in the working. (IB Chemistry Guide
+          2025, Assessment objectives.)
+        </p>
+      </aside>
+
+      <!-- 13. Mark scheme -->
+      <section class="ib-mark">
+        <h3>Mark scheme</h3>
+        <ul>
+          <li>
+            1 mark — correct rearrangement of <code>PV = nRT</code> to <code>V = nRT / P</code>.
+          </li>
+          <li>1 mark — correct numerical answer with appropriate units (m³ or L).</li>
+        </ul>
+      </section>
+
+      <!-- 14. Misconceptions -->
+      <section class="ib-misc">
+        <h2>Common misconceptions</h2>
+        <p><strong>"Gas pressure is caused by gas particles pushing each other."</strong></p>
+        <p>
+          ✗ <em>Wrong:</em> particles only exert measurable force when they collide with the
+          container walls, not when passing each other.
+        </p>
+        <p>
+          ✓ <em>Right:</em> pressure is the force per unit area from particle-wall collisions.
+          Inter-particle collisions redistribute energy but don't directly cause container pressure.
+        </p>
+      </section>
+
+      <!-- 15. Exit ticket -->
+      <section class="ib-exitticket">
+        <h2>Exit ticket</h2>
+        <ol>
+          <li>What surprised you most about how pressure changes with temperature?</li>
+          <li>If you doubled the amount of gas at constant T and V, what happens to P? Why?</li>
+          <li>One thing you'd like to understand more clearly:</li>
+        </ol>
+      </section>
+
+      <!-- 16. What's next — placeholder, disabled -->
+      <a class="topic-next topic-next--disabled" aria-disabled="true">
+        <div class="topic-next__kicker">Next topic — coming soon</div>
+        <div class="topic-next__title">S2.1 — The ionic model</div>
+        <div class="topic-next__preview">
+          From the gas phase to the solid: how oppositely charged ions form lattices, why ionic
+          compounds melt at high temperatures and conduct electricity only when molten or dissolved.
+        </div>
+      </a>
+    </div>
+
+    <!--
+      The IIFE bundle is used (not <script type="module">) so the page works
+      when opened directly via file:// — modern browsers block ESM imports across
+      file:// origins for security. The IIFE bundle's side effects register all
+      five step-6 components plus <sim-engine>.
+    -->
+    <script src="../../packages/core/dist/index.global.js"></script>
+    <script>
+      // Step 8 inline script: variant toggle + prefs persistence.
+      const TOPIC_ID = 's1.5-gas-laws';
+      const PREFS_KEY = `aisc-simengine:prefs:${TOPIC_ID}`;
+
+      function loadPrefs() {
+        try {
+          return JSON.parse(localStorage.getItem(PREFS_KEY) || '{}');
+        } catch {
+          return {};
+        }
+      }
+
+      function savePrefs(prefs) {
+        try {
+          localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+        } catch {
+          // localStorage unavailable — graceful no-op
+        }
+      }
+
+      function applyLevel(level) {
+        // 1. Flip every [data-variant] block in the page (commit 3 adds these).
+        for (const el of document.querySelectorAll('[data-variant]')) {
+          const visible = el.dataset.variant === `default-${level}`;
+          el.hidden = !visible;
+        }
+        // 2. Mirror to the sim.
+        document.getElementById('sim').setAttribute('level', level);
+        // 3. Mirror to the header toggle (in case state was restored from prefs).
+        const toggle = document.getElementById('hl-toggle');
+        if (toggle) toggle.checked = level === 'hl';
+      }
+
+      // On load: restore from prefs (defaults to 'sl').
+      const prefs = loadPrefs();
+      const initialLevel = prefs.level === 'hl' ? 'hl' : 'sl';
+      applyLevel(initialLevel);
+
+      // Wire the header HL/SL toggle.
+      document.getElementById('hl-toggle').addEventListener('change', (e) => {
+        const level = e.target.checked ? 'hl' : 'sl';
+        applyLevel(level);
+        savePrefs({ ...loadPrefs(), level });
+      });
+
+      // Wire the Tweaks button (same as smoke test).
+      document.getElementById('tweaks-button').addEventListener('click', () => {
+        document.querySelector('sim-tweaks-panel').toggleAttribute('data-open');
+      });
+    </script>
+  </body>
+</html>

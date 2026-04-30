@@ -190,3 +190,67 @@ Sims may declare an optional `tweaks: [...]` array. Each entry: `{ id, label, st
 
 - `.sim-switch` styled toggle (iOS-style, native checkbox under the hood) added to `components.css`. Used by the smoke test HL toggle and `<sim-tweaks-panel>`.
 - gas-laws sim's rail reorders so preset and species dropdowns sit together at top.
+
+## Step 8 — Topic page wrap
+
+Composes the step-6 components into a polished Gas Laws topic page. Pure HTML + CSS additions; no new web components, no new modules in `packages/core/src/`, no new tests.
+
+### File layout
+
+- `examples/topic-page/index.html` (NEW) — the polished Gas Laws topic page.
+- `packages/core/src/styles/components.css` — appends `.topic-header`, `.topic-intro`, `.topic-next` rule blocks (~82 lines total), plus phase-8a additions for `.ib-understandings` and a `.sim-wrap.topic-page` width modifier.
+
+The topic page loads the four design-system stylesheets and the IIFE bundle (`packages/core/dist/index.global.js`). All five step-6 components are auto-defined via the bundle's existing side-effect imports.
+
+### Page structure (spec §3)
+
+The topic page renders 15 ordered sections (14 from spec §3 plus the new `.ib-understandings` block added in phase 8a), omitting teacher-view items (steps 11+) and EAL variants:
+
+1. Top strip (`.sim-topstrip`)
+2. Sticky page-level header (`.topic-header` — new) with breadcrumb + HL/SL toggle
+3. Header block (`.sim-head`) with kicker, title, lede containing 2 `<sim-glossary-term>` and 1 `<sim-data-pill>`
+4. Bell ringer (`.ib-bellringer`)
+5. Topic intro (`.topic-intro` — new) with `default-sl` and `default-hl` variants
+6. Key concept (`.ib-concept`)
+7. IB Understandings (`.ib-understandings` — new in phase 8a) with paraphrased S1.5.1–S1.5.4 statements (cited "IB Chemistry Guide 2025")
+8. Equation panel (`.ib-equation`) with `<sim-data-pill>` for R (the gas constant)
+9. Learning intentions / success criteria (`.ib-lisc`)
+10. The sim (`<sim-engine>`) with sibling `<sim-tweaks-panel for="sim">`
+11. Worked example (`.ib-worked`) with stepped-reveal solution
+12. Practice question + hidden answer (`.ib-practice` + `.ib-answer`)
+13. Command term reminder (`.ib-command-card`)
+14. Mark scheme (`.ib-mark`)
+15. Misconceptions (`.ib-misc`)
+16. Exit ticket (`.ib-exitticket`)
+17. What's next (`.topic-next` — new, disabled state) → S2.1 The ionic model
+
+### Inline script — variant toggle + prefs persistence
+
+A single `<script>` block at the bottom of the topic page (~30 lines vanilla JS, no imports). Responsibilities:
+
+- Loads/saves prefs from `localStorage` under `aisc-simengine:prefs:s1.5-gas-laws` (try/catch wrapped for graceful degradation).
+- `applyLevel(level)` flips every `[data-variant]` block in the page based on `default-${level}` match, mirrors the level via `setAttribute('level', …)` on the sim, and mirrors the checked state of the sticky-header toggle.
+- On load: restores the saved level (default `sl`) and applies it.
+- Wires the HL/SL toggle change handler (saves to prefs).
+- Wires the Tweaks button (toggles `data-open` attribute on the panel).
+
+### Bidirectional level synchronization
+
+Three surfaces all reflect the same `level` state:
+
+- The sticky-header `.sim-switch` HL toggle.
+- The `<sim-tweaks-panel>` HL graph switch (commit 7's bidirectional state-sync).
+- The sim's Ideal-vs-Real graph visibility.
+
+Flipping any of them triggers a state update that propagates through the existing state-listener subscriptions. No new code beyond the inline script's `applyLevel` call.
+
+### What ships vs what's deferred
+
+Step 8 is intentionally narrower than the spec's combined §8–§11. This phase ships the **page assembly** with realistic placeholder content. Each of the following is its own future phase:
+
+| Spec § | What                                                          | Status                      |
+| ------ | ------------------------------------------------------------- | --------------------------- |
+| 8      | Markdown content authoring pipeline                           | Deferred (future "step 8b") |
+| 9      | Author full Gas Laws content (real prose for all 14 sections) | Deferred (future "step 8c") |
+| 11     | Teacher view (`<sim-data-map>`, lesson plan tie-in)           | Deferred (future "step 9")  |
+| 12     | Print stylesheet, print button                                | Deferred (polish phase)     |
