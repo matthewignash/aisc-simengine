@@ -22,6 +22,7 @@ import './components/sim-engine.js';
 import './components/sim-data-pill.js';
 import './components/sim-data-card.js';
 import './components/sim-glossary-term.js';
+import './components/sim-tweaks-panel.js';
 
 import gasLaws from './sims/gas-laws/index.js';
 import { registerSim as _registerForBoot } from './sims/registry.js';

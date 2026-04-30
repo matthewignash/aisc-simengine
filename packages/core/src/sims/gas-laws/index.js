@@ -90,6 +90,24 @@ const sim = {
     },
   ],
 
+  tweaks: [
+    {
+      id: 'showHLGraph',
+      label: 'Show Ideal-vs-Real graph (HL)',
+      stateKey: 'level',
+      on: 'hl',
+      off: 'sl',
+      asAttribute: true,
+    },
+    {
+      id: 'showMBGraph',
+      label: 'Show Maxwell-Boltzmann graph',
+      stateKey: 'showMBGraph',
+      on: true,
+      off: false,
+    },
+  ],
+
   init(host) {
     const root = host.shadowRoot;
     const stage = root.querySelector('.sim-canvas__stage');
@@ -270,6 +288,13 @@ const sim = {
       host._state.on('level', (level) => {
         this._hlContainer.style.display = level === 'hl' ? '' : 'none';
         if (level === 'hl') this._redrawHLGraph(host);
+      })
+    );
+
+    if (host._state.get('showMBGraph') === undefined) host._state.set('showMBGraph', true);
+    this._unsubs.push(
+      host._state.on('showMBGraph', (show) => {
+        if (mbCanvas) mbCanvas.style.display = show ? '' : 'none';
       })
     );
 
