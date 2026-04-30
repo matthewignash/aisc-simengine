@@ -38,20 +38,19 @@
       </div>
     </header>
 
-    <div class="sim-wrap">
+    <div class="sim-wrap topic-page">
       <!-- 3. Header block (kicker, title, lede) -->
       <header class="sim-head">
         <div>
-          <div class="sim-head__kicker">Topic S1.5 — Gas Laws</div>
-          <h1 class="sim-head__title">PV = <em>nRT</em>, plus van der Waals.</h1>
+          <div class="sim-head__kicker">Topic S1.5 — Ideal Gases</div>
+          <h1 class="sim-head__title">PV = <em>nRT</em>: pressure, volume, temperature.</h1>
           <p class="sim-head__lede">
             An animated <sim-glossary-term ref="ideal-gas">ideal gas</sim-glossary-term> in a piston
             container. The ideal gas equation
             <code>PV = <sim-data-pill ref="gas-constant-R"></sim-data-pill>nT</code> ties together
             <sim-glossary-term ref="pressure">pressure</sim-glossary-term>, volume, temperature, and
-            the amount of gas. Selecting CO₂ adds the
-            <sim-glossary-term ref="van-der-waals">van der Waals correction</sim-glossary-term>
-            for non-ideal behaviour.
+            the amount of gas. Switch to CO₂ to see how a real gas can deviate from the ideal model
+            at low temperature and high pressure.
           </p>
         </div>
         <div class="sim-head__meta">
@@ -104,26 +103,28 @@
 
         <div data-variant="default-hl">
           <p>
-            A gas in a sealed container exerts
-            <sim-glossary-term ref="pressure">pressure</sim-glossary-term>
-            on the walls because its particles are constantly colliding with them. The
-            <sim-glossary-term ref="ideal-gas">ideal gas</sim-glossary-term>
-            equation <code>PV = nRT</code> models this push for an ideal gas — one whose particles
-            have negligible volume of their own and exert no attractive forces on each other.
+            The <sim-glossary-term ref="ideal-gas">ideal gas</sim-glossary-term> model assumes
+            particles have negligible volume of their own and exert no attractive forces on each
+            other — assumptions that hold well at low
+            <sim-glossary-term ref="pressure">pressure</sim-glossary-term> and high temperature.
+            <code>PV = nRT</code> did not arrive in one step. It is the combination of three
+            empirical proportionalities established before the kinetic-molecular model was complete.
           </p>
           <p>
-            Real gases approximate this idealisation at low pressure and high temperature, where the
-            particles spend most of their time far apart. They diverge from <code>PV = nRT</code>
-            when forced together — at high pressure, low temperature, or when the gas itself has
-            strong intermolecular forces (CO₂ being a classic example).
+            Boyle (1662) showed that <code>P</code> is inversely proportional to <code>V</code> at
+            constant temperature and amount of gas. Charles (1787) showed <code>V</code> is directly
+            proportional to <code>T</code> at constant <code>P</code> and <code>n</code>. Gay-Lussac
+            (1809) showed <code>P</code> is directly proportional to <code>T</code> at constant
+            <code>V</code> and <code>n</code>. Each was a separate empirical law. Together they
+            imply that <code>PV / T</code> is a constant for any fixed amount of gas; Avogadro's law
+            (<code>V ∝ n</code> at constant <code>T</code> and <code>P</code>) supplies the
+            proportionality, completing <code>PV = nRT</code>.
           </p>
           <p>
-            The
-            <sim-glossary-term ref="van-der-waals">van der Waals equation</sim-glossary-term>
-            refines <code>PV = nRT</code> for real gases by adding two correction terms: one for the
-            volume the particles themselves occupy, and one for the attractive forces between them.
-            Toggle CO₂ in the simulation below and watch the Ideal-vs-Real graph reveal the
-            divergence.
+            The combined equation is exact for an ideal gas. Real gases, especially polar or
+            larger-molecule species like CO₂, deviate at low temperature and high pressure where the
+            model's two assumptions break down. Switch the species selector below to CO₂ and toggle
+            the HL Ideal-vs-Real graph to see the divergence.
           </p>
         </div>
       </section>
@@ -139,6 +140,46 @@
         </p>
       </section>
 
+      <!-- 6.5 IB syllabus understandings (S1.5.1–S1.5.4) -->
+      <section class="ib-understandings">
+        <h2>What the IB syllabus says</h2>
+        <p class="ib-understandings__source">
+          Adapted from the IB Chemistry Guide 2025, Structure 1.5 (Ideal Gases).
+        </p>
+        <ul class="ib-understandings__list">
+          <li>
+            <span class="ib-understandings__code">S1.5.1</span>
+            <span>
+              The kinetic-molecular theory describes an ideal gas as a collection of particles in
+              constant random motion, with negligible volume, no intermolecular forces, and
+              perfectly elastic collisions.
+            </span>
+          </li>
+          <li>
+            <span class="ib-understandings__code">S1.5.2</span>
+            <span>
+              Real gases deviate from ideal behaviour at low temperature and high pressure, where
+              intermolecular forces and the volume of the particles themselves become significant.
+            </span>
+          </li>
+          <li>
+            <span class="ib-understandings__code">S1.5.3</span>
+            <span>
+              At standard temperature and pressure (273.15 K, 100 kPa), the molar volume of an ideal
+              gas is 22.7 dm³ mol⁻¹.
+            </span>
+          </li>
+          <li>
+            <span class="ib-understandings__code">S1.5.4</span>
+            <span>
+              Boyle's law, Charles's law, Gay-Lussac's law, the combined gas law, and the ideal gas
+              equation (<code>PV = nRT</code>) relate pressure, volume, temperature, and amount of
+              gas. All temperatures must be in kelvin.
+            </span>
+          </li>
+        </ul>
+      </section>
+
       <!-- 7. Equation panel -->
       <section class="ib-equation">
         <h2>The ideal gas equation</h2>
@@ -146,10 +187,9 @@
           <code>P · V = n · <sim-data-pill ref="gas-constant-R"></sim-data-pill> · T</code>
         </p>
         <p style="font-size: 0.9em; color: var(--ib-ink-700)">
-          where P is pressure, V is volume, n is amount of gas in moles, T is absolute temperature,
-          and R is the molar gas constant. For CO₂, the van der Waals correction uses
-          <sim-data-pill ref="vdw-co2-a"></sim-data-pill> and
-          <sim-data-pill ref="vdw-co2-b"></sim-data-pill>.
+          where P is pressure, V is volume, n is amount of gas in moles, T is absolute temperature
+          in kelvin, and R is the molar gas constant. The four individual gas laws — Boyle, Charles,
+          Gay-Lussac, and Avogadro — are special cases of this single relationship.
         </p>
       </section>
 
@@ -280,10 +320,10 @@
       <!-- 16. What's next — placeholder, disabled -->
       <a class="topic-next topic-next--disabled" aria-disabled="true">
         <div class="topic-next__kicker">Next topic — coming soon</div>
-        <div class="topic-next__title">S1.6 — Avogadro's law</div>
+        <div class="topic-next__title">S2.1 — The ionic model</div>
         <div class="topic-next__preview">
-          Equal volumes of any ideal gas, at the same temperature and pressure, contain equal
-          numbers of particles. Lays the groundwork for stoichiometry calculations involving gases.
+          From the gas phase to the solid: how oppositely charged ions form lattices, why ionic
+          compounds melt at high temperatures and conduct electricity only when molten or dissolved.
         </div>
       </a>
     </div>
