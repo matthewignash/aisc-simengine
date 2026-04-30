@@ -1085,3 +1085,59 @@
   font-size: var(--fs-14, 14px);
   color: var(--ib-ink-700, #374151);
 }
+
+/* Topic-page width modifier — narrower than the default .sim-wrap (1440px)
+   so reading-heavy content doesn't sprawl across very large monitors. */
+.sim-wrap.topic-page {
+  max-width: 1100px;
+}
+
+/* IB syllabus understandings — what the official guide specifies for the topic.
+   Sits between the key concept and the equation panel: the "What does the IB
+   say I need to know?" frame for the rest of the page. */
+.ib-understandings {
+  margin: var(--sp-5, 20px) 0;
+  padding: var(--sp-4, 16px) var(--sp-5, 20px);
+  background: var(--ib-navy-050, #f5f7fc);
+  border-left: 4px solid var(--ib-navy-600, #2a46a3);
+  border-radius: 0 var(--r-md, 8px) var(--r-md, 8px) 0;
+  max-width: 80ch;
+}
+.ib-understandings h2 {
+  margin: 0 0 var(--sp-2, 8px);
+  font-size: var(--fs-20, 20px);
+  color: var(--ib-navy-800, #0b2265);
+}
+.ib-understandings__source {
+  font-style: italic;
+  font-size: var(--fs-14, 14px);
+  color: var(--ib-ink-500, #6b7280);
+  margin: 0 0 var(--sp-3, 12px);
+}
+.ib-understandings__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3, 12px);
+  font-size: var(--fs-16, 16px);
+  line-height: 1.6;
+}
+.ib-understandings__list li {
+  display: flex;
+  gap: var(--sp-3, 12px);
+  align-items: baseline;
+}
+.ib-understandings__code {
+  flex-shrink: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: var(--fs-14, 13px);
+  font-weight: 600;
+  color: var(--ib-navy-700, #173080);
+  background: var(--ib-navy-100, #ebf0fa);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
