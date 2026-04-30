@@ -215,11 +215,11 @@
           <div class="ib-lisc__col ib-lisc__col--sc">
             <div class="ib-lisc__kicker">Success criteria</div>
             <h3 class="ib-lisc__title">I can…</h3>
-            <ul class="ib-lisc__list">
+            <sim-checklist topic="s1.5-gas-laws" level="sl">
               <li>Describe what happens to P when V halves at constant T and n.</li>
               <li>Calculate P, V, T, or n given the other three quantities.</li>
               <li>Explain the shape of a P–V graph at constant temperature and label its axes.</li>
-            </ul>
+            </sim-checklist>
           </div>
         </div>
       </section>
@@ -367,6 +367,11 @@
         // 3. Mirror to the header toggle (in case state was restored from prefs).
         const toggle = document.getElementById('hl-toggle');
         if (toggle) toggle.checked = level === 'hl';
+        // 4. Push level to every <sim-checklist> on the page so per-level
+        //    state swaps with the toggle.
+        for (const cl of document.querySelectorAll('sim-checklist')) {
+          cl.setAttribute('level', level);
+        }
       }
 
       // On load: restore from prefs (defaults to 'sl').
