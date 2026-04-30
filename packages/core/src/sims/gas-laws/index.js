@@ -146,6 +146,18 @@ const sim = {
     });
     rail.appendChild(presetDropdown);
 
+    // Species selector — sits next to the preset dropdown so the two
+    // "set the scenario" controls live together at the top of the rail.
+    if (host._state.get('species') === undefined) host._state.set('species', 'ideal');
+    const speciesDropdown = createDropdown({
+      key: 'species',
+      label: 'Gas',
+      options: SPECIES_OPTIONS,
+      value: host._state.get('species'),
+      onChange: (v) => host.setVariable('species', v),
+    });
+    rail.appendChild(speciesDropdown);
+
     // P-V graph
     const graphCanvas = document.createElement('canvas');
     graphCanvas.width = 320;
@@ -208,17 +220,6 @@ const sim = {
         })
       );
     }
-
-    // Species selector — append after sliders.
-    if (host._state.get('species') === undefined) host._state.set('species', 'ideal');
-    const speciesDropdown = createDropdown({
-      key: 'species',
-      label: 'Gas',
-      options: SPECIES_OPTIONS,
-      value: host._state.get('species'),
-      onChange: (v) => host.setVariable('species', v),
-    });
-    rail.appendChild(speciesDropdown);
 
     // Transport buttons
     transport.append(
