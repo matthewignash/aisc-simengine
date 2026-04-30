@@ -110,6 +110,35 @@ Ten commits adding the five supporting web components from spec §3 plus two pol
 - Reinstate proper `<slot>` composition in `<sim-coachmark>` (currently composes via direct `textContent` copy due to a happy-dom 15.x slot-projection limitation).
 - ~25 sweep items carried over from step 5b (positioning polish, animation, multi-pill coordination, etc.).
 
+### Step 8 — Topic page wrap
+
+Four commits composing the step-6 components into a polished Gas Laws topic page (`examples/topic-page/index.html`) demonstrating the spec §3 layout end-to-end.
+
+- `feat(core)`: add `.topic-header` / `.topic-intro` / `.topic-next` styles
+- `feat(examples)`: topic-page scaffold + lede + sim region (sticky header, lede with glossary terms + data pill, equation panel with data pills, sim, tweaks panel, inline variant-toggle script)
+- `feat(examples)`: topic-page post-sim sections + variant content (bell ringer, topic intro with `default-sl` + `default-hl` variants, key concept, LISC, worked example, practice + hidden answer, command term, mark scheme, misconceptions, exit ticket, what's next)
+- `docs`: this CHANGELOG entry + architecture.md update
+
+**Test count:** 140 (unchanged from step 6 — step 8 is HTML + CSS only, no new tests).
+
+**New CSS classes in `components.css`:**
+
+- `.topic-header` — sticky page-level header
+- `.topic-intro` — adaptive-content prose block with `[data-variant][hidden]` rule
+- `.topic-next` — next-topic link card (with `--disabled` modifier)
+
+**Page-level prefs persistence:** HL/SL toggle saves to `localStorage` under `aisc-simengine:prefs:s1.5-gas-laws`. Reload preserves the choice and restores both the sim's level attribute AND the visible content variant.
+
+**Known follow-ups (deferred):**
+
+- Markdown content authoring pipeline (spec §8 — future "step 8b").
+- Real production-ready content for placeholder sections (spec §9 — future "step 8c").
+- Teacher view + `<sim-data-map>` flowchart + lesson plan tie-in (spec §11 — future "step 9").
+- EAL variants (bundled with eventual content authoring phase).
+- Print stylesheet, print button (spec §12 polish).
+- Real "What's next" topic link (deferred until a second topic exists).
+- Two follow-up tasks from step 6 still queued: promote `<sim-engine>` private API to public, reinstate `<slot>` in `<sim-coachmark>`.
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.
