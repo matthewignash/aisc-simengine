@@ -24,6 +24,10 @@ importers:
   packages/content-aisc: {}
 
   packages/core:
+    dependencies:
+      '@TBD/simengine-data':
+        specifier: workspace:*
+        version: link:../data
     devDependencies:
       happy-dom:
         specifier: ^15
