@@ -1003,3 +1003,85 @@
   font-family: var(--font-sans, sans-serif);
   font-size: var(--fs-14, 14px);
 }
+
+/* Topic page sticky header — page-level controls (HL/SL toggle for now). */
+.topic-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3, 12px) var(--sp-5, 20px);
+  background: var(--ib-white, #fff);
+  border-bottom: 1px solid var(--ib-ink-200, #e5e7eb);
+  box-shadow: var(--el-1, 0 1px 2px rgba(11, 34, 101, 0.06));
+  font-family: var(--font-sans, sans-serif);
+}
+.topic-header__breadcrumb {
+  font-size: var(--fs-14, 14px);
+  color: var(--ib-ink-700, #374151);
+}
+.topic-header__breadcrumb a {
+  color: var(--ib-navy-700, #173080);
+  text-decoration: none;
+}
+.topic-header__breadcrumb a:hover {
+  text-decoration: underline;
+}
+.topic-header__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+}
+
+/* Topic introduction — adaptive prose block (default-sl, default-hl, etc.). */
+.topic-intro {
+  margin: var(--sp-5, 20px) 0;
+  font-size: var(--fs-16, 16px);
+  line-height: 1.7;
+  color: var(--ib-ink-900, #111827);
+  max-width: 70ch;
+}
+.topic-intro p {
+  margin: 0 0 var(--sp-3, 12px);
+}
+.topic-intro [data-variant][hidden] {
+  display: none;
+}
+
+/* Next-topic link card. */
+.topic-next {
+  display: block;
+  margin: var(--sp-6, 24px) 0;
+  padding: var(--sp-4, 16px);
+  border: 1px solid var(--ib-ink-200, #e5e7eb);
+  border-radius: var(--r-md, 8px);
+  text-decoration: none;
+  color: inherit;
+  background: var(--ib-navy-050, #f5f7fc);
+  transition: background 0.18s ease;
+}
+.topic-next:hover {
+  background: var(--ib-navy-100, #ebf0fa);
+}
+.topic-next--disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+.topic-next__kicker {
+  font-size: var(--fs-12, 12px);
+  color: var(--ib-ink-500, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.topic-next__title {
+  font-size: var(--fs-18, 18px);
+  font-weight: 600;
+  margin: 4px 0;
+}
+.topic-next__preview {
+  font-size: var(--fs-14, 14px);
+  color: var(--ib-ink-700, #374151);
+}
