@@ -307,6 +307,25 @@ const sim = {
     this._redrawHLGraph(host);
     this._lastHost = host;
     this._frameCount = 0;
+
+    // First-mount coachmark — anchored to T slider, persisted dismissal.
+    // Timer is registered in _unsubs so dispose() can clear it; otherwise a
+    // disposed-but-not-yet-fired coachmark would still append to the host
+    // and register a doc-level Escape listener that never gets cleaned up.
+    if (typeof localStorage !== 'undefined') {
+      const dismissedKey = 'aisc-simengine:coachmark:dismissed:gas-laws-first-slider';
+      if (!localStorage.getItem(dismissedKey)) {
+        const timerId = setTimeout(() => {
+          const coachmark = document.createElement('sim-coachmark');
+          coachmark.id = 'gas-laws-first-slider';
+          coachmark.setAttribute('anchor', '.sim-slider[data-var="T"]');
+          coachmark.textContent =
+            'Drag the temperature slider — watch the pressure readout and particle speed change.';
+          host.shadowRoot.appendChild(coachmark);
+        }, 1500);
+        this._unsubs.push(() => clearTimeout(timerId));
+      }
+    }
   },
 
   step(dt) {
