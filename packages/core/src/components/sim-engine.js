@@ -224,6 +224,26 @@ class SimEngineElement extends HTMLElement {
   }
 
   /**
+   * Dismiss a coachmark by id within the sim's shadow DOM. Also persists
+   * the dismissal in localStorage so it doesn't re-show on reload.
+   *
+   * @param {string} id
+   */
+  dismissCoachmark(id) {
+    const cm = this.shadowRoot?.querySelector(`sim-coachmark[id="${id}"]`);
+    if (cm && typeof cm.dismiss === 'function') {
+      cm.dismiss();
+    } else {
+      // Element may not be mounted — still persist the dismissal
+      try {
+        localStorage.setItem(`aisc-simengine:coachmark:dismissed:${id}`, '1');
+      } catch (e) {
+        // localStorage unavailable
+      }
+    }
+  }
+
+  /**
    * Start the requestAnimationFrame loop. Each tick reads playing/dt from
    * state, calls sim.step(dt), and paints once via _paintOnce. When a user
    * prefers reduced motion, a single paint is performed and no loop runs.

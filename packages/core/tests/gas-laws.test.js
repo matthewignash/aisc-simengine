@@ -314,4 +314,18 @@ describe('gas-laws sim module', () => {
     // The fix: _redrawHLGraph should skip these points, so no traces are
     // glued to the y=0 floor in the V<2 region.
   });
+
+  it('rail order: preset and species dropdowns sit together at top, before any graph', async () => {
+    registerSim(gasLaws);
+    const el = mountSimEngine({ sim: 'gas-laws' });
+    await Promise.resolve();
+    const railChildren = Array.from(el.shadowRoot.querySelector('.sim-rail').children);
+    expect(railChildren[0].dataset.var).toBe('preset');
+    expect(railChildren[1].dataset.var).toBe('species');
+    // First canvas should come AFTER both dropdowns.
+    const firstCanvasIdx = railChildren.findIndex(
+      (c) => c.tagName === 'CANVAS' || c.querySelector?.('canvas')
+    );
+    expect(firstCanvasIdx).toBeGreaterThanOrEqual(2);
+  });
 });

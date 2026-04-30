@@ -19,6 +19,11 @@ export { registerSim, lookupSim } from './sims/registry.js';
 
 // Side-effect import: defines the <sim-engine> custom element.
 import './components/sim-engine.js';
+import './components/sim-data-pill.js';
+import './components/sim-data-card.js';
+import './components/sim-glossary-term.js';
+import './components/sim-tweaks-panel.js';
+import './components/sim-coachmark.js';
 
 import gasLaws from './sims/gas-laws/index.js';
 import { registerSim as _registerForBoot } from './sims/registry.js';

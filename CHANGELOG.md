@@ -75,6 +75,41 @@ Twelve commits adding the IB SL/HL syllabus extensions and folding in three high
 
 **Deferred to a future polish PR (~25 items):** state.set no-op skip, recordTrial JSDoc, recorder.size accessor, search palette UI, measured pressure, particle-particle collisions, exportPNG, MB Y-axis auto-scale, preset dropdown auto-revert to custom, `<sim-engine>.scenario()` attribute-aware writes, sim init re-entrancy hardening, HL graph skip-on-V-change, and others.
 
+### Step 6 — Supporting components for the topic page
+
+Ten commits adding the five supporting web components from spec §3 plus two polish folds-in.
+
+- `fix(examples)`: replace HL checkbox with styled toggle switch (.sim-switch)
+- `feat(core)`: gas-laws — move species dropdown to top of rail
+- `feat(data)`: seed core.json, sources.json, glossary.json, schema
+- `feat(core)`: <sim-data-pill> custom element — clickable inline data values
+- `feat(core)`: <sim-data-card> popover with source citation + focus trap
+- `feat(core)`: <sim-glossary-term> inline tooltip with EAL definitions
+- `feat(core)`: <sim-tweaks-panel> teacher config + sim tweaks contract
+- `feat(core)`: <sim-coachmark> + dismissCoachmark real impl (was stub from step 4)
+- `feat(examples)`: smoke test page demonstrates all step 6 components
+- `docs`: this CHANGELOG entry + architecture.md update
+
+**Test count:** 140 (was 105 after step 5b; +35 new across both packages).
+
+**Public surface added to `@TBD/simengine`:**
+
+- 5 new custom elements: `<sim-data-pill>`, `<sim-data-card>`, `<sim-glossary-term>`, `<sim-tweaks-panel>`, `<sim-coachmark>`. All auto-defined.
+- `host.dismissCoachmark(id)` real implementation.
+- Sim contract gains optional `tweaks: [...]` array (parallel to `controls` and `scenarios`).
+- gas-laws declares 2 tweaks: `showHLGraph`, `showMBGraph`.
+
+**Public surface added to `@TBD/simengine-data`:**
+
+- `getValue(ref)`, `getSource(sourceId)`, `getGlossaryTerm(ref)`, `loadCore()`, `loadSources()`, `loadGlossary()`, `validate()`.
+- Step 6 ships ~10 numeric entries + 4 glossary terms; step 7's database drop will expand both.
+
+**Known follow-ups (deferred to sweep):**
+
+- Promote `<sim-engine>`'s private `_sim` and `_state` access to a public API (`getTweaks()`, `subscribeToState(key, fn)`) used by `<sim-tweaks-panel>`.
+- Reinstate proper `<slot>` composition in `<sim-coachmark>` (currently composes via direct `textContent` copy due to a happy-dom 15.x slot-projection limitation).
+- ~25 sweep items carried over from step 5b (positioning polish, animation, multi-pill coordination, etc.).
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.

@@ -1,0 +1,19 @@
+{
+  "sources": {
+    "ib-booklet-2025": {
+      "label": "IB Chemistry Data Booklet 2025",
+      "section": "Section 2: Physical constants",
+      "license": "Reproduced under fair-use for educational purposes"
+    },
+    "nist-codata-2018": {
+      "label": "NIST CODATA 2018 Recommended Values",
+      "url": "https://physics.nist.gov/cuu/Constants/",
+      "license": "Public domain (US Government)"
+    },
+    "iupac-2016": {
+      "label": "IUPAC Recommended Atomic Weights 2016",
+      "url": "https://iupac.org/what-we-do/periodic-table-of-elements/",
+      "license": "CC-BY-NC-ND-4.0"
+    }
+  }
+}

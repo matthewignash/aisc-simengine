@@ -66,6 +66,10 @@ export function announce(message, politeness = 'polite') {
  * panel). Tab cycles within the container; Shift+Tab cycles backwards.
  * Call the returned `release` function to restore default tab order.
  *
+ * Works whether `element` lives in the document or a shadow root: the
+ * active-element check reads from `element.getRootNode().activeElement`
+ * so shadow-DOM retargeting doesn't break the wrap-around.
+ *
  * @param {HTMLElement} element
  * @returns {{ release: () => void }}
  */
@@ -82,10 +86,15 @@ export function trapFocus(element) {
     if (focusables.length === 0) return;
     const first = /** @type {HTMLElement} */ (focusables[0]);
     const last = /** @type {HTMLElement} */ (focusables[focusables.length - 1]);
-    if (e.shiftKey && document.activeElement === first) {
+    // Read from the element's root (Document or ShadowRoot) rather than
+    // document.activeElement so retargeting in shadow DOM doesn't break the
+    // wrap-around.
+    const root = /** @type {Document | ShadowRoot} */ (element.getRootNode());
+    const active = root.activeElement;
+    if (e.shiftKey && active === first) {
       e.preventDefault();
       last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
+    } else if (!e.shiftKey && active === last) {
       e.preventDefault();
       first.focus();
     }

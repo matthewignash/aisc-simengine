@@ -90,6 +90,24 @@ const sim = {
     },
   ],
 
+  tweaks: [
+    {
+      id: 'showHLGraph',
+      label: 'Show Ideal-vs-Real graph (HL)',
+      stateKey: 'level',
+      on: 'hl',
+      off: 'sl',
+      asAttribute: true,
+    },
+    {
+      id: 'showMBGraph',
+      label: 'Show Maxwell-Boltzmann graph',
+      stateKey: 'showMBGraph',
+      on: true,
+      off: false,
+    },
+  ],
+
   init(host) {
     const root = host.shadowRoot;
     const stage = root.querySelector('.sim-canvas__stage');
@@ -145,6 +163,18 @@ const sim = {
       },
     });
     rail.appendChild(presetDropdown);
+
+    // Species selector — sits next to the preset dropdown so the two
+    // "set the scenario" controls live together at the top of the rail.
+    if (host._state.get('species') === undefined) host._state.set('species', 'ideal');
+    const speciesDropdown = createDropdown({
+      key: 'species',
+      label: 'Gas',
+      options: SPECIES_OPTIONS,
+      value: host._state.get('species'),
+      onChange: (v) => host.setVariable('species', v),
+    });
+    rail.appendChild(speciesDropdown);
 
     // P-V graph
     const graphCanvas = document.createElement('canvas');
@@ -209,17 +239,6 @@ const sim = {
       );
     }
 
-    // Species selector — append after sliders.
-    if (host._state.get('species') === undefined) host._state.set('species', 'ideal');
-    const speciesDropdown = createDropdown({
-      key: 'species',
-      label: 'Gas',
-      options: SPECIES_OPTIONS,
-      value: host._state.get('species'),
-      onChange: (v) => host.setVariable('species', v),
-    });
-    rail.appendChild(speciesDropdown);
-
     // Transport buttons
     transport.append(
       createButton({ label: 'Play', variant: 'primary', onClick: () => host.play() }),
@@ -272,6 +291,13 @@ const sim = {
       })
     );
 
+    if (host._state.get('showMBGraph') === undefined) host._state.set('showMBGraph', true);
+    this._unsubs.push(
+      host._state.on('showMBGraph', (show) => {
+        if (mbCanvas) mbCanvas.style.display = show ? '' : 'none';
+      })
+    );
+
     this._pressureFn = (state) => {
       const sp = SPECIES[state.species ?? 'ideal'];
       if (sp.a === 0 && sp.b === 0) return idealPressure(state);
@@ -281,6 +307,25 @@ const sim = {
     this._redrawHLGraph(host);
     this._lastHost = host;
     this._frameCount = 0;
+
+    // First-mount coachmark — anchored to T slider, persisted dismissal.
+    // Timer is registered in _unsubs so dispose() can clear it; otherwise a
+    // disposed-but-not-yet-fired coachmark would still append to the host
+    // and register a doc-level Escape listener that never gets cleaned up.
+    if (typeof localStorage !== 'undefined') {
+      const dismissedKey = 'aisc-simengine:coachmark:dismissed:gas-laws-first-slider';
+      if (!localStorage.getItem(dismissedKey)) {
+        const timerId = setTimeout(() => {
+          const coachmark = document.createElement('sim-coachmark');
+          coachmark.id = 'gas-laws-first-slider';
+          coachmark.setAttribute('anchor', '.sim-slider[data-var="T"]');
+          coachmark.textContent =
+            'Drag the temperature slider — watch the pressure readout and particle speed change.';
+          host.shadowRoot.appendChild(coachmark);
+        }, 1500);
+        this._unsubs.push(() => clearTimeout(timerId));
+      }
+    }
   },
 
   step(dt) {

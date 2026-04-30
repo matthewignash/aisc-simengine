@@ -1,0 +1,68 @@
+{
+  "values": {
+    "gas-constant-R": {
+      "value": 8.314,
+      "unit": "J·K⁻¹·mol⁻¹",
+      "symbol": "R",
+      "name": "Molar gas constant",
+      "source": "ib-booklet-2025",
+      "description": "Used in the ideal gas equation PV = nRT."
+    },
+    "boltzmann-kB": {
+      "value": 1.380649e-23,
+      "unit": "J·K⁻¹",
+      "symbol": "k_B",
+      "name": "Boltzmann constant",
+      "source": "nist-codata-2018",
+      "description": "Relates per-particle kinetic energy to temperature."
+    },
+    "avogadro-NA": {
+      "value": 6.022e23,
+      "unit": "mol⁻¹",
+      "symbol": "N_A",
+      "name": "Avogadro constant",
+      "source": "ib-booklet-2025",
+      "description": "Number of entities per mole."
+    },
+    "molar-mass-he": {
+      "value": 4.003,
+      "unit": "g·mol⁻¹",
+      "symbol": "M(He)",
+      "name": "Molar mass of helium",
+      "source": "iupac-2016",
+      "description": "Used in kinetic-theory speed calculations."
+    },
+    "molar-mass-n2": {
+      "value": 28.014,
+      "unit": "g·mol⁻¹",
+      "symbol": "M(N₂)",
+      "name": "Molar mass of nitrogen (N₂)",
+      "source": "iupac-2016",
+      "description": "Diatomic nitrogen, dominant atmospheric component."
+    },
+    "molar-mass-co2": {
+      "value": 44.01,
+      "unit": "g·mol⁻¹",
+      "symbol": "M(CO₂)",
+      "name": "Molar mass of carbon dioxide",
+      "source": "iupac-2016",
+      "description": "Triatomic, important greenhouse gas."
+    },
+    "vdw-co2-a": {
+      "value": 366,
+      "unit": "kPa·L²·mol⁻²",
+      "symbol": "a(CO₂)",
+      "name": "VdW attraction constant for CO₂",
+      "source": "ib-booklet-2025",
+      "description": "Pedagogically scaled; see species.js."
+    },
+    "vdw-co2-b": {
+      "value": 0.0429,
+      "unit": "L·mol⁻¹",
+      "symbol": "b(CO₂)",
+      "name": "VdW excluded volume for CO₂",
+      "source": "ib-booklet-2025",
+      "description": "Pedagogically scaled; see species.js."
+    }
+  }
+}
