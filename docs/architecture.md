@@ -161,3 +161,32 @@ Sims that register state listeners via `host._state.on(...)` MUST collect the re
 ### `dt` clamping
 
 `<sim-engine>`'s rAF loop clamps the per-frame `dt` to `Math.min(rawDt, 0.1)` at the loop boundary. Without this, a backgrounded tab resumed after seconds of throttling delivers one giant `dt` that produces glitched physics on the resumed frame. The cap is invisible during normal 60fps operation.
+
+## Step 6 — Supporting components
+
+Five new web components plus the data layer's first real seed.
+
+### Data layer
+
+`@TBD/simengine-data` ships JSON files (`core.json`, `sources.json`, `glossary.json`, `schema.json`) plus a JS API in `src/index.js`. Step 6's seed: ~10 numeric entries (R, kB, Avogadro, three molar masses, three VdW constants), 3 citations (IB Booklet 2025, NIST CODATA 2018, IUPAC 2016), and 4 glossary terms. `validate()` runs at import time so consumers fail fast on data corruption.
+
+### Components
+
+- **`<sim-data-pill ref="...">`** — clickable inline data value. Looks up via `getValue`. Click toggles a child `<sim-data-card>` (also in shadow DOM). Outside-click and Escape close. Emits `data-pill-clicked`.
+- **`<sim-data-card ref="...">`** — popover with symbol, name, value+unit, description, source citation, "Copy citation" button, optional "View source" link. Uses foundation `trapFocus`. Hidden by default; emits `data-card-closed`.
+- **`<sim-glossary-term ref="...">term</sim-glossary-term>`** — inline tooltip. Slot brings in user-visible underlined text. Hover (200ms) or focus shows tooltip; click pins. Escape closes pinned. ARIA `role="tooltip"` + `aria-describedby`.
+- **`<sim-tweaks-panel for="sim-id">`** — teacher-facing floating panel. Queries the referenced `<sim-engine>` for its `tweaks: [...]` array, renders one `.sim-switch` per tweak. Slides in via `[data-open]` attribute.
+- **`<sim-coachmark id="..." anchor="...">text</sim-coachmark>`** — contextual hint anchored to a CSS-selector element (resolved against the coachmark's own root, so it works in light DOM or shadow DOM). Positions absolutely. "Got it" dismisses; persists per-id in `localStorage`.
+
+### Sim contract: tweaks array
+
+Sims may declare an optional `tweaks: [...]` array. Each entry: `{ id, label, stateKey, on, off, asAttribute? }`. Consumed by `<sim-tweaks-panel>`. gas-laws declares two: `showHLGraph` (level via attribute) and `showMBGraph` (state).
+
+### Foundation a11y improvement (commit 5)
+
+`trapFocus` in `packages/core/src/engine/a11y.js` now reads `activeElement` from the trapped element's `getRootNode()` (Document or ShadowRoot) instead of `document.activeElement`. This fixes the wrap-around behavior for components rooted in shadow DOM — without it, retargeting caused `document.activeElement` to return the shadow host, never matching the inner first/last focusable.
+
+### Polish folds-in
+
+- `.sim-switch` styled toggle (iOS-style, native checkbox under the hood) added to `components.css`. Used by the smoke test HL toggle and `<sim-tweaks-panel>`.
+- gas-laws sim's rail reorders so preset and species dropdowns sit together at top.
