@@ -61,6 +61,11 @@
       <sim-tweaks-panel for="sim"></sim-tweaks-panel>
     </div>
 
+    <!-- Singleton data-card for the page. Listens for data-pill-clicked
+         events emitted by any <sim-data-pill> on the page; slides in from
+         the left with the clicked pill's data. -->
+    <sim-data-card></sim-data-card>
+
     <!--
       The IIFE bundle is used here (not <script type="module">) so the page works
       when opened directly via file:// — modern browsers block ESM imports across

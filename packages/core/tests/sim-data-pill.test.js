@@ -31,47 +31,7 @@ describe('<sim-data-pill>', () => {
     errorSpy.mockRestore();
   });
 
-  it('click toggles the child sim-data-card hidden attribute', async () => {
-    const pill = document.createElement('sim-data-pill');
-    pill.setAttribute('ref', 'gas-constant-R');
-    document.body.appendChild(pill);
-    await Promise.resolve();
-    const card = pill.shadowRoot.querySelector('sim-data-card');
-    const button = pill.shadowRoot.querySelector('button');
-    expect(card.hidden).toBe(true);
-    button.click();
-    expect(card.hidden).toBe(false);
-    button.click();
-    expect(card.hidden).toBe(true);
-  });
-
-  it('Escape key closes the open card', async () => {
-    const pill = document.createElement('sim-data-pill');
-    pill.setAttribute('ref', 'gas-constant-R');
-    document.body.appendChild(pill);
-    await Promise.resolve();
-    const card = pill.shadowRoot.querySelector('sim-data-card');
-    pill.shadowRoot.querySelector('button').click();
-    expect(card.hidden).toBe(false);
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-    expect(card.hidden).toBe(true);
-  });
-
-  it('click outside the pill closes the open card', async () => {
-    const pill = document.createElement('sim-data-pill');
-    pill.setAttribute('ref', 'gas-constant-R');
-    document.body.appendChild(pill);
-    const outside = document.createElement('div');
-    document.body.appendChild(outside);
-    await Promise.resolve();
-    const card = pill.shadowRoot.querySelector('sim-data-card');
-    pill.shadowRoot.querySelector('button').click();
-    expect(card.hidden).toBe(false);
-    outside.click();
-    expect(card.hidden).toBe(true);
-  });
-
-  it('emits data-pill-clicked with detail { ref }', async () => {
+  it('emits data-pill-clicked with detail { ref } on click', async () => {
     const pill = document.createElement('sim-data-pill');
     pill.setAttribute('ref', 'gas-constant-R');
     document.body.appendChild(pill);
@@ -80,6 +40,34 @@ describe('<sim-data-pill>', () => {
     document.body.addEventListener('data-pill-clicked', (e) => events.push(e.detail));
     pill.shadowRoot.querySelector('button').click();
     expect(events).toEqual([{ ref: 'gas-constant-R' }]);
+  });
+
+  it('re-emits data-pill-clicked on every click (not just the first)', async () => {
+    const pill = document.createElement('sim-data-pill');
+    pill.setAttribute('ref', 'gas-constant-R');
+    document.body.appendChild(pill);
+    await Promise.resolve();
+    const events = [];
+    document.body.addEventListener('data-pill-clicked', (e) => events.push(e.detail));
+    const button = pill.shadowRoot.querySelector('button');
+    button.click();
+    button.click();
+    button.click();
+    expect(events).toHaveLength(3);
+    expect(events.every((e) => e.ref === 'gas-constant-R')).toBe(true);
+  });
+
+  it('does NOT register document-level click or keydown listeners', async () => {
+    const docAddSpy = vi.spyOn(document, 'addEventListener');
+    const pill = document.createElement('sim-data-pill');
+    pill.setAttribute('ref', 'gas-constant-R');
+    document.body.appendChild(pill);
+    await Promise.resolve();
+    // Pill should not add 'click' or 'keydown' listeners directly to document.
+    const calls = docAddSpy.mock.calls.map((c) => c[0]);
+    expect(calls).not.toContain('click');
+    expect(calls).not.toContain('keydown');
+    docAddSpy.mockRestore();
   });
 
   it('button has aria-label with name + value + unit', async () => {
@@ -92,5 +80,14 @@ describe('<sim-data-pill>', () => {
     expect(label).toContain('Molar gas constant');
     expect(label).toContain('8.314');
     expect(label).toContain('J·K⁻¹·mol⁻¹');
+  });
+
+  it('does NOT create a child sim-data-card in its shadow DOM', async () => {
+    // Phase 9 regression test: card lives at page level, not inside pill.
+    const pill = document.createElement('sim-data-pill');
+    pill.setAttribute('ref', 'gas-constant-R');
+    document.body.appendChild(pill);
+    await Promise.resolve();
+    expect(pill.shadowRoot.querySelector('sim-data-card')).toBeNull();
   });
 });

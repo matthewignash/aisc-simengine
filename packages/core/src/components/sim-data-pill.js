@@ -1,9 +1,9 @@
 /**
- * <sim-data-pill ref="..."> — clickable inline data value.
+ * <sim-data-pill ref="..."> — clickable inline data value (thin click-to-emit).
  *
- * Looks up the ref via @TBD/simengine-data's getValue(). On click,
- * toggles a child <sim-data-card> (also in shadow DOM). Outside-click
- * and Escape close. Emits `data-pill-clicked` with detail { ref }.
+ * Looks up the ref via @TBD/simengine-data's getValue(). On click, dispatches
+ * a `data-pill-clicked` CustomEvent with detail { ref }; a singleton
+ * <sim-data-card> elsewhere in the page listens and slides in with the data.
  *
  * Unknown ref renders an inline error marker and console.errors.
  */
@@ -83,15 +83,12 @@ class SimDataPillElement extends HTMLElement {
     unitEl.textContent = data.unit;
     button.append(valueEl, unitEl);
 
-    // Child card, hidden by default
-    const card = document.createElement('sim-data-card');
-    card.setAttribute('ref', ref);
-    card.hidden = true;
-    this._card = card;
-
     button.addEventListener('click', (e) => {
+      // Stop propagation so the singleton <sim-data-card>'s outside-click
+      // handler (which listens on document) doesn't see this event and
+      // trigger a close. (The card's handler also defends with a
+      // composedPath check for <sim-data-pill>; this is belt-and-suspenders.)
       e.stopPropagation();
-      this._card.hidden = !this._card.hidden;
       this.dispatchEvent(
         new CustomEvent('data-pill-clicked', {
           detail: { ref },
@@ -101,29 +98,10 @@ class SimDataPillElement extends HTMLElement {
       );
     });
 
-    // Outside click closes
-    this._docClickHandler = (e) => {
-      if (!this.contains(e.target) && !e.composedPath().includes(this)) {
-        this._card.hidden = true;
-      }
-    };
-    document.addEventListener('click', this._docClickHandler);
-
-    // Escape closes
-    this._keyHandler = (e) => {
-      if (e.key === 'Escape') this._card.hidden = true;
-    };
-    document.addEventListener('keydown', this._keyHandler);
-
-    root.append(button, card);
+    root.appendChild(button);
   }
 
   disconnectedCallback() {
-    if (this._docClickHandler) document.removeEventListener('click', this._docClickHandler);
-    if (this._keyHandler) document.removeEventListener('keydown', this._keyHandler);
-    this._docClickHandler = null;
-    this._keyHandler = null;
-    this._card = null;
     // Allow re-render if the element is moved/reattached.
     this._initialized = false;
   }

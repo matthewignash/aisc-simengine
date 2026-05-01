@@ -147,6 +147,32 @@ Four commits composing the step-6 components into a polished Gas Laws topic page
 - Real "What's next" topic link (deferred until a second topic exists).
 - Two follow-up tasks from step 6 still queued: promote `<sim-engine>` private API to public, reinstate `<slot>` in `<sim-coachmark>`.
 
+### Phase 9 — `<sim-data-card>` slide-out side panel
+
+Three commits refactoring `<sim-data-card>` from an inline-anchored absolute popover (which shifts surrounding page content when it opens) into a singleton fixed slide-out side panel. One card per page; pills emit `data-pill-clicked` events; the card listens globally and updates content in place when different pills are clicked.
+
+- `feat(core)`: redesign `<sim-data-card>` as singleton slide-out + `<sim-data-pill>` emits events
+- `feat(examples)`: topic-page + smoke test add singleton `<sim-data-card>`
+- `docs`: this CHANGELOG entry + architecture.md update
+
+**Test count:** 140 → 143 (+3 net). `<sim-data-card>` test file rewritten for the singleton + event-driven model (6 → 9 tests, +3). `<sim-data-pill>` test file rewritten for the slimmed-down pill (7 → 7 tests; 2 old tests dropped, 2 new added).
+
+**Public surface changes (`@TBD/simengine`):**
+
+- `<sim-data-card>` is now a singleton: pages must include exactly one `<sim-data-card></sim-data-card>` element. Visibility is controlled via the `[data-open]` attribute (was `[hidden]`).
+- `<sim-data-pill>` no longer creates a child `<sim-data-card>`. Click emits `data-pill-clicked` (existing event); the singleton listens.
+- Card position: `position: fixed; top: 80px; left: 16px; width: 320px` (was absolute, anchored to pill). Slides in from the left; the tweaks panel still slides in from the right; both can be open simultaneously without overlap.
+
+**Resolved:** the deferred sweep item from step 6 — "Data-pill 'one card open at a time' coordination across multiple pills on a page." With one card per page, only one card can be open.
+
+**Known follow-ups (still deferred):**
+
+- The two follow-up tasks from step 6 — promote `<sim-engine>` private API to public; reinstate `<slot>` in `<sim-coachmark>`.
+- Mobile/tablet responsive layout for the card (`top: 80px; left: 16px; width: 320px` may need media queries on narrow viewports).
+- Animated content-swap when a different pill is clicked while the card is open (currently the swap is instant — no fade/slide).
+- Singleton-detection warning if a page accidentally mounts two `<sim-data-card>` elements.
+- Phase 10's success-criteria interactive checklist with export — its own design phase next.
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.

@@ -254,3 +254,39 @@ Step 8 is intentionally narrower than the spec's combined §8–§11. This phase
 | 9      | Author full Gas Laws content (real prose for all 14 sections) | Deferred (future "step 8c") |
 | 11     | Teacher view (`<sim-data-map>`, lesson plan tie-in)           | Deferred (future "step 9")  |
 | 12     | Print stylesheet, print button                                | Deferred (polish phase)     |
+
+## Phase 9 — `<sim-data-card>` slide-out side panel
+
+A focused refactor of the data-card component, prompted by user feedback after step 8 shipped: the inline-anchored popover shifted surrounding page content when it opened. Phase 9 makes the card a singleton fixed slide-out side panel that does not displace the page.
+
+### Architecture
+
+- One `<sim-data-card>` per page, declared in light DOM as a sibling of the main content wrapper.
+- Pills emit `data-pill-clicked` events with `{ ref }`; the card listens globally on `document`.
+- Card uses `position: fixed; top: 80px; left: 16px; width: 320px; z-index: 100`. Slides in from the left edge of the viewport via the `[data-open]` attribute (transform + visibility transition, matching the tweaks-panel pattern from step 6 commit 7).
+- Content-swap is in-place: clicking a different pill while the card is open re-renders with the new ref without a close-then-reopen animation.
+- `_currentRef` and `_previouslyFocused` are tracked on the card; `_currentRef` distinguishes "same pill clicked again" (toggle close) from "different pill" (swap); `_previouslyFocused` updates to the new pill on each swap so close still returns focus to the most recent trigger.
+- `<sim-data-pill>` is slimmed: no child `<sim-data-card>` creation, no document-level listeners. Click only stops propagation and dispatches `data-pill-clicked`.
+
+### Two-layer defense for the outside-click vs. pill-click race
+
+When a user clicks Pill B while Pill A's content is showing, BOTH the pill's click handler AND the card's document-level outside-click handler fire (the card sees Pill B as "outside"). Without defense, the doc-click would close the panel just after the swap.
+
+- **Layer 1**: the pill calls `e.stopPropagation()` on its button click — should halt the event before reaching `document`.
+- **Layer 2**: the card's outside-click handler additionally walks `e.composedPath()` for any `<sim-data-pill>` element. If found, the click is treated as "into a pill" rather than "outside the card" and is ignored.
+
+Belt-and-suspenders against shadow-DOM event quirks. Verified by the dedicated regression test `outside click dismisses; click on a different pill swaps (not close-then-reopen)`.
+
+### What ships vs what's deferred
+
+| Concern                                                | Status                                    |
+| ------------------------------------------------------ | ----------------------------------------- |
+| Singleton card per page                                | Shipped                                   |
+| Slide from left; coexists with right-side tweaks panel | Shipped                                   |
+| Multi-pill swap-in-place                               | Shipped                                   |
+| Outside-click ignores pill clicks (regression test)    | Shipped                                   |
+| Mobile/tablet responsive layout                        | Deferred (polish phase)                   |
+| Animated content-swap                                  | Deferred                                  |
+| Singleton-detection warning (two `<sim-data-card>`s)   | Deferred                                  |
+| `<slot>` reinstatement in `<sim-coachmark>`            | Deferred (still on step-6 follow-up list) |
+| `<sim-engine>` private API → public                    | Deferred (still on step-6 follow-up list) |
