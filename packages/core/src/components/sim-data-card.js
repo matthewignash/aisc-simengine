@@ -109,6 +109,12 @@ const HOST_STYLES = `
     color: inherit;
   }
   .sim-btn:hover { background: var(--ib-ink-100, #f4f4f4); }
+  @media (prefers-reduced-motion: reduce) {
+    :host,
+    :host([data-open]) {
+      transition: none;
+    }
+  }
 `;
 
 const sheet = new CSSStyleSheet();

@@ -153,6 +153,12 @@ const HOST_STYLES = `
   .sim-btn:hover { background: var(--ib-ink-100, #f4f4f4); }
   .sim-btn--ghost { color: var(--ib-ink-700, #374151); }
   .sim-btn--ghost:hover { background: var(--ib-navy-050, #f5f7fc); }
+  @media (prefers-reduced-motion: reduce) {
+    :host,
+    :host([data-open]) {
+      transition: none;
+    }
+  }
 `;
 
 const sheet = new CSSStyleSheet();
@@ -287,6 +293,8 @@ class SimChecklistElement extends HTMLElement {
     const progressEl = document.createElement('span');
     progressEl.className = 'sim-checklist__progress';
     progressEl.textContent = `0 of ${this._items.length} checked`;
+    progressEl.setAttribute('aria-live', 'polite');
+    progressEl.setAttribute('aria-atomic', 'true');
     head.appendChild(progressEl);
     const closeBtn = document.createElement('button');
     closeBtn.className = 'sim-checklist__close';
@@ -637,6 +645,7 @@ class SimChecklistElement extends HTMLElement {
   _buildPrintBlock(state) {
     const container = document.createElement('div');
     container.id = 'print-reflection-output';
+    container.setAttribute('aria-hidden', 'true');
 
     const h1 = document.createElement('h1');
     h1.textContent = `${state.topic} — Reflection`;

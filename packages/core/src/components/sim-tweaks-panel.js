@@ -67,6 +67,12 @@ const HOST_STYLES = `
     flex-direction: column;
     gap: var(--sp-3, 12px);
   }
+  @media (prefers-reduced-motion: reduce) {
+    :host,
+    :host([data-open]) {
+      transition: none;
+    }
+  }
 `;
 
 const componentsSheet = new CSSStyleSheet();
