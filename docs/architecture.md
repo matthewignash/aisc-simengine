@@ -290,3 +290,70 @@ Belt-and-suspenders against shadow-DOM event quirks. Verified by the dedicated r
 | Singleton-detection warning (two `<sim-data-card>`s)   | Deferred                                  |
 | `<slot>` reinstatement in `<sim-coachmark>`            | Deferred (still on step-6 follow-up list) |
 | `<sim-engine>` private API → public                    | Deferred (still on step-6 follow-up list) |
+
+## Phase 10A v2 — Side-panel checklist + reflection export
+
+A `<sim-checklist>` custom element ships as a slide-out side panel from the left, mutually exclusive with `<sim-data-card>`. The topic page gains a "📝 Reflect on these criteria" button below the static LISC success-criteria list; clicking it opens the panel.
+
+**Supersedes phase 10A v1** (PR #7, unmerged): v1 shipped an inline-replacement implementation. After live review, the user preferred the side-panel UX. v1's design + plan docs remain in main as historical record.
+
+### Architecture
+
+- One `<sim-checklist>` per use site. Topic page mounts one as a sibling of `.sim-wrap` (alongside `<sim-data-card>` and `<sim-tweaks-panel>`).
+- Slot-based item API: page authors include plain `<li>` elements as children. The component reads them at upgrade, captures `textContent`, clears the host's light DOM, and renders interactive checkbox-rows in shadow DOM.
+- Per-topic-per-level localStorage key: `aisc-simengine:checklist:<topic>:<level>`. JSON shape: `{ checkedItems: number[], freeText: string }`.
+- Auto-save on check toggle (immediate); on textarea input (300ms debounce). The `level` attribute change force-flushes the pending textarea save to the OLD key before switching, preventing a race where mid-debounce typing is lost.
+- Position: `position: fixed; top: 80px; left: 16px; width: 320px; z-index: 100`. Slides in via `[data-open]` attribute. Same pattern as `<sim-data-card>` (phase 9) and `<sim-tweaks-panel>` (step 6).
+
+### Mutual exclusion
+
+`<sim-data-card>` and `<sim-checklist>` are both left-side panels. Mutual-exclusion contract:
+
+- On `_activate` (data-card) / `_activate` (checklist), each dispatches `panel-opened` CustomEvent on `document` with `detail: { source: this }`, `bubbles: true, composed: true`.
+- Each component's `connectedCallback` registers a document listener for `panel-opened`. If the source is a different element AND the listening panel has `[data-open]`, the listener calls `_dismiss()` (data-card) or `close()` (checklist).
+- Both panels' CSS slide transitions (180ms) run concurrently — the user sees one panel slide out as the other slides in.
+- Cleanup in `disconnectedCallback` removes the listener.
+
+This contract is open for any future left-side panel to participate in. The right-side `<sim-tweaks-panel>` is unaffected.
+
+### Export pipeline
+
+Same as v1 (the export logic was preserved across the redesign):
+
+- **Markdown** — one-click download. Generates `# topic — Reflection` + level + date + `[x]`/`[ ]` checklist + optional `## My reflection`. `Blob` + `URL.createObjectURL` + temporary `<a download>` + click + revoke.
+- **PDF** — synthesizes a `#print-reflection-output` element in `document.body` (reused via `replaceWith` across exports), adds `body.printing-reflection`, calls `window.print()`. The `@media print` rules in global `components.css` hide everything except `#print-reflection-output` while `body.printing-reflection` is set. An `afterprint` listener (registered on `window` in `connectedCallback`) clears the body class when the dialog closes.
+
+This pipeline is **reflection-only**. Whole-topic-page print stylesheet remains the deferred §12 polish item.
+
+### Topic-page integration
+
+The Gas Laws topic page's `applyLevel(level)` inline function now has 5 steps:
+
+1. Flip every `[data-variant]` block (existing, step 8).
+2. Mirror level to the sim (existing).
+3. Mirror to the HL toggle's checked state (existing).
+4. Push level to every `<sim-engine>` (n/a — only one sim per page; no-op for this topic).
+5. **Push level to every `<sim-checklist>`** so per-level state swaps with the toggle. (Phase 10A v2.)
+
+The Reflect button's click handler calls `e.stopPropagation()` to prevent the checklist's outside-click handler from immediately re-closing. The button toggles via `toggleAttribute('data-open')` so a second click closes.
+
+### What ships vs what's deferred
+
+| Concern                                                 | Status                                    |
+| ------------------------------------------------------- | ----------------------------------------- |
+| `<sim-checklist>` as slide-out side panel from the left | Shipped                                   |
+| Slot-based `<li>` API                                   | Shipped                                   |
+| Per-topic-per-level localStorage                        | Shipped                                   |
+| Free-text reflection textarea (debounced auto-save)     | Shipped                                   |
+| .md download                                            | Shipped                                   |
+| Save as PDF (reflection-only via `window.print()`)      | Shipped                                   |
+| Reset button with confirm                               | Shipped                                   |
+| Mutual exclusion with `<sim-data-card>`                 | Shipped                                   |
+| Bell ringer / practice / exit ticket interactivity      | Deferred to Phase 10B                     |
+| `<sim-reflection-export>` portfolio aggregator          | Deferred to Phase 10B                     |
+| Whole-topic-page print stylesheet                       | Deferred to spec §12 polish               |
+| Mobile/tablet responsive tweaks                         | Deferred (polish phase)                   |
+| Animated check transitions, fancier progress bar        | Deferred                                  |
+| More sophisticated mutual-exclusion choreography        | Deferred                                  |
+| `<sim-engine>` private API → public                     | Deferred (still on step-6 follow-up list) |
+| `<slot>` reinstatement in `<sim-coachmark>`             | Deferred (still on step-6 follow-up list) |

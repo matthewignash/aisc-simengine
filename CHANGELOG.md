@@ -173,6 +173,43 @@ Three commits refactoring `<sim-data-card>` from an inline-anchored absolute pop
 - Singleton-detection warning if a page accidentally mounts two `<sim-data-card>` elements.
 - Phase 10's success-criteria interactive checklist with export — its own design phase next.
 
+### Phase 10A v2 — Side-panel checklist + reflection export
+
+Four commits introducing `<sim-checklist>` as a slide-out side panel from the left, mutually exclusive with `<sim-data-card>`. The Gas Laws topic page's static success-criteria column gets a "📝 Reflect on these criteria" button that opens the panel containing interactive checkboxes + a free-text reflection textarea + .md / PDF export.
+
+This phase **supersedes phase 10A v1 (PR #7)**, which shipped an inline-replacement implementation. After live review, the user preferred the side-panel UX from phase 9 (`<sim-data-card>`) over the inline replacement of the LISC SC column. PR #7 was closed unmerged; v1 design + plan docs remain in main as a historical record of the iteration.
+
+- `feat(core)`: `<sim-checklist>` custom element — slide-out side panel
+- `feat(core)`: `<sim-data-card>` mutual exclusion via panel-opened events
+- `feat(examples)`: topic-page success-criteria reverts to static + adds Reflect side panel
+- `docs`: this CHANGELOG entry + architecture.md update
+
+**Test count:** +12 net (11 new in `sim-checklist.test.js` + 1 new in `sim-data-card.test.js`).
+
+**Public surface added (`@TBD/simengine`):**
+
+- New custom element `<sim-checklist topic="..." level="..." label="...">` with slotted `<li>` API. Auto-defined as a side effect of importing the core package.
+- Five events (bubbles + composed): `panel-opened`, `panel-closed`, `checklist-changed`, `checklist-exported`, `checklist-reset`.
+- Imperative API on the element instance: `open()`, `close()`, `getState()`, `exportMarkdown(triggerDownload?)`, `exportPDF()`.
+- New mutual-exclusion contract: `<sim-data-card>` and `<sim-checklist>` listen for `panel-opened` on `document` and close themselves if the source is a different element. Same contract is available to any future left-side panel.
+- Print stylesheet rules for `body.printing-reflection` + `#print-reflection-output` in `components.css` — used by `<sim-checklist>.exportPDF()` to print the reflection without the rest of the page.
+
+**Persistence:** localStorage key `aisc-simengine:checklist:<topic>:<level>` (separate state per level).
+
+**Known follow-ups (deferred to Phase 10B):**
+
+- `<sim-text-response>` for bell ringer + exit ticket interactivity.
+- `<sim-practice-question>` with answer-reveal-and-compare flow.
+- `<sim-reflection-export>` aggregator that pulls state from all interactive components on the page into a single portfolio export. Phase 10A v2's export pipeline becomes the foundation; 10B refactors export OUT of the checklist into the aggregator.
+
+**Other deferred polish (still queued):**
+
+- Mobile/tablet responsive tweaks for the side panel.
+- Whole-topic-page print stylesheet (spec §12 polish — distinct from the reflection-only print added here).
+- Animated check transitions; fancier progress bar.
+- More sophisticated mutual-exclusion choreography (e.g., wait for sibling slide-out to complete before sliding in — current runs both transitions concurrently).
+- The two follow-up tasks from step 6 — `<sim-engine>` private API to public; reinstate `<slot>` in `<sim-coachmark>`.
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.
