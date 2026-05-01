@@ -1141,3 +1141,53 @@
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
+
+/* Phase 10A v2: Reflection-only print stylesheet for <sim-checklist> exportPDF.
+   The component synthesizes a #print-reflection-output block in the body,
+   adds body.printing-reflection, then calls window.print(). The afterprint
+   listener clears the body class. The synthesized block is left in place
+   between exports (cheap; reused via element.replaceWith). */
+@media print {
+  body.printing-reflection > *:not(#print-reflection-output) {
+    display: none !important;
+  }
+  body.printing-reflection #print-reflection-output {
+    display: block !important;
+  }
+}
+#print-reflection-output {
+  display: none; /* hidden in screen mode; shown only via print stylesheet */
+}
+#print-reflection-output h1 {
+  font-size: 20pt;
+  margin: 0 0 16pt;
+}
+#print-reflection-output h2 {
+  font-size: 14pt;
+  margin: 16pt 0 8pt;
+}
+#print-reflection-output ul {
+  list-style: none;
+  padding: 0;
+}
+#print-reflection-output ul li {
+  padding: 4pt 0;
+  font-size: 11pt;
+}
+#print-reflection-output ul li::before {
+  content: '[ ] ';
+  font-family: monospace;
+}
+#print-reflection-output ul li.checked::before {
+  content: '[x] ';
+}
+#print-reflection-output .reflection-meta {
+  color: #555;
+  font-size: 10pt;
+  margin-bottom: 12pt;
+}
+#print-reflection-output .reflection-text {
+  font-size: 11pt;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
