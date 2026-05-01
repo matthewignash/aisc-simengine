@@ -137,6 +137,15 @@ class SimDataCardElement extends HTMLElement {
     // Listen globally for pill clicks anywhere in the document.
     this._pillClickHandler = (e) => this._onPillClicked(e);
     document.addEventListener('data-pill-clicked', this._pillClickHandler);
+
+    // Mutual exclusion: listen for sibling panels opening. Close ourselves
+    // if a different source signaled open while we're [data-open].
+    this._panelOpenedHandler = (e) => {
+      if (e.detail?.source !== this && this.hasAttribute('data-open')) {
+        this._dismiss();
+      }
+    };
+    document.addEventListener('panel-opened', this._panelOpenedHandler);
   }
 
   attributeChangedCallback(name) {
@@ -322,6 +331,15 @@ class SimDataCardElement extends HTMLElement {
       this._dismiss();
     };
     document.addEventListener('click', this._outsideClickHandler);
+
+    // Mutual exclusion: announce that we're open.
+    this.dispatchEvent(
+      new CustomEvent('panel-opened', {
+        detail: { source: this },
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   _deactivate({ skipFocusRestore = false } = {}) {
@@ -361,6 +379,10 @@ class SimDataCardElement extends HTMLElement {
       document.removeEventListener('data-pill-clicked', this._pillClickHandler);
     }
     this._pillClickHandler = null;
+    if (this._panelOpenedHandler) {
+      document.removeEventListener('panel-opened', this._panelOpenedHandler);
+      this._panelOpenedHandler = null;
+    }
     this._currentRef = null;
     this._previouslyFocused = null;
     // Allow re-render if the element is moved/reattached.

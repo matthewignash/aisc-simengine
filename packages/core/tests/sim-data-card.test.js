@@ -161,4 +161,23 @@ describe('<sim-data-card> (singleton slide-out)', () => {
     expect(errSpy).toHaveBeenCalled();
     errSpy.mockRestore();
   });
+
+  it('closes when a sibling panel-opened event fires from a non-self source', async () => {
+    const { card, pills } = await mount({ pillRefs: ['gas-constant-R'] });
+    pills[0].shadowRoot.querySelector('button').click();
+    await Promise.resolve();
+    expect(card.hasAttribute('data-open')).toBe(true);
+
+    // Simulate a different panel opening — dispatch synthetic event with a
+    // different source.
+    const fakeSource = document.createElement('div');
+    document.body.appendChild(fakeSource);
+    document.dispatchEvent(
+      new CustomEvent('panel-opened', {
+        detail: { source: fakeSource },
+        bubbles: true,
+      })
+    );
+    expect(card.hasAttribute('data-open')).toBe(false);
+  });
 });
