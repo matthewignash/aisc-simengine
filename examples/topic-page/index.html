@@ -220,6 +220,13 @@
               <li>Calculate P, V, T, or n given the other three quantities.</li>
               <li>Explain the shape of a P–V graph at constant temperature and label its axes.</li>
             </ul>
+            <button
+              id="reflect-button"
+              class="ib-btn ib-btn--ghost"
+              style="margin-top: var(--sp-3, 12px); align-self: flex-start"
+            >
+              📝 Reflect on these criteria
+            </button>
           </div>
         </div>
       </section>
@@ -332,6 +339,11 @@
          events emitted by any <sim-data-pill> on the page; slides in from
          the left with the clicked pill's data. -->
     <sim-data-card></sim-data-card>
+    <sim-checklist topic="s1.5-gas-laws" level="sl" label="Success criteria">
+      <li>Describe what happens to P when V halves at constant T and n.</li>
+      <li>Calculate P, V, T, or n given the other three quantities.</li>
+      <li>Explain the shape of a P–V graph at constant temperature and label its axes.</li>
+    </sim-checklist>
 
     <!--
       The IIFE bundle is used (not <script type="module">) so the page works
@@ -372,6 +384,11 @@
         // 3. Mirror to the header toggle (in case state was restored from prefs).
         const toggle = document.getElementById('hl-toggle');
         if (toggle) toggle.checked = level === 'hl';
+        // 5. Push level to every <sim-checklist> on the page so per-level state
+        //    swaps with the toggle.
+        for (const cl of document.querySelectorAll('sim-checklist')) {
+          cl.setAttribute('level', level);
+        }
       }
 
       // On load: restore from prefs (defaults to 'sl').
@@ -389,6 +406,10 @@
       // Wire the Tweaks button (same as smoke test).
       document.getElementById('tweaks-button').addEventListener('click', () => {
         document.querySelector('sim-tweaks-panel').toggleAttribute('data-open');
+      });
+      document.getElementById('reflect-button').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.querySelector('sim-checklist').toggleAttribute('data-open');
       });
     </script>
   </body>
