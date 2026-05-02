@@ -253,6 +253,10 @@ Four commits introducing three new interactive components and refactoring `<sim-
 - Animated check transitions; fancier progress / status visualisations.
 - The two long-standing step-6 follow-ups (`<sim-engine>` private API → public; reinstate `<slot>` in `<sim-coachmark>`).
 
+### Topic-page UX correction (post-10B)
+
+- Bell ringer reverts to paper-only static prose. The prompts ("Label every symbol", "Circle the variable") imply physical-paper actions that don't translate cleanly to a textarea. The three `<sim-text-response>` instances under `section="bell-ringer"` are removed from `examples/topic-page/index.html`; the `<ol>` returns to plain `<li>` items framed as "5 minutes — from memory, in your notebook." `<sim-text-response>` itself is unchanged and still used by the exit ticket (3 instances). The aggregator's `bell-ringer` section heading simply doesn't render when no components on the page declare that section — no aggregator code change needed.
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.
