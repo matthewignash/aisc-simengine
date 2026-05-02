@@ -265,6 +265,15 @@ Four commits introducing three new interactive components and refactoring `<sim-
 - +2 lightweight tests assert the print-rule presence in each affected component's HOST_STYLES (catches accidental deletion in future refactors). Manual Chrome print preview is the real verification.
 - Page authors opt in to the sim placeholder by setting `data-print-url` on the `.sim-shell` element. If the attribute is missing, the placeholder line still prints — just without a URL.
 
+### Gas-laws background section (post-10B)
+
+- New "How we got here — and where you will see it" section on the Gas Laws topic page (`examples/topic-page/index.html`), inserted between Topic introduction (5) and Key concept (6). Provides historical context for the four gas laws (Boyle, Charles, Gay-Lussac, Avogadro), the Karlsruhe Congress 1860 as an IB international-mindedness anchor, real-world examples, and (HL only) a TOK note on how scientific consensus emerges across cultures.
+- HL/SL adaptive via the existing `data-variant` mechanism. SL ~250 words; HL ~500 words. The existing `applyLevel(level)` function in the inline `<script>` already handles the toggle.
+- New `.topic-background` CSS rule in `components.css` modeled on `.topic-intro` with an amber left-accent border (vs. navy for topic-intro) to signal "context" vs. "concept exposition."
+- New `mendeleev` entry in `packages/data/src/glossary.json` referenced by `<sim-glossary-term ref="mendeleev">` in the HL prose.
+- No new tests, no new components, no JS changes. Bundle bytes minimally impacted (one new CSS rule + one new glossary entry).
+- **Figures added:** four photographs (one per gas law) sourced from Wikimedia Commons under CC-BY-SA / CC-BY / public-domain licenses, self-hosted in `examples/topic-page/img/`. Each figure has descriptive alt text, a caption matching the existing law description, and an inline attribution line pointing to the Wikimedia source. The full attribution record (creator, license, source URL per image) lives in `examples/topic-page/img/CREDITS.md`. Layout: 4-column desktop grid; single-column stack at ≤720 px; 2×2 print grid with image height capped at 2 inches.
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.

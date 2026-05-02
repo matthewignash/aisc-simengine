@@ -15,6 +15,10 @@
     "kinetic-energy": {
       "term": "kinetic energy",
       "definition": "The energy a particle has due to its motion. Higher temperature means higher average kinetic energy."
+    },
+    "mendeleev": {
+      "term": "Dmitri Mendeleev",
+      "definition": "Russian chemist (1834–1907) who attended the Karlsruhe Congress in 1860 as a young researcher. He later credited the meeting as the turning point that made the modern periodic table thinkable; he published the first version in 1869."
     }
   }
 }

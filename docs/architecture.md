@@ -460,3 +460,11 @@ The page author opts in to the sim placeholder by setting `data-print-url="<URL>
 ```
 
 falls back to an empty URL string if the attribute is missing. The placeholder line still prints — useful even before the real URL is locked.
+
+## Topic-page background sections
+
+The Gas Laws topic page now includes a "topic-background" section between the topic introduction and the key concept. The pattern: a new `<section class="topic-background">` with two `data-variant` blocks (SL + HL) for level-adaptive prose. The existing `applyLevel(level)` function in the inline page script handles the toggle automatically — any future topic page can adopt the same shape with no JS changes.
+
+The section is intended for historical context, real-world applications, and IB international-mindedness content. The `.topic-background` CSS rule uses an amber left-accent border, distinguishing it visually from the navy-accented `.topic-intro` (concept exposition). Future topic pages adopting this pattern should target the same convention so the visual rhythm carries across the curriculum.
+
+For HL prose, a brief TOK (theory of knowledge) note is appropriate when the historical narrative supports it. SL prose distills the same lesson into one accessible sentence.
