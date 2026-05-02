@@ -272,6 +272,7 @@ Four commits introducing three new interactive components and refactoring `<sim-
 - New `.topic-background` CSS rule in `components.css` modeled on `.topic-intro` with an amber left-accent border (vs. navy for topic-intro) to signal "context" vs. "concept exposition."
 - New `mendeleev` entry in `packages/data/src/glossary.json` referenced by `<sim-glossary-term ref="mendeleev">` in the HL prose.
 - No new tests, no new components, no JS changes. Bundle bytes minimally impacted (one new CSS rule + one new glossary entry).
+- **Figures added:** four photographs (one per gas law) sourced from Wikimedia Commons under CC-BY-SA / CC-BY / public-domain licenses, self-hosted in `examples/topic-page/img/`. Each figure has descriptive alt text, a caption matching the existing law description, and an inline attribution line pointing to the Wikimedia source. The full attribution record (creator, license, source URL per image) lives in `examples/topic-page/img/CREDITS.md`. Layout: 4-column desktop grid; single-column stack at ≤720 px; 2×2 print grid with image height capped at 2 inches.
 
 ### Notes
 
