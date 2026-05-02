@@ -1161,6 +1161,19 @@
   animation: anim-boyle-pressure-scale 4s ease-in-out infinite;
   transform-origin: 8px 80px;
 }
+@keyframes anim-boyle-particles-scale {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(0.6);
+  }
+}
+.boyle-particles {
+  animation: anim-boyle-particles-scale 4s ease-in-out infinite;
+  transform-origin: 30px 80px;
+}
 
 /* ── Charles's law: balloon scaling + thermometer fill rising ── */
 @keyframes anim-charles-balloon {
@@ -1260,6 +1273,67 @@
 .avogadro-p5 {
   animation: anim-avogadro-fade 4s ease-in-out infinite;
   animation-delay: 1.6s;
+}
+
+/* ── Brownian-style wiggle for gas particles. Three variants
+   so adjacent particles move out of phase. Used on Boyle, Charles,
+   and Gay-Lussac particles. Subtle motion (2–4 px); doesn't dominate
+   over the primary animation (piston, balloon, gauge). ── */
+@keyframes wiggle-a {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(2px, -3px);
+  }
+  50% {
+    transform: translate(-1px, 2px);
+  }
+  75% {
+    transform: translate(3px, 1px);
+  }
+}
+@keyframes wiggle-b {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-2px, 2px);
+  }
+  50% {
+    transform: translate(3px, -1px);
+  }
+  75% {
+    transform: translate(-1px, -3px);
+  }
+}
+@keyframes wiggle-c {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(1px, 3px);
+  }
+  50% {
+    transform: translate(-3px, -1px);
+  }
+  75% {
+    transform: translate(2px, -2px);
+  }
+}
+.wiggle-a {
+  animation: wiggle-a 1.4s ease-in-out infinite;
+}
+.wiggle-b {
+  animation: wiggle-b 1.6s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+.wiggle-c {
+  animation: wiggle-c 1.5s ease-in-out infinite;
+  animation-delay: 0.4s;
 }
 
 /* ── Reduced motion: pause all the per-law animations ── */
