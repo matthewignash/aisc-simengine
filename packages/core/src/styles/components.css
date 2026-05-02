@@ -1050,6 +1050,27 @@
   display: none;
 }
 
+/* Topic background — historical context, real-world relevance, IB
+   international mindedness. Mirrors .topic-intro for vertical rhythm but
+   with a different left-accent color (amber) to signal "context" vs.
+   "concept exposition" (.topic-intro uses navy). */
+.topic-background {
+  margin: var(--sp-5, 20px) 0;
+  padding-left: var(--sp-4, 16px);
+  border-left: 4px solid var(--ib-amber-500, #f59e0b);
+  font-size: var(--fs-16, 16px);
+  line-height: 1.6;
+}
+.topic-background h3 {
+  margin-top: var(--sp-4, 16px);
+  font-size: var(--fs-16, 16px);
+  font-weight: 600;
+}
+.topic-background ul {
+  margin: var(--sp-2, 8px) 0;
+  padding-left: var(--sp-5, 20px);
+}
+
 /* Next-topic link card. */
 .topic-next {
   display: block;
