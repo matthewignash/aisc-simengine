@@ -357,3 +357,81 @@ The Reflect button's click handler calls `e.stopPropagation()` to prevent the ch
 | More sophisticated mutual-exclusion choreography        | Deferred                                  |
 | `<sim-engine>` private API → public                     | Deferred (still on step-6 follow-up list) |
 | `<slot>` reinstatement in `<sim-coachmark>`             | Deferred (still on step-6 follow-up list) |
+
+## Phase 10B — Interactive reflection portfolio
+
+Three new custom elements complete the topic-page reflection portfolio: `<sim-text-response>` (inline textarea bound to a prompt; used 6× on the Gas Laws page for bell ringer and exit ticket), `<sim-practice-question>` (do-then-reveal flow with 3-chip self-rating; used 1× for the practice question section), and `<sim-reflection-export>` (page-wide aggregator side panel; LEFT side, joins the existing mutual-exclusion contract). The aggregator pulls state from every reflection component on the page on each open and each export click — state pull, not push. `<sim-checklist>` is refactored to expose `clear()` and to include `items` in `getState()`, while shedding its `exportPDF()` method and its in-panel `Download .md` / `Save as PDF` buttons.
+
+### Architecture
+
+- One instance of each new component per use site (topic-page convention; the aggregator is a singleton; text-response and practice-question are inline and instantiated per prompt).
+- All three new components store per-instance state to localStorage with the standard `aisc-simengine:<kind>:<topic>:<level>:<id>` key shape.
+- Each component observes `level` and force-flushes any pending debounce save to the OLD key BEFORE loading from the NEW key on attribute change. Same race-defense pattern as `<sim-checklist>` from Phase 10A v2.
+- The aggregator stores no state of its own — its panel `[data-open]` attribute does not persist across reloads.
+
+### State pull contract
+
+The aggregator's source-of-truth is one `document.querySelectorAll('sim-checklist, sim-text-response, sim-practice-question')` call, performed:
+
+- On every `_activate` (panel open) — to refresh the preview list.
+- On every export click — to capture the latest state into the .md or PDF.
+
+Each component exposes a `getState()` method whose return value is the canonical snapshot used for export. No event-bus subscription, no registry pattern. Adding a new reflection component later means: implement `getState()` on the new tag, add it to the aggregator's selector, done.
+
+### Section grouping in the export
+
+`section` attribute (`bell-ringer` / `exit-ticket` / `practice` / `success-criteria` / `misc`) becomes the heading bucket in both the .md and PDF output. Sections render in alphabetical order; within each section, components render in DOM order. Empty values render as `> *no response*` in markdown so blanks are visible to teachers reviewing the export.
+
+### Mutual exclusion contract — three left-side participants
+
+Phase 10A v2's contract: `<sim-data-card>` + `<sim-checklist>` dispatch + listen for `panel-opened` on `document`. Phase 10B adds `<sim-reflection-export>` as the third participant. Three left-side panels, only one open at a time. The contract:
+
+- Each panel dispatches `panel-opened` with `{ source: this }`, bubbles + composed, on `_activate`.
+- Each panel's `connectedCallback` registers a document listener for `panel-opened`. If the source is a different element AND the listening panel is `[data-open]`, it closes itself (`_dismiss()` for data-card; `close()` for checklist + export).
+- Cleanup in `disconnectedCallback`.
+
+`<sim-tweaks-panel>` (right side) stays independent — left-side-only by convention.
+
+### Topic-page integration
+
+The Gas Laws topic page's `applyLevel(level)` inline function gains a step 6 — push the new level to every `<sim-text-response>`, `<sim-practice-question>`, and `<sim-reflection-export>` on the page. Per-level state swap with the HL/SL toggle works for all six new component instances.
+
+The sticky header now contains the HL toggle, the Tweaks button, and the new "Save your work" button (no emoji, ghost style) — both top-level session-control buttons live in the header. The Tweaks button was hoisted out of its prior in-page row as part of this commit, so the topic page no longer renders a separate button row above the sim. The Save-your-work click handler toggles the export panel's `[data-open]` with `e.stopPropagation()`. The Reflect button label drops its emoji prefix in the same commit so the topic page is emoji-free overall.
+
+### Export pipeline (consolidated)
+
+Markdown:
+
+1. Aggregator's `exportMarkdown(triggerDownload)` calls `_scanSources()` + `_groupBySection()`.
+2. Builds a string with H1 + level/date metadata + H2-per-section + per-component lines (text-response, practice-question, checklist all rendered inline with their own format).
+3. If `triggerDownload === true`, creates a `Blob`, `URL.createObjectURL`, temporary `<a download>`, click, revoke.
+
+PDF:
+
+1. `exportPDF()` calls `_scanSources()` + builds a `#print-reflection-output` super-block via `_buildPrintBlock`.
+2. Inserts (or `replaceWith`s) into `document.body`.
+3. Adds `body.printing-reflection`, calls `window.print()`.
+4. Reuses the existing `@media print` rules from `components.css` (added in Phase 10A v2). No new CSS needed.
+5. `afterprint` window listener clears `body.printing-reflection` when the dialog closes.
+
+### What ships vs what's deferred
+
+| Concern                                                             | Status                                    |
+| ------------------------------------------------------------------- | ----------------------------------------- |
+| `<sim-text-response>` inline component                              | Shipped                                   |
+| `<sim-practice-question>` do-then-reveal + 3-chip rating            | Shipped                                   |
+| `<sim-reflection-export>` page-wide aggregator side panel           | Shipped                                   |
+| `<sim-checklist>` export consolidation (refactor)                   | Shipped                                   |
+| Per-instance localStorage persistence (text-response, practice)     | Shipped                                   |
+| Three-way mutual exclusion (data-card / checklist / export)         | Shipped                                   |
+| Section grouping in markdown + PDF (alphabetical, DOM-order within) | Shipped                                   |
+| Empty-portfolio guard                                               | Shipped                                   |
+| Clear-all (with confirm)                                            | Shipped                                   |
+| Topic-page emoji-free pass                                          | Shipped                                   |
+| Mobile/tablet responsive panel tweaks                               | Deferred (polish phase)                   |
+| Whole-topic-page print stylesheet                                   | Deferred (spec §12 polish)                |
+| Cross-topic portfolio aggregator                                    | Deferred (out of scope; possibly never)   |
+| Server-side persistence                                             | Deferred (out of scope; possibly never)   |
+| Animated check transitions; fancier progress visuals                | Deferred                                  |
+| `<sim-engine>` private API → public                                 | Deferred (still on step-6 follow-up list) |
+| `<slot>` reinstatement in `<sim-coachmark>`                         | Deferred (still on step-6 follow-up list) |

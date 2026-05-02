@@ -210,6 +210,49 @@ This phase **supersedes phase 10A v1 (PR #7)**, which shipped an inline-replacem
 - More sophisticated mutual-exclusion choreography (e.g., wait for sibling slide-out to complete before sliding in — current runs both transitions concurrently).
 - The two follow-up tasks from step 6 — `<sim-engine>` private API to public; reinstate `<slot>` in `<sim-coachmark>`.
 
+### Phase 10B — Interactive reflection portfolio
+
+Four commits introducing three new interactive components and refactoring `<sim-checklist>` so the topic-page export consolidates into a single side-panel aggregator:
+
+- `feat(core)`: `<sim-text-response>` (inline textarea + persistence) and `<sim-practice-question>` (do-then-reveal with 3-chip self-rating)
+- `feat(core)`: `<sim-reflection-export>` aggregator side panel + `<sim-checklist>` export refactor
+- `feat(examples)`: topic-page wires bell-ringer + practice + exit-ticket + export panel; the sticky header now hosts both top-level session-control buttons (Tweaks + Save your work). The Tweaks button was hoisted out of its prior in-page row as part of this work, so the topic page no longer carries a separate button row above the sim. Drops the emoji from the Reflect button label.
+- `docs`: this CHANGELOG entry + architecture.md update
+
+**Test count:** +22 net (7 + 7 + 9 + (3 added − 1 dropped) on `<sim-checklist>` ).
+
+**Public surface added (`@TBD/simengine`):**
+
+- New custom elements:
+  - `<sim-text-response topic level id section label>` — inline persisted textarea
+  - `<sim-practice-question topic level id section label>` with `[slot="answer"]` — do-then-reveal + 3-chip self-rating
+  - `<sim-reflection-export topic level>` — page-wide portfolio aggregator side panel (LEFT, joins existing mutual-exclusion contract)
+- Events (bubbles + composed): `text-response-changed`, `practice-changed`, `portfolio-exported`, plus `panel-opened` / `panel-closed` on the new aggregator.
+- Imperative API: `getState()`, `clear()`, `focus()` on text-response; `getState()`, `clear()` on practice; `open()`, `close()`, `exportMarkdown(triggerDownload?)`, `exportPDF()` on the aggregator.
+
+**Public surface changed:**
+
+- `<sim-checklist>.exportPDF()` removed. Per-component PDF synthesis is dead code now that the aggregator owns PDF output. Acceptable breaking change because PR #8 just shipped (no consumers) and the package scope is `@TBD/*` (pre-publish).
+- `<sim-checklist>.getState()` extended to include `items: string[]` so the aggregator can render the checklist body without reaching into private state. Additive; existing consumers unaffected.
+- `<sim-checklist>.clear()` added (no-confirm public method) for the aggregator's "Clear all my work" link.
+
+**Persistence:**
+
+- `aisc-simengine:textresponse:<topic>:<level>:<id>` — `{ value: string }`
+- `aisc-simengine:practice:<topic>:<level>:<id>` — `{ attempt, revealed, rating }`
+- `aisc-simengine:checklist:<topic>:<level>` — unchanged
+
+**Topic-page UX touch:** the existing Reflect button drops its emoji prefix. Topic page is now emoji-free overall.
+
+**Known follow-ups (deferred post-10B):**
+
+- Mobile/tablet responsive tweaks for any panel.
+- Whole-topic-page print stylesheet (still §12 polish).
+- Cross-topic portfolio aggregation (one export covering multiple topic pages).
+- Server-side persistence / accounts.
+- Animated check transitions; fancier progress / status visualisations.
+- The two long-standing step-6 follow-ups (`<sim-engine>` private API → public; reinstate `<slot>` in `<sim-coachmark>`).
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.
