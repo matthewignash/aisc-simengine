@@ -257,6 +257,14 @@ Four commits introducing three new interactive components and refactoring `<sim-
 
 - Bell ringer reverts to paper-only static prose. The prompts ("Label every symbol", "Circle the variable") imply physical-paper actions that don't translate cleanly to a textarea. The three `<sim-text-response>` instances under `section="bell-ringer"` are removed from `examples/topic-page/index.html`; the `<ol>` returns to plain `<li>` items framed as "5 minutes — from memory, in your notebook." `<sim-text-response>` itself is unchanged and still used by the exit ticket (3 instances). The aggregator's `bell-ringer` section heading simply doesn't render when no components on the page declare that section — no aggregator code change needed.
 
+### Topic-page print stylesheet (post-10B)
+
+- Whole-topic-page print mode: Cmd+P on the topic page now produces a clean classroom handout. UI chrome (top strip, sticky header, side panels, "Next topic" placeholder) hidden; sim canvas replaced with a "Interactive simulation — see online at \[URL\]" placeholder line driven by `data-print-url` on the `.sim-shell` element; page-break hints on cohesive sections; URL appendices on `<a href>` links suppressed.
+- Per-component print rules: `<sim-text-response>` hides its textarea + char-count footer; `<sim-practice-question>` hides its attempt textarea, Show-answer button, and 3-chip rating row. The practice question's slotted model answer prints only if the student/teacher clicked Show answer (mirrors the worked example's `<details>` default behavior).
+- Coexists with the reflection-only print mode from Phase 10A v2 — the whole-page rules gate on `body:not(.printing-reflection)`, so `<sim-reflection-export>.exportPDF()` continues to produce reflection-only output uncontaminated by handout layout.
+- +2 lightweight tests assert the print-rule presence in each affected component's HOST_STYLES (catches accidental deletion in future refactors). Manual Chrome print preview is the real verification.
+- Page authors opt in to the sim placeholder by setting `data-print-url` on the `.sim-shell` element. If the attribute is missing, the placeholder line still prints — just without a URL.
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.

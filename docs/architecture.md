@@ -435,3 +435,28 @@ PDF:
 | Animated check transitions; fancier progress visuals                | Deferred                                  |
 | `<sim-engine>` private API → public                                 | Deferred (still on step-6 follow-up list) |
 | `<slot>` reinstatement in `<sim-coachmark>`                         | Deferred (still on step-6 follow-up list) |
+
+## Topic-page print stylesheet
+
+Two-mode print contract layered on top of the existing CSS:
+
+- **Reflection-only mode** (Phase 10A v2 / PR #8): `<sim-reflection-export>.exportPDF()` synthesizes a `#print-reflection-output` block in `document.body`, adds `body.printing-reflection`, calls `window.print()`. The `@media print` rules gate on `.printing-reflection` and hide everything except the synthesized block. `afterprint` listener removes the class. Used for portfolio-only output.
+- **Whole-page handout mode**: a teacher hits Cmd+P from the browser. `body.printing-reflection` is NOT set. The `@media print` rules gate on `body:not(.printing-reflection)` and produce a classroom handout: UI chrome hidden, sim section replaced with a "see online" placeholder via `attr(data-print-url)`, side panels hidden, link URL appendices suppressed, page-break hints on cohesive blocks.
+
+The two modes don't compete because their selectors are mutually exclusive on the `.printing-reflection` class. The reflection-only rules ship in `components.css` (added in PR #8). The whole-page rules ship at the END of the same file, gated on the `:not(.printing-reflection)` selector.
+
+### Per-component print rules
+
+Components with shadow DOM (`<sim-text-response>`, `<sim-practice-question>`) carry their own `@media print` blocks inside `HOST_STYLES`. These scope to the shadow root via the singleton `adoptedStyleSheets` pattern and apply at print time alongside the global rules. Convention: every interactive component owns its print presentation. Future contributors adding a new interactive element should add the corresponding `@media print` block in HOST_STYLES — the regression test pattern from `sim-text-response.test.js` / `sim-practice-question.test.js` provides a template.
+
+### Sim placeholder contract
+
+The page author opts in to the sim placeholder by setting `data-print-url="<URL>"` on the `.sim-shell` element. The print rule:
+
+```css
+.sim-shell::after {
+  content: 'Interactive simulation — see online at ' attr(data-print-url);
+}
+```
+
+falls back to an empty URL string if the attribute is missing. The placeholder line still prints — useful even before the real URL is locked.

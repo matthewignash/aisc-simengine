@@ -239,12 +239,14 @@
       </section>
 
       <!-- 9. The sim -->
-      <sim-engine sim="gas-laws" id="sim">
-        <div class="sim-fallback">
-          <p>Loading the simulation… enable JavaScript to run it.</p>
-        </div>
-      </sim-engine>
-      <sim-tweaks-panel for="sim"></sim-tweaks-panel>
+      <div class="sim-shell" data-print-url="https://aisc-sims.example/s1.5-gas-laws">
+        <sim-engine sim="gas-laws" id="sim">
+          <div class="sim-fallback">
+            <p>Loading the simulation… enable JavaScript to run it.</p>
+          </div>
+        </sim-engine>
+        <sim-tweaks-panel for="sim"></sim-tweaks-panel>
+      </div>
 
       <!-- 10. Worked example -->
       <section class="ib-worked">
