@@ -27,6 +27,7 @@ import './components/sim-coachmark.js';
 import './components/sim-checklist.js';
 import './components/sim-text-response.js';
 import './components/sim-practice-question.js';
+import './components/sim-reflection-export.js';
 
 import gasLaws from './sims/gas-laws/index.js';
 import { registerSim as _registerForBoot } from './sims/registry.js';

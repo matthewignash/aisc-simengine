@@ -3,10 +3,14 @@
  *
  * Reads slotted <li> items at upgrade and renders them as interactive checkbox
  * rows in shadow DOM. State + an optional free-text reflection textarea persist
- * to localStorage keyed by topic + level. Three action buttons:
- *   - 📄 Download .md  → one-click markdown download
- *   - 🖨 Save as PDF   → window.print() into a synthesized print block
+ * to localStorage keyed by topic + level. One action button:
  *   - Reset            → window.confirm() prompt; clears state + storage
+ *
+ * Phase 10B: in-panel export buttons (Download .md / Save as PDF) were
+ * removed. Export is owned by <sim-reflection-export>, which scans every
+ * source on the page and builds a portfolio-level export. This component
+ * still exposes exportMarkdown() (@internal) and getState()/clear() so the
+ * aggregator can pull data and the page-level Clear-all link can wipe it.
  *
  * Layout: position: fixed; top: 80px; left: 16px; width: 320px. Slides in
  * from the left edge of the viewport via the [data-open] attribute. Same
@@ -20,14 +24,15 @@
  *   - panel-opened: { source: this } — fires on open
  *   - panel-closed: { source: this } — fires on close
  *   - checklist-changed: { topic, level, checkedCount, total, freeText }
- *   - checklist-exported: { topic, level, format: 'md' | 'pdf' }
+ *   - checklist-exported: { topic, level, format: 'md' } — only when
+ *     exportMarkdown(true) is called
  *   - checklist-reset: { topic, level }
  *
  * Imperative API:
  *   - open() / close() — explicit panel lifecycle (sets/removes data-open)
- *   - getState() → { topic, level, checkedItems: number[], freeText: string }
- *   - exportMarkdown(triggerDownload?) → string
- *   - exportPDF() → triggers window.print()
+ *   - getState() → { topic, level, items, checkedItems, freeText }
+ *   - clear() — clear state + storage with no confirmation prompt
+ *   - exportMarkdown(triggerDownload?) → string  (@internal)
  *
  * DOM-safety: all rendering uses createElement + textContent. No .innerHTML.
  */
@@ -328,12 +333,8 @@ class SimChecklistElement extends HTMLElement {
 
     const actions = document.createElement('div');
     actions.className = 'sim-checklist__actions';
-    const mdBtn = this._makeButton('📄 Download .md', 'download-md', () =>
-      this.exportMarkdown(true)
-    );
-    const pdfBtn = this._makeButton('🖨 Save as PDF', 'save-pdf', () => this.exportPDF());
     const resetBtn = this._makeButton('Reset', 'reset', () => this._onReset(), true);
-    actions.append(mdBtn, pdfBtn, resetBtn);
+    actions.append(resetBtn);
 
     wrap.append(head, list, textarea, actions);
     root.appendChild(wrap);
@@ -448,11 +449,11 @@ class SimChecklistElement extends HTMLElement {
     );
   }
 
-  _onReset() {
-    const confirmed = window.confirm(
-      'Clear all checks and reflection text? This cannot be undone.'
-    );
-    if (!confirmed) return;
+  _clearState() {
+    if (this._textareaDebounce) {
+      clearTimeout(this._textareaDebounce);
+      this._textareaDebounce = null;
+    }
     this._state = { checkedItems: [], freeText: '' };
     try {
       localStorage.removeItem(this._storageKey());
@@ -470,6 +471,22 @@ class SimChecklistElement extends HTMLElement {
         composed: true,
       })
     );
+  }
+
+  _onReset() {
+    const confirmed = window.confirm(
+      'Clear all checks and reflection text? This cannot be undone.'
+    );
+    if (!confirmed) return;
+    this._clearState();
+  }
+
+  /**
+   * Clear state + storage + dispatch checklist-reset, no confirmation prompt.
+   * Used by <sim-reflection-export>'s "Clear all my work" link.
+   */
+  clear() {
+    this._clearState();
   }
 
   // ── Panel lifecycle ─────────────────────────────────────
@@ -562,6 +579,7 @@ class SimChecklistElement extends HTMLElement {
     return {
       topic: this.getAttribute('topic') || 'default',
       level: this.getAttribute('level') || 'default',
+      items: this._items.slice(),
       checkedItems: this._state.checkedItems.slice(),
       freeText: this._state.freeText,
     };
@@ -572,6 +590,12 @@ class SimChecklistElement extends HTMLElement {
    * `triggerDownload` is true, also creates a Blob and triggers a browser
    * file download.
    *
+   * Phase 10B: this method is no longer wired to a UI button (the
+   * Download .md button was removed from the panel). Kept on the prototype
+   * because <sim-reflection-export> may invoke it directly when building
+   * the portfolio export.
+   *
+   * @internal
    * @param {boolean} [triggerDownload]
    * @returns {string}
    */
@@ -615,72 +639,6 @@ class SimChecklistElement extends HTMLElement {
     }
 
     return md;
-  }
-
-  /**
-   * Synthesizes the print block, sets body.printing-reflection, and calls
-   * window.print(). The afterprint listener (registered in connectedCallback)
-   * removes the body class when the print dialog closes.
-   */
-  exportPDF() {
-    const state = this.getState();
-    const newBlock = this._buildPrintBlock(state);
-
-    const old = document.getElementById('print-reflection-output');
-    if (old) old.replaceWith(newBlock);
-    else document.body.appendChild(newBlock);
-
-    document.body.classList.add('printing-reflection');
-    window.print();
-
-    this.dispatchEvent(
-      new CustomEvent('checklist-exported', {
-        detail: { topic: state.topic, level: state.level, format: 'pdf' },
-        bubbles: true,
-        composed: true,
-      })
-    );
-  }
-
-  _buildPrintBlock(state) {
-    const container = document.createElement('div');
-    container.id = 'print-reflection-output';
-    container.setAttribute('aria-hidden', 'true');
-
-    const h1 = document.createElement('h1');
-    h1.textContent = `${state.topic} — Reflection`;
-    container.appendChild(h1);
-
-    const meta = document.createElement('p');
-    meta.className = 'reflection-meta';
-    const date = new Date().toISOString().slice(0, 10);
-    meta.textContent = `Level: ${state.level} · Date: ${date}`;
-    container.appendChild(meta);
-
-    const h2 = document.createElement('h2');
-    h2.textContent = this.getAttribute('label') || 'Checklist';
-    container.appendChild(h2);
-
-    const ul = document.createElement('ul');
-    for (let i = 0; i < this._items.length; i++) {
-      const li = document.createElement('li');
-      if (state.checkedItems.includes(i)) li.classList.add('checked');
-      li.textContent = this._items[i];
-      ul.appendChild(li);
-    }
-    container.appendChild(ul);
-
-    if (state.freeText.trim()) {
-      const h2b = document.createElement('h2');
-      h2b.textContent = 'My reflection';
-      container.appendChild(h2b);
-      const div = document.createElement('div');
-      div.className = 'reflection-text';
-      div.textContent = state.freeText;
-      container.appendChild(div);
-    }
-
-    return container;
   }
 }
 

@@ -122,43 +122,6 @@ describe('<sim-checklist>', () => {
     expect(textarea.value).toBe('');
   });
 
-  it('Download .md generates correct markdown payload', async () => {
-    const blobs = [];
-    const origCreate = URL.createObjectURL;
-    const origRevoke = URL.revokeObjectURL;
-    URL.createObjectURL = vi.fn((blob) => {
-      blobs.push(blob);
-      return 'blob:fake-url';
-    });
-    URL.revokeObjectURL = vi.fn();
-
-    try {
-      localStorage.setItem(
-        STORAGE_KEY_SL,
-        JSON.stringify({
-          checkedItems: [0, 2],
-          freeText: 'I got stuck on the units.',
-        })
-      );
-      const el = await mount({ items: SAMPLE_ITEMS, open: true });
-      const mdBtn = el.shadowRoot.querySelector('button[data-action="download-md"]');
-      mdBtn.click();
-      expect(blobs).toHaveLength(1);
-      const text = await blobs[0].text();
-      expect(text).toContain('# s1.5-gas-laws — Reflection');
-      expect(text).toContain('**Level:** sl');
-      expect(text).toContain('## Success criteria');
-      expect(text).toContain('- [x] Describe what happens to P');
-      expect(text).toContain('- [ ] Calculate P, V, T, or n');
-      expect(text).toContain('- [x] Explain the shape of a P–V graph');
-      expect(text).toContain('## My reflection');
-      expect(text).toContain('I got stuck on the units.');
-    } finally {
-      URL.createObjectURL = origCreate;
-      URL.revokeObjectURL = origRevoke;
-    }
-  });
-
   it('Reset clears state, localStorage, and emits checklist-reset event', async () => {
     localStorage.setItem(
       STORAGE_KEY_SL,
@@ -282,5 +245,49 @@ describe('<sim-checklist>', () => {
     const md = el.exportMarkdown(false);
     expect(md).toContain('# default — Reflection');
     expect(md).toContain('## Success criteria');
+  });
+
+  it('exportMarkdown(false) returns the .md string without triggering download', async () => {
+    localStorage.setItem(
+      STORAGE_KEY_SL,
+      JSON.stringify({
+        checkedItems: [0, 2],
+        freeText: 'I got stuck on the units.',
+      })
+    );
+    const el = await mount({ items: SAMPLE_ITEMS, open: true });
+    const md = el.exportMarkdown(false);
+    expect(md).toContain('# s1.5-gas-laws — Reflection');
+    expect(md).toContain('**Level:** sl');
+    expect(md).toContain('## Success criteria');
+    expect(md).toContain('- [x] Describe what happens to P');
+    expect(md).toContain('- [ ] Calculate P, V, T, or n');
+    expect(md).toContain('- [x] Explain the shape of a P–V graph');
+    expect(md).toContain('## My reflection');
+    expect(md).toContain('I got stuck on the units.');
+  });
+
+  it('getState() includes items array', async () => {
+    const el = await mount({ items: SAMPLE_ITEMS, open: true });
+    const state = el.getState();
+    expect(Array.isArray(state.items)).toBe(true);
+    expect(state.items).toHaveLength(3);
+    expect(state.items[0]).toContain('Describe what happens to P');
+  });
+
+  it('clear() empties state without prompting; matches Reset behavior post-confirm', async () => {
+    localStorage.setItem(
+      STORAGE_KEY_SL,
+      JSON.stringify({ checkedItems: [1], freeText: 'some text' })
+    );
+    const el = await mount({ items: SAMPLE_ITEMS, open: true });
+    expect(el.getState().checkedItems).toEqual([1]);
+    el.clear();
+    expect(el.getState()).toMatchObject({
+      items: SAMPLE_ITEMS,
+      checkedItems: [],
+      freeText: '',
+    });
+    expect(localStorage.getItem(STORAGE_KEY_SL)).toBeNull();
   });
 });
