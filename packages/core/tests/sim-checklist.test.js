@@ -57,6 +57,10 @@ describe('<sim-checklist>', () => {
     expect(spans).toHaveLength(3);
     expect(spans[0].textContent).toContain('Describe what happens to P');
     expect(el.querySelector('li')).toBeNull();
+    // a11y polish: progress span gets aria-live + aria-atomic
+    const progress = el.shadowRoot.querySelector('.sim-checklist__progress');
+    expect(progress.getAttribute('aria-live')).toBe('polite');
+    expect(progress.getAttribute('aria-atomic')).toBe('true');
   });
 
   it('progress indicator updates on check toggle', async () => {
@@ -229,5 +233,54 @@ describe('<sim-checklist>', () => {
       })
     );
     expect(el.hasAttribute('data-open')).toBe(false);
+  });
+
+  it('does not crash when localStorage.setItem throws (private mode / quota)', async () => {
+    const origSetItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function () {
+      throw new Error('QuotaExceededError');
+    };
+    try {
+      const el = await mount({ items: SAMPLE_ITEMS, open: true });
+      const checkboxes = el.shadowRoot.querySelectorAll(
+        '.sim-checklist__list input[type="checkbox"]'
+      );
+      // Toggling a checkbox triggers _saveState. Should not throw.
+      expect(() => {
+        checkboxes[0].checked = true;
+        checkboxes[0].dispatchEvent(new Event('change'));
+      }).not.toThrow();
+
+      // Reset path also calls localStorage.removeItem — also should not throw
+      // even when storage is broken.
+      const origRemoveItem = Storage.prototype.removeItem;
+      Storage.prototype.removeItem = function () {
+        throw new Error('storage broken');
+      };
+      const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+      try {
+        const resetBtn = el.shadowRoot.querySelector('button[data-action="reset"]');
+        expect(() => resetBtn.click()).not.toThrow();
+      } finally {
+        confirmSpy.mockRestore();
+        Storage.prototype.removeItem = origRemoveItem;
+      }
+    } finally {
+      Storage.prototype.setItem = origSetItem;
+    }
+  });
+
+  it('mounts with zero items and renders "0 of 0 checked"', async () => {
+    const el = await mount({ topic: 'default', open: true });
+    const progress = el.shadowRoot.querySelector('.sim-checklist__progress');
+    expect(progress.textContent).toBe('0 of 0 checked');
+    const checkboxes = el.shadowRoot.querySelectorAll(
+      '.sim-checklist__list input[type="checkbox"]'
+    );
+    expect(checkboxes).toHaveLength(0);
+    // Markdown export with no items produces just the header + empty checklist section
+    const md = el.exportMarkdown(false);
+    expect(md).toContain('# default — Reflection');
+    expect(md).toContain('## Success criteria');
   });
 });
