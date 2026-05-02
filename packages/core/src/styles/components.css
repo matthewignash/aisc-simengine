@@ -1122,6 +1122,164 @@
   }
 }
 
+/* Animated SVG diagrams below each example photo. Schematic loops that
+   show the gas-law physics in motion. Always-loop on screen; pause on
+   prefers-reduced-motion or print. Inline SVGs in the topic-page HTML
+   carry the per-element class names referenced by the @keyframes below. */
+.topic-background__animation {
+  display: block;
+  width: 100%;
+  aspect-ratio: 7 / 4;
+  margin-top: var(--sp-2, 8px);
+  background: var(--ib-navy-050, #f5f7fc);
+  border-radius: var(--r-sm, 4px);
+}
+
+/* ── Boyle's law: piston compressing + pressure indicator scaling ── */
+@keyframes anim-boyle-piston-translate {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-80px);
+  }
+}
+.boyle-piston {
+  animation: anim-boyle-piston-translate 4s ease-in-out infinite;
+}
+@keyframes anim-boyle-pressure-scale {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(2.5);
+  }
+}
+.boyle-pressure {
+  animation: anim-boyle-pressure-scale 4s ease-in-out infinite;
+  transform-origin: 8px 80px;
+}
+
+/* ── Charles's law: balloon scaling + thermometer fill rising ── */
+@keyframes anim-charles-balloon {
+  0%,
+  100% {
+    transform: scale(0.7);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+.charles-balloon {
+  animation: anim-charles-balloon 4s ease-in-out infinite;
+  transform-origin: 190px 130px;
+}
+@keyframes anim-charles-thermometer {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.charles-thermometer-fill {
+  animation: anim-charles-thermometer 4s ease-in-out infinite;
+  transform-origin: 47px 120px;
+}
+
+/* ── Gay-Lussac's law: pressure-gauge needle rotating + thermometer fill ── */
+@keyframes anim-gay-lussac-needle {
+  0%,
+  100% {
+    transform: rotate(-60deg);
+  }
+  50% {
+    transform: rotate(60deg);
+  }
+}
+.gay-lussac-needle {
+  animation: anim-gay-lussac-needle 4s ease-in-out infinite;
+  transform-origin: 0 0;
+}
+@keyframes anim-gay-lussac-thermometer {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.gay-lussac-thermometer-fill {
+  animation: anim-gay-lussac-thermometer 4s ease-in-out infinite;
+  transform-origin: 35px 125px;
+}
+
+/* ── Avogadro's law: cylinders growing + particles fading in ── */
+@keyframes anim-avogadro-grow {
+  0%,
+  100% {
+    transform: scaleY(0.5);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.avogadro-left,
+.avogadro-right {
+  animation: anim-avogadro-grow 4s ease-in-out infinite;
+  transform-origin: center 130px;
+}
+@keyframes anim-avogadro-fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.avogadro-p1 {
+  animation: anim-avogadro-fade 4s ease-in-out infinite;
+  animation-delay: 0s;
+}
+.avogadro-p2 {
+  animation: anim-avogadro-fade 4s ease-in-out infinite;
+  animation-delay: 0.4s;
+}
+.avogadro-p3 {
+  animation: anim-avogadro-fade 4s ease-in-out infinite;
+  animation-delay: 0.8s;
+}
+.avogadro-p4 {
+  animation: anim-avogadro-fade 4s ease-in-out infinite;
+  animation-delay: 1.2s;
+}
+.avogadro-p5 {
+  animation: anim-avogadro-fade 4s ease-in-out infinite;
+  animation-delay: 1.6s;
+}
+
+/* ── Reduced motion: pause all the per-law animations ── */
+@media (prefers-reduced-motion: reduce) {
+  .topic-background__animation * {
+    animation-play-state: paused !important;
+  }
+}
+
+/* ── Print: pause animations; SVG renders as a static representative frame ── */
+@media print {
+  body:not(.printing-reflection) .topic-background__animation * {
+    animation-play-state: paused !important;
+  }
+  body:not(.printing-reflection) .topic-background__animation {
+    aspect-ratio: 7 / 4;
+    max-height: 1.2in;
+  }
+}
+
 /* Next-topic link card. */
 .topic-next {
   display: block;
