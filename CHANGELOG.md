@@ -265,6 +265,13 @@ Four commits introducing three new interactive components and refactoring `<sim-
 - +2 lightweight tests assert the print-rule presence in each affected component's HOST_STYLES (catches accidental deletion in future refactors). Manual Chrome print preview is the real verification.
 - Page authors opt in to the sim placeholder by setting `data-print-url` on the `.sim-shell` element. If the attribute is missing, the placeholder line still prints — just without a URL.
 
+### Mobile-panel responsive (post-10B)
+
+- Each of the four side panels (`<sim-data-card>`, `<sim-checklist>`, `<sim-reflection-export>`, `<sim-tweaks-panel>`) gains a `@media (max-width: 720px)` block in its `HOST_STYLES` that shrinks the host width to `calc(100vw - 32px)` capped at `max-width: 320px`. Below the breakpoint the panel still floats with the same `top: 80px` and `left: 16px` (or `right: 16px`) offsets, the same slide animation, and the same mutual-exclusion contract — just narrower so it fits inside a phone-width viewport with 16 px margins on each side.
+- Reuses the project's existing 720 px breakpoint (the LISC layout rule in `components.css`).
+- +4 lightweight CSS-string presence tests (one per panel; same source-read pattern as PR #12's print-rule tests).
+- Out of scope (file as follow-up if needed): sticky-header overflow at narrow widths, bottom-drawer mobile pattern, tablet-specific tuning beyond what 720 px catches, touch-target sizing for the close × button.
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.

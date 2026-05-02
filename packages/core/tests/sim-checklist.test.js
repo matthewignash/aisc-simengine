@@ -290,4 +290,17 @@ describe('<sim-checklist>', () => {
     });
     expect(localStorage.getItem(STORAGE_KEY_SL)).toBeNull();
   });
+
+  it('HOST_STYLES includes a max-width: 720px @media block that shrinks the panel in place', async () => {
+    const fs = await import('node:fs/promises');
+    const path = await import('node:path');
+    const url = await import('node:url');
+    const here = path.dirname(url.fileURLToPath(import.meta.url));
+    const src = await fs.readFile(path.join(here, '../src/components/sim-checklist.js'), 'utf-8');
+    const m = src.match(/@media\s*\(\s*max-width:\s*720px\s*\)\s*\{([\s\S]*?)\}\s*\}/);
+    expect(m).not.toBeNull();
+    const block = m[1];
+    expect(block).toContain('width: calc(100vw - 32px)');
+    expect(block).toContain('max-width: 320px');
+  });
 });

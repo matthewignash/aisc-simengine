@@ -460,3 +460,17 @@ The page author opts in to the sim placeholder by setting `data-print-url="<URL>
 ```
 
 falls back to an empty URL string if the attribute is missing. The placeholder line still prints — useful even before the real URL is locked.
+
+## Mobile-panel responsive
+
+All four floating side panels carry a `@media (max-width: 720px)` block in their HOST_STYLES that shrinks the host width to `calc(100vw - 32px)` capped at `max-width: 320px`. Below the breakpoint, the panel still floats with the same top/side offsets and slide animation, just narrower. Desktop layout unchanged.
+
+The convention is now three concentric @media layers per panel, all inside HOST_STYLES:
+
+1. `@media (prefers-reduced-motion: reduce)` — disables the slide transition (PR #9).
+2. `@media print` — hides interactive UI in print mode (PR #12, applies to `<sim-text-response>` and `<sim-practice-question>` only).
+3. `@media (max-width: 720px)` — shrinks the panel in place for phone-width viewports (this section).
+
+Future contributors adding a new floating panel should include the prefers-reduced-motion and max-width: 720px blocks. The print rule depends on whether the panel has interactive UI to hide (the export aggregator's panel, for example, is fully hidden in print via global CSS rather than per-component rules).
+
+The 720 px breakpoint matches the existing LISC single-column rule in `components.css`. Single shared breakpoint for the whole topic page.
