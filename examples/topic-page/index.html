@@ -35,6 +35,10 @@
           <span class="sim-switch__track" aria-hidden="true"></span>
           <span class="sim-switch__label">HL mode</span>
         </label>
+        <button class="ib-btn ib-btn--ghost" id="tweaks-button">⚙ Tweaks</button>
+        <button id="export-button" class="ib-btn ib-btn--ghost" aria-label="Save your work">
+          Save your work
+        </button>
       </div>
     </header>
 
@@ -63,15 +67,33 @@
       <section class="ib-bellringer">
         <h2>Bell ringer</h2>
         <p><strong>5 minutes — from memory:</strong></p>
-        <ol>
-          <li>Write the ideal gas equation. Label every symbol.</li>
+        <ol class="ib-bellringer__list">
           <li>
-            Circle the variable that is <em>inversely</em> proportional to pressure at constant
-            temperature and amount of gas.
+            <sim-text-response
+              topic="s1.5-gas-laws"
+              level="sl"
+              id="bell-1"
+              section="bell-ringer"
+              label="Write the ideal gas equation. Label every symbol."
+            ></sim-text-response>
           </li>
           <li>
-            In one sentence, describe what happens to the speed of gas particles when temperature
-            doubles at constant volume.
+            <sim-text-response
+              topic="s1.5-gas-laws"
+              level="sl"
+              id="bell-2"
+              section="bell-ringer"
+              label="Circle the variable that is inversely proportional to pressure at constant temperature and amount of gas."
+            ></sim-text-response>
+          </li>
+          <li>
+            <sim-text-response
+              topic="s1.5-gas-laws"
+              level="sl"
+              id="bell-3"
+              section="bell-ringer"
+              label="In one sentence, describe what happens to the speed of gas particles when temperature doubles at constant volume."
+            ></sim-text-response>
           </li>
         </ol>
       </section>
@@ -225,16 +247,11 @@
               class="ib-btn ib-btn--ghost"
               style="margin-top: var(--sp-3, 12px); align-self: flex-start"
             >
-              📝 Reflect on these criteria
+              Reflect on these criteria
             </button>
           </div>
         </div>
       </section>
-
-      <!-- Tweaks button row above the sim -->
-      <div style="display: flex; gap: 16px; align-items: center; margin: 16px 0">
-        <button class="ib-btn ib-btn--ghost" id="tweaks-button">⚙ Tweaks</button>
-      </div>
 
       <!-- 9. The sim -->
       <sim-engine sim="gas-laws" id="sim">
@@ -268,16 +285,21 @@
       <!-- 11. Practice question -->
       <section class="ib-practice">
         <h2>Practice question</h2>
-        <p>
-          <strong>Calculate</strong> the volume occupied by 0.25 mol of an ideal gas at 250 K and
-          150 kPa.
-        </p>
-        <details class="ib-answer">
-          <summary>Show answer</summary>
-          <p>
-            <code>V = nRT / P = (0.25 × 8.314 × 250) / (150 × 10³) = 3.46 × 10⁻³ m³ ≈ 3.46 L</code>
-          </p>
-        </details>
+        <sim-practice-question
+          topic="s1.5-gas-laws"
+          level="sl"
+          id="practice-1"
+          section="practice"
+          label="Calculate the volume occupied by 0.25 mol of an ideal gas at 250 K and 150 kPa."
+        >
+          <div slot="answer">
+            <p>
+              <code
+                >V = nRT / P = (0.25 × 8.314 × 250) / (150 × 10³) = 3.46 × 10⁻³ m³ ≈ 3.46 L</code
+              >
+            </p>
+          </div>
+        </sim-practice-question>
       </section>
 
       <!-- 12. Command term reminder -->
@@ -317,10 +339,34 @@
       <!-- 15. Exit ticket -->
       <section class="ib-exitticket">
         <h2>Exit ticket</h2>
-        <ol>
-          <li>What surprised you most about how pressure changes with temperature?</li>
-          <li>If you doubled the amount of gas at constant T and V, what happens to P? Why?</li>
-          <li>One thing you'd like to understand more clearly:</li>
+        <ol class="ib-exitticket__list">
+          <li>
+            <sim-text-response
+              topic="s1.5-gas-laws"
+              level="sl"
+              id="exit-1"
+              section="exit-ticket"
+              label="What surprised you most about how pressure changes with temperature?"
+            ></sim-text-response>
+          </li>
+          <li>
+            <sim-text-response
+              topic="s1.5-gas-laws"
+              level="sl"
+              id="exit-2"
+              section="exit-ticket"
+              label="If you doubled the amount of gas at constant T and V, what happens to P? Why?"
+            ></sim-text-response>
+          </li>
+          <li>
+            <sim-text-response
+              topic="s1.5-gas-laws"
+              level="sl"
+              id="exit-3"
+              section="exit-ticket"
+              label="One thing you'd like to understand more clearly."
+            ></sim-text-response>
+          </li>
         </ol>
       </section>
 
@@ -344,6 +390,7 @@
       <li>Calculate P, V, T, or n given the other three quantities.</li>
       <li>Explain the shape of a P–V graph at constant temperature and label its axes.</li>
     </sim-checklist>
+    <sim-reflection-export topic="s1.5-gas-laws" level="sl"></sim-reflection-export>
 
     <!--
       The IIFE bundle is used (not <script type="module">) so the page works
@@ -389,6 +436,12 @@
         for (const cl of document.querySelectorAll('sim-checklist')) {
           cl.setAttribute('level', level);
         }
+        // 6. Push level to every interactive reflection component on the page.
+        for (const el of document.querySelectorAll(
+          'sim-text-response, sim-practice-question, sim-reflection-export'
+        )) {
+          el.setAttribute('level', level);
+        }
       }
 
       // On load: restore from prefs (defaults to 'sl').
@@ -410,6 +463,10 @@
       document.getElementById('reflect-button').addEventListener('click', (e) => {
         e.stopPropagation();
         document.querySelector('sim-checklist').toggleAttribute('data-open');
+      });
+      document.getElementById('export-button').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.querySelector('sim-reflection-export').toggleAttribute('data-open');
       });
     </script>
   </body>
