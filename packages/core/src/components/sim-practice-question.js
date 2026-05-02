@@ -77,6 +77,16 @@ const HOST_STYLES = `
     color: var(--ib-white, #fff);
     border-color: var(--ib-navy-600, #2a46a3);
   }
+  @media print {
+    .sim-practice__textarea,
+    .sim-practice__show-answer,
+    .sim-practice__rating {
+      display: none;
+    }
+    .sim-practice__prompt {
+      font-weight: 500;
+    }
+  }
 `;
 
 const sheet = new CSSStyleSheet();

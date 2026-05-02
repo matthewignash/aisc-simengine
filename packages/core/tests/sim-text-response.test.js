@@ -119,4 +119,24 @@ describe('<sim-text-response>', () => {
       Storage.prototype.setItem = origSetItem;
     }
   });
+
+  it('HOST_STYLES includes an @media print rule that hides textarea + char-count', async () => {
+    const fs = await import('node:fs/promises');
+    const path = await import('node:path');
+    const url = await import('node:url');
+    const here = path.dirname(url.fileURLToPath(import.meta.url));
+    const src = await fs.readFile(
+      path.join(here, '../src/components/sim-text-response.js'),
+      'utf-8'
+    );
+    // The @media print block lives inside the HOST_STYLES template literal.
+    // Match `@media print { ... }` non-greedily and assert it hides both
+    // interactive children.
+    const m = src.match(/@media\s+print\s*\{([\s\S]*?)\}\s*\n\s*`/);
+    expect(m).not.toBeNull();
+    const printBlock = m[1];
+    expect(printBlock).toContain('.sim-text-response__textarea');
+    expect(printBlock).toContain('.sim-text-response__count');
+    expect(printBlock).toMatch(/display\s*:\s*none/);
+  });
 });

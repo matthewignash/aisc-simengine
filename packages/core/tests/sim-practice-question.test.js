@@ -145,4 +145,22 @@ describe('<sim-practice-question>', () => {
       warnSpy.mockRestore();
     }
   });
+
+  it('HOST_STYLES includes an @media print rule that hides textarea + show-answer + chips', async () => {
+    const fs = await import('node:fs/promises');
+    const path = await import('node:path');
+    const url = await import('node:url');
+    const here = path.dirname(url.fileURLToPath(import.meta.url));
+    const src = await fs.readFile(
+      path.join(here, '../src/components/sim-practice-question.js'),
+      'utf-8'
+    );
+    const m = src.match(/@media\s+print\s*\{([\s\S]*?)\}\s*\n\s*`/);
+    expect(m).not.toBeNull();
+    const printBlock = m[1];
+    expect(printBlock).toContain('.sim-practice__textarea');
+    expect(printBlock).toContain('.sim-practice__show-answer');
+    expect(printBlock).toContain('.sim-practice__rating');
+    expect(printBlock).toMatch(/display\s*:\s*none/);
+  });
 });

@@ -47,6 +47,15 @@ const HOST_STYLES = `
     font-size: var(--fs-13, 13px);
     color: var(--ib-ink-500, #6b7280);
   }
+  @media print {
+    .sim-text-response__textarea,
+    .sim-text-response__count {
+      display: none;
+    }
+    .sim-text-response__prompt {
+      font-weight: 500;
+    }
+  }
 `;
 
 const sheet = new CSSStyleSheet();

@@ -1191,3 +1191,73 @@
   line-height: 1.5;
   white-space: pre-wrap;
 }
+
+/* Phase polish: whole-topic-page print stylesheet.
+   Triggered by Cmd+P when body.printing-reflection is NOT set.
+   Coexists with the reflection-only print mode above (which gates on the
+   .printing-reflection class). The reflection-only rules already short-
+   circuit their own output; these whole-page rules apply uniformly in
+   @media print and produce a clean classroom handout. */
+@page {
+  margin: 0.75in;
+}
+
+@media print {
+  /* Body baseline: fill the printable area, drop the screen max-width cap. */
+  body {
+    max-width: none;
+  }
+  body:not(.printing-reflection) .sim-wrap.topic-page {
+    max-width: none;
+    padding: 0;
+  }
+
+  /* Hidden chrome (whole-page mode only). */
+  body:not(.printing-reflection) .sim-topstrip,
+  body:not(.printing-reflection) .topic-header,
+  body:not(.printing-reflection) sim-data-card,
+  body:not(.printing-reflection) sim-checklist,
+  body:not(.printing-reflection) sim-reflection-export,
+  body:not(.printing-reflection) sim-tweaks-panel,
+  body:not(.printing-reflection) #reflect-button,
+  body:not(.printing-reflection) .topic-next {
+    display: none !important;
+  }
+
+  /* Sim placeholder: hide the canvas + controls; render a one-line
+     "see online" line via ::after. The page author opts in by setting
+     data-print-url on the .sim-shell element. */
+  body:not(.printing-reflection) .sim-shell > * {
+    display: none !important;
+  }
+  body:not(.printing-reflection) .sim-shell::after {
+    content: 'Interactive simulation — see online at ' attr(data-print-url);
+    display: block;
+    padding: 12pt;
+    border: 1pt solid #999;
+    border-radius: 4pt;
+    font-style: italic;
+    color: #555;
+    text-align: center;
+  }
+
+  /* Drop URL appendices on links — Chrome/Safari/Firefox default behavior
+     adds (https://...) after every <a href>; that's noisy on a topic page
+     full of internal anchors and glossary terms. */
+  body:not(.printing-reflection) a[href]::after {
+    content: none;
+  }
+
+  /* Page-break hints — keep cohesive blocks together. */
+  body:not(.printing-reflection) .ib-bellringer,
+  body:not(.printing-reflection) .ib-concept,
+  body:not(.printing-reflection) .ib-equation,
+  body:not(.printing-reflection) .ib-worked,
+  body:not(.printing-reflection) .ib-practice,
+  body:not(.printing-reflection) .ib-mark,
+  body:not(.printing-reflection) .ib-misc,
+  body:not(.printing-reflection) .ib-exitticket,
+  body:not(.printing-reflection) .ib-understandings__list li {
+    break-inside: avoid;
+  }
+}
