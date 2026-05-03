@@ -73,6 +73,12 @@ const HOST_STYLES = `
       transition: none;
     }
   }
+  @media (max-width: 720px) {
+    :host {
+      width: calc(100vw - 32px);
+      max-width: 320px;
+    }
+  }
 `;
 
 const componentsSheet = new CSSStyleSheet();

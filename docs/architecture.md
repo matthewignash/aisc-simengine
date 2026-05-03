@@ -468,3 +468,17 @@ The Gas Laws topic page now includes a "topic-background" section between the to
 The section is intended for historical context, real-world applications, and IB international-mindedness content. The `.topic-background` CSS rule uses an amber left-accent border, distinguishing it visually from the navy-accented `.topic-intro` (concept exposition). Future topic pages adopting this pattern should target the same convention so the visual rhythm carries across the curriculum.
 
 For HL prose, a brief TOK (theory of knowledge) note is appropriate when the historical narrative supports it. SL prose distills the same lesson into one accessible sentence.
+
+## Mobile-panel responsive
+
+All four floating side panels carry a `@media (max-width: 720px)` block in their HOST_STYLES that shrinks the host width to `calc(100vw - 32px)` capped at `max-width: 320px`. Below the breakpoint, the panel still floats with the same top/side offsets and slide animation, just narrower. Desktop layout unchanged.
+
+The convention is now three concentric @media layers per panel, all inside HOST_STYLES:
+
+1. `@media (prefers-reduced-motion: reduce)` — disables the slide transition (PR #9).
+2. `@media print` — hides interactive UI in print mode (PR #12, applies to `<sim-text-response>` and `<sim-practice-question>` only).
+3. `@media (max-width: 720px)` — shrinks the panel in place for phone-width viewports (this section).
+
+Future contributors adding a new floating panel should include the prefers-reduced-motion and max-width: 720px blocks. The print rule depends on whether the panel has interactive UI to hide (the export aggregator's panel, for example, is fully hidden in print via global CSS rather than per-component rules).
+
+The 720 px breakpoint matches the existing LISC single-column rule in `components.css`. Single shared breakpoint for the whole topic page.
