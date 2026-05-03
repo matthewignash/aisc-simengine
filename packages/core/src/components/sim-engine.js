@@ -19,7 +19,8 @@
  *     emit `level-changed` when level toggles.
  *   - disconnectedCallback: stop the recorder; call sim.dispose if defined.
  *
- * Imperative API: setVariable, recordTrial, exportCSV, scenario, reset.
+ * Imperative API: setVariable, recordTrial, exportCSV, scenario, reset,
+ * dismissCoachmark, play, pause, step, redraw.
  */
 
 import componentsCss from '../styles/components.css?inline';
@@ -316,6 +317,31 @@ class SimEngineElement extends HTMLElement {
   pause() {
     if (!this._state) return;
     this._state.set('playing', false);
+  }
+
+  /**
+   * Advance the simulation by exactly one timestep, then paint. Safe to call
+   * while paused (intended for scrubbing through frames) or while running
+   * (advances an extra frame on top of the loop's ongoing ticks). No-op when
+   * the sim module has no `step` function.
+   *
+   * @public
+   * @param {number} [dt=1/60] - Timestep in seconds. Defaults to 1/60.
+   */
+  step(dt = 1 / 60) {
+    if (typeof this._sim?.step === 'function') this._sim.step(dt);
+    this._paintOnce();
+  }
+
+  /**
+   * Force a single render of the current state without advancing the sim.
+   * Useful when an external consumer mutates state via `setVariable()` while
+   * paused and wants the canvas to reflect the change immediately.
+   *
+   * @public
+   */
+  redraw() {
+    this._paintOnce();
   }
 
   /**

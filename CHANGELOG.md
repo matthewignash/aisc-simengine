@@ -283,6 +283,16 @@ Four commits introducing three new interactive components and refactoring `<sim-
 - +4 lightweight CSS-string presence tests (one per panel; same source-read pattern as PR #12's print-rule tests).
 - Out of scope (file as follow-up if needed): sticky-header overflow at narrow widths, bottom-drawer mobile pattern, tablet-specific tuning beyond what 720 px catches, touch-target sizing for the close × button.
 
+### Step-6 follow-ups (post-10B)
+
+Two long-deferred items from Step 6 (supporting components) ship together as PR #16:
+
+- **`<sim-engine>.step(dt?)` and `.redraw()`:** new public imperative-API methods. `step()` advances the simulation by exactly one timestep (default 1/60 s) and paints once — safe while paused (frame scrubbing) and while running (advances an extra frame). `redraw()` forces a single render without advancing the sim — useful when external consumers mutate state via `setVariable()` while paused and want the canvas to reflect the change immediately. Both are thin public wrappers over the existing private `_paintOnce` helper. The previously-deferred "private API → public" item turned out to be smaller than originally framed: `play()` and `pause()` were already public; only `step()` and `redraw()` were missing.
+- **`<sim-coachmark>` `<slot>` probe:** added a probe test against happy-dom 15.11.7 to determine whether slot composition is fixed in the current patch. The probe revealed partial support: `slot.assignedNodes({ flatten: true })` correctly returns projected text nodes, but `.textContent` on a shadow wrapper containing a `<slot>` still does NOT include the projected light-DOM text. Because the existing `<sim-coachmark>` tests read shadow content via `.textContent`, slot reinstatement would still break them. The textContent fallback stays. The probe test stays in the codebase asserting the broken-state (`.textContent` returns `''`) and will start FAILING when happy-dom fixes textContent traversal — alerting future readers that slot reinstatement is now safe.
+- Test count: 188 → 193 (+4 sim-engine tests, +1 happy-dom probe).
+- Bundle delta: ~+0.13 kB IIFE.
+- The `<sim-engine>` private-API item is removed from the `docs/architecture.md` deferred table; the `<sim-coachmark>` slot-reinstatement item is updated with the latest probe finding.
+
 ### Notes
 
 - npm package scope is `@TBD/*` (placeholder). It will be replaced with the final scope before any publish.

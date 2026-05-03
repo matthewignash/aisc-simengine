@@ -115,9 +115,11 @@ class SimCoachmarkElement extends HTMLElement {
     content.className = 'sim-coachmark__content';
     content.id = 'coachmark-content';
     // Mirror the host's text into the shadow content div. (A <slot> would be
-    // the natural shadow-DOM idiom, but happy-dom 15's slot composition does
-    // not project text through textContent reads in tests, so we copy directly.
-    // Real browsers see the same text either way.)
+    // the natural shadow-DOM idiom, but happy-dom 15.11.7 still does not
+    // propagate slotted text through .textContent reads in tests —
+    // confirmed by the PROBE in tests/sim-coachmark.test.js. Re-test on the
+    // next major upgrade (16.x or 17.x). Real browsers see the same text
+    // either way via the textContent copy.)
     content.textContent = this.textContent;
 
     const dismiss = document.createElement('button');
