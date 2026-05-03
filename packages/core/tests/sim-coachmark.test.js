@@ -111,4 +111,48 @@ describe('<sim-coachmark>', () => {
     sim.dismissCoachmark('cm-host-dismiss');
     expect(localStorage.getItem('aisc-simengine:coachmark:dismissed:cm-host-dismiss')).toBe('1');
   });
+
+  it('PROBE: happy-dom propagates slotted text through textContent reads (re-tested with the current happy-dom version)', async () => {
+    // Define a tiny throwaway component that uses a real <slot>. The
+    // <sim-coachmark> tests read shadow content via element.textContent, so
+    // the practically-relevant question is whether textContent on a shadow
+    // wrapper containing a <slot> includes the projected light-DOM text.
+    //
+    // Outcome on happy-dom 15.11.7: PARTIAL SUPPORT. slot.assignedNodes({
+    // flatten: true }) DOES return the projected text node correctly
+    // (modern API works), but reading .textContent on the wrapper that
+    // CONTAINS the <slot> still returns '' — slot composition is not
+    // reflected in textContent traversal. This means we CANNOT reinstate
+    // <slot> in <sim-coachmark> without breaking the existing tests that
+    // read via .textContent. The textContent workaround stays.
+    //
+    // The assertion below documents the broken state: textContent on a
+    // wrapper containing a <slot> with projected children returns ''. When
+    // happy-dom fixes this, the assertion will start FAILING, alerting
+    // future readers that the bug is fixed and slot reinstatement is now
+    // safe.
+    class SlotProbe extends HTMLElement {
+      connectedCallback() {
+        const root = this.attachShadow({ mode: 'open' });
+        const wrapper = document.createElement('div');
+        wrapper.id = 'wrap';
+        const slot = document.createElement('slot');
+        wrapper.appendChild(slot);
+        root.appendChild(wrapper);
+      }
+    }
+    if (!customElements.get('slot-probe-happy-dom')) {
+      customElements.define('slot-probe-happy-dom', SlotProbe);
+    }
+    const el = document.createElement('slot-probe-happy-dom');
+    el.textContent = 'hello world';
+    document.body.appendChild(el);
+    await Promise.resolve();
+    await Promise.resolve();
+    const wrap = el.shadowRoot.querySelector('#wrap');
+    // .textContent on the shadow wrapper does NOT traverse the slot to
+    // include projected light-DOM text in happy-dom 15.11.7 — this is the
+    // practical behavior that blocks slot reinstatement.
+    expect(wrap.textContent).toBe('');
+  });
 });

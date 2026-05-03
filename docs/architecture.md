@@ -279,17 +279,17 @@ Belt-and-suspenders against shadow-DOM event quirks. Verified by the dedicated r
 
 ### What ships vs what's deferred
 
-| Concern                                                | Status                                    |
-| ------------------------------------------------------ | ----------------------------------------- |
-| Singleton card per page                                | Shipped                                   |
-| Slide from left; coexists with right-side tweaks panel | Shipped                                   |
-| Multi-pill swap-in-place                               | Shipped                                   |
-| Outside-click ignores pill clicks (regression test)    | Shipped                                   |
-| Mobile/tablet responsive layout                        | Deferred (polish phase)                   |
-| Animated content-swap                                  | Deferred                                  |
-| Singleton-detection warning (two `<sim-data-card>`s)   | Deferred                                  |
-| `<slot>` reinstatement in `<sim-coachmark>`            | Deferred (still on step-6 follow-up list) |
-| `<sim-engine>` private API → public                    | Deferred (still on step-6 follow-up list) |
+| Concern                                                | Status                                                                            |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| Singleton card per page                                | Shipped                                                                           |
+| Slide from left; coexists with right-side tweaks panel | Shipped                                                                           |
+| Multi-pill swap-in-place                               | Shipped                                                                           |
+| Outside-click ignores pill clicks (regression test)    | Shipped                                                                           |
+| Mobile/tablet responsive layout                        | Deferred (polish phase)                                                           |
+| Animated content-swap                                  | Deferred                                                                          |
+| Singleton-detection warning (two `<sim-data-card>`s)   | Deferred                                                                          |
+| `<slot>` reinstatement in `<sim-coachmark>`            | Probed in PR #16; happy-dom 15.11.7 still broken. Re-test on 16.x / 17.x upgrade. |
+| `<sim-engine>` step(dt?) and redraw() public methods   | Shipped in PR #16. play() and pause() already existed.                            |
 
 ## Phase 10A v2 — Side-panel checklist + reflection export
 
@@ -339,24 +339,24 @@ The Reflect button's click handler calls `e.stopPropagation()` to prevent the ch
 
 ### What ships vs what's deferred
 
-| Concern                                                 | Status                                    |
-| ------------------------------------------------------- | ----------------------------------------- |
-| `<sim-checklist>` as slide-out side panel from the left | Shipped                                   |
-| Slot-based `<li>` API                                   | Shipped                                   |
-| Per-topic-per-level localStorage                        | Shipped                                   |
-| Free-text reflection textarea (debounced auto-save)     | Shipped                                   |
-| .md download                                            | Shipped                                   |
-| Save as PDF (reflection-only via `window.print()`)      | Shipped                                   |
-| Reset button with confirm                               | Shipped                                   |
-| Mutual exclusion with `<sim-data-card>`                 | Shipped                                   |
-| Bell ringer / practice / exit ticket interactivity      | Deferred to Phase 10B                     |
-| `<sim-reflection-export>` portfolio aggregator          | Deferred to Phase 10B                     |
-| Whole-topic-page print stylesheet                       | Deferred to spec §12 polish               |
-| Mobile/tablet responsive tweaks                         | Deferred (polish phase)                   |
-| Animated check transitions, fancier progress bar        | Deferred                                  |
-| More sophisticated mutual-exclusion choreography        | Deferred                                  |
-| `<sim-engine>` private API → public                     | Deferred (still on step-6 follow-up list) |
-| `<slot>` reinstatement in `<sim-coachmark>`             | Deferred (still on step-6 follow-up list) |
+| Concern                                                 | Status                                                                            |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `<sim-checklist>` as slide-out side panel from the left | Shipped                                                                           |
+| Slot-based `<li>` API                                   | Shipped                                                                           |
+| Per-topic-per-level localStorage                        | Shipped                                                                           |
+| Free-text reflection textarea (debounced auto-save)     | Shipped                                                                           |
+| .md download                                            | Shipped                                                                           |
+| Save as PDF (reflection-only via `window.print()`)      | Shipped                                                                           |
+| Reset button with confirm                               | Shipped                                                                           |
+| Mutual exclusion with `<sim-data-card>`                 | Shipped                                                                           |
+| Bell ringer / practice / exit ticket interactivity      | Deferred to Phase 10B                                                             |
+| `<sim-reflection-export>` portfolio aggregator          | Deferred to Phase 10B                                                             |
+| Whole-topic-page print stylesheet                       | Deferred to spec §12 polish                                                       |
+| Mobile/tablet responsive tweaks                         | Deferred (polish phase)                                                           |
+| Animated check transitions, fancier progress bar        | Deferred                                                                          |
+| More sophisticated mutual-exclusion choreography        | Deferred                                                                          |
+| `<sim-engine>` step(dt?) and redraw() public methods    | Shipped in PR #16. play() and pause() already existed.                            |
+| `<slot>` reinstatement in `<sim-coachmark>`             | Probed in PR #16; happy-dom 15.11.7 still broken. Re-test on 16.x / 17.x upgrade. |
 
 ## Phase 10B — Interactive reflection portfolio
 
@@ -416,25 +416,25 @@ PDF:
 
 ### What ships vs what's deferred
 
-| Concern                                                             | Status                                    |
-| ------------------------------------------------------------------- | ----------------------------------------- |
-| `<sim-text-response>` inline component                              | Shipped                                   |
-| `<sim-practice-question>` do-then-reveal + 3-chip rating            | Shipped                                   |
-| `<sim-reflection-export>` page-wide aggregator side panel           | Shipped                                   |
-| `<sim-checklist>` export consolidation (refactor)                   | Shipped                                   |
-| Per-instance localStorage persistence (text-response, practice)     | Shipped                                   |
-| Three-way mutual exclusion (data-card / checklist / export)         | Shipped                                   |
-| Section grouping in markdown + PDF (alphabetical, DOM-order within) | Shipped                                   |
-| Empty-portfolio guard                                               | Shipped                                   |
-| Clear-all (with confirm)                                            | Shipped                                   |
-| Topic-page emoji-free pass                                          | Shipped                                   |
-| Mobile/tablet responsive panel tweaks                               | Deferred (polish phase)                   |
-| Whole-topic-page print stylesheet                                   | Deferred (spec §12 polish)                |
-| Cross-topic portfolio aggregator                                    | Deferred (out of scope; possibly never)   |
-| Server-side persistence                                             | Deferred (out of scope; possibly never)   |
-| Animated check transitions; fancier progress visuals                | Deferred                                  |
-| `<sim-engine>` private API → public                                 | Deferred (still on step-6 follow-up list) |
-| `<slot>` reinstatement in `<sim-coachmark>`                         | Deferred (still on step-6 follow-up list) |
+| Concern                                                             | Status                                                                            |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `<sim-text-response>` inline component                              | Shipped                                                                           |
+| `<sim-practice-question>` do-then-reveal + 3-chip rating            | Shipped                                                                           |
+| `<sim-reflection-export>` page-wide aggregator side panel           | Shipped                                                                           |
+| `<sim-checklist>` export consolidation (refactor)                   | Shipped                                                                           |
+| Per-instance localStorage persistence (text-response, practice)     | Shipped                                                                           |
+| Three-way mutual exclusion (data-card / checklist / export)         | Shipped                                                                           |
+| Section grouping in markdown + PDF (alphabetical, DOM-order within) | Shipped                                                                           |
+| Empty-portfolio guard                                               | Shipped                                                                           |
+| Clear-all (with confirm)                                            | Shipped                                                                           |
+| Topic-page emoji-free pass                                          | Shipped                                                                           |
+| Mobile/tablet responsive panel tweaks                               | Deferred (polish phase)                                                           |
+| Whole-topic-page print stylesheet                                   | Deferred (spec §12 polish)                                                        |
+| Cross-topic portfolio aggregator                                    | Deferred (out of scope; possibly never)                                           |
+| Server-side persistence                                             | Deferred (out of scope; possibly never)                                           |
+| Animated check transitions; fancier progress visuals                | Deferred                                                                          |
+| `<sim-engine>` step(dt?) and redraw() public methods                | Shipped in PR #16. play() and pause() already existed.                            |
+| `<slot>` reinstatement in `<sim-coachmark>`                         | Probed in PR #16; happy-dom 15.11.7 still broken. Re-test on 16.x / 17.x upgrade. |
 
 ## Topic-page print stylesheet
 
