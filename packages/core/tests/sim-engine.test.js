@@ -254,4 +254,82 @@ describe('<sim-engine> — rAF loop', () => {
       globalThis.requestAnimationFrame = originalRAF;
     }
   });
+
+  it('step(dt) calls sim.step(dt) once and paints once', async () => {
+    const el = document.createElement('sim-engine');
+    el.setAttribute('sim', 'fake-sim');
+    document.body.appendChild(el);
+    await Promise.resolve();
+    await Promise.resolve();
+    // _paintOnce requires a canvas in the stage to invoke sim.render(ctx).
+    // happy-dom returns null from getContext('2d'); stub a canvas so _paintOnce
+    // can pass a non-null ctx through to sim.render.
+    const canvas = document.createElement('canvas');
+    canvas.getContext = () => ({});
+    el.shadowRoot.querySelector('.sim-canvas__stage').appendChild(canvas);
+    // After mount, swap in spies for the sim's step + render
+    const stepSpy = vi.fn();
+    const renderSpy = vi.fn();
+    el._sim = { step: stepSpy, render: renderSpy };
+    el.step(0.05);
+    expect(stepSpy).toHaveBeenCalledOnce();
+    expect(stepSpy).toHaveBeenCalledWith(0.05);
+    expect(renderSpy).toHaveBeenCalledOnce();
+  });
+
+  it('step() with no argument uses default dt of 1/60', async () => {
+    const el = document.createElement('sim-engine');
+    el.setAttribute('sim', 'fake-sim');
+    document.body.appendChild(el);
+    await Promise.resolve();
+    await Promise.resolve();
+    // happy-dom returns null from getContext('2d'); stub a canvas so _paintOnce
+    // can pass a non-null ctx through to sim.render.
+    const canvas = document.createElement('canvas');
+    canvas.getContext = () => ({});
+    el.shadowRoot.querySelector('.sim-canvas__stage').appendChild(canvas);
+    const stepSpy = vi.fn();
+    el._sim = { step: stepSpy, render: vi.fn() };
+    el.step();
+    expect(stepSpy).toHaveBeenCalledWith(1 / 60);
+  });
+
+  it('step() works while paused (does not require play state)', async () => {
+    const el = document.createElement('sim-engine');
+    el.setAttribute('sim', 'fake-sim');
+    document.body.appendChild(el);
+    await Promise.resolve();
+    await Promise.resolve();
+    // happy-dom returns null from getContext('2d'); stub a canvas so _paintOnce
+    // can pass a non-null ctx through to sim.render.
+    const canvas = document.createElement('canvas');
+    canvas.getContext = () => ({});
+    el.shadowRoot.querySelector('.sim-canvas__stage').appendChild(canvas);
+    el.pause();
+    const stepSpy = vi.fn();
+    const renderSpy = vi.fn();
+    el._sim = { step: stepSpy, render: renderSpy };
+    el.step(0.1);
+    expect(stepSpy).toHaveBeenCalledOnce();
+    expect(renderSpy).toHaveBeenCalledOnce();
+  });
+
+  it('redraw() calls sim.render but NOT sim.step', async () => {
+    const el = document.createElement('sim-engine');
+    el.setAttribute('sim', 'fake-sim');
+    document.body.appendChild(el);
+    await Promise.resolve();
+    await Promise.resolve();
+    // happy-dom returns null from getContext('2d'); stub a canvas so _paintOnce
+    // can pass a non-null ctx through to sim.render.
+    const canvas = document.createElement('canvas');
+    canvas.getContext = () => ({});
+    el.shadowRoot.querySelector('.sim-canvas__stage').appendChild(canvas);
+    const stepSpy = vi.fn();
+    const renderSpy = vi.fn();
+    el._sim = { step: stepSpy, render: renderSpy };
+    el.redraw();
+    expect(stepSpy).not.toHaveBeenCalled();
+    expect(renderSpy).toHaveBeenCalledOnce();
+  });
 });
